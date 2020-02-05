@@ -300,5 +300,16 @@ Devise.setup do |config|
   # config.to_prepare do
   #   DeviseController.respond_to :html, :json
   # end
-  # config.navigational_formats = [:json]
+  config.navigational_formats = []
+  config.jwt do |jwt|
+    # variable generated with rake secret
+    jwt.secret = ENV['DEVISE_JWT_SECRET_KEY']
+    jwt.dispatch_requests = [
+        ['POST', %r{^/login$}]
+    ]
+    jwt.revocation_requests = [
+        ['DELETE', %r{^/logout$}]
+    ]
+    jwt.expiration_time = 30.minutes.to_i
+  end
 end
