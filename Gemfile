@@ -7,6 +7,8 @@ gem 'devise'
 
 gem 'devise-jwt', '~> 0.5.9'
 
+gem 'omniauth-facebook', '~> 6.0'
+
 gem 'dotenv-rails', groups: [:development, :test]
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'

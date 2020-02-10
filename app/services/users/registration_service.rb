@@ -1,7 +1,7 @@
 module Users
   class RegistrationService < ApplicationService
     def initialize(params)
-      @params = params.require(:user).permit(:email, :password, :password_confirmation)
+      @params = params.require(:user).permit(:email, :phone, :password, :password_confirmation)
     end
 
     def execute

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  before_action :skip_session
 
   protected
 
@@ -20,5 +21,10 @@ class ApplicationController < ActionController::API
         message: msg,
         data: nil
     }, code: code
+  end
+
+  # Skip sessions and cookies for Rails API
+  def skip_session
+    request.session_options[:skip] = true
   end
 end
