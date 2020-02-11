@@ -7,7 +7,7 @@ gem 'devise'
 
 gem 'devise-jwt', '~> 0.5.9'
 
-gem 'omniauth-facebook', '~> 6.0'
+gem 'koala', '~> 3.0'
 
 gem 'dotenv-rails', groups: [:development, :test]
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

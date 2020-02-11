@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::API
-  before_action :skip_session
-
+  before_action :configure_permitted_parameters, if: :devise_controller?
   protected
 
   def render_response(json)
@@ -23,8 +22,12 @@ class ApplicationController < ActionController::API
     }, code: code
   end
 
-  # Skip sessions and cookies for Rails API
-  def skip_session
-    request.session_options[:skip] = true
+  protected
+
+  def configure_permitted_parameters
+    added_attrs = [:phone, :email, :password, :password_confirmation]
+    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
+    devise_parameter_sanitizer.permit :account_update, keys: added_attrs
   end
+
 end
