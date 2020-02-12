@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :configure_permitted_parameters, if: :devise_controller?
+
   protected
 
   def render_response(json)
@@ -21,8 +22,6 @@ class ApplicationController < ActionController::API
         data: nil
     }, code: code
   end
-
-  protected
 
   def configure_permitted_parameters
     added_attrs = [:phone, :email, :password, :password_confirmation]
