@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :check_authorize
 
   protected
 
@@ -12,15 +13,15 @@ class ApplicationController < ActionController::API
         success: true,
         message: msg,
         data: data
-    }, code: 200
+    }, status: :ok
   end
 
-  def render_error_response(msg = 'Bad Request', code = 400)
+  def render_error_response(msg = 'Bad Request', status = :bad_request)
     render json: {
         success: false,
         message: msg,
         data: nil
-    }, code: code
+    }, status: status
   end
 
   def configure_permitted_parameters
@@ -29,4 +30,10 @@ class ApplicationController < ActionController::API
     devise_parameter_sanitizer.permit :account_update, keys: added_attrs
   end
 
+  def check_authorize
+    token = request.headers['token']
+    return render_error_response unless token
+    user = JsonWebToken.decode(token)
+    render_error_response('Token is not valid.') if Time.now.to_i > user[:exp]
+  end
 end

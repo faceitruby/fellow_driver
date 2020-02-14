@@ -38,7 +38,6 @@ class User < ApplicationRecord
   end
 
   def email_or_phone
-    errors.add(:email_or_phone, 'Fill in the email or phone field') if
-        email.empty? && phone.empty?
+    errors.add(:email_or_phone, 'Fill in the email or phone field') if email.empty? && phone.empty?
   end
 end

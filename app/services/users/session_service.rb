@@ -4,7 +4,7 @@ module Users
       @user = user
     end
 
-    def execute
+    def perform
       return OpenStruct.new(success?: false, user: nil, errors: 'Invalid Login or password') unless @user
       OpenStruct.new(success?: true, data: {token: jwt_encode(@user), user: @user}, errors: nil)
     end

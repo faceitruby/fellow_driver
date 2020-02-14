@@ -4,7 +4,7 @@ module Users
       @token = token
     end
 
-    def execute
+    def perform
       validate_facebook_token
     end
 
