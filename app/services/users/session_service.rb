@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 module Users
   class SessionService < ApplicationService
     def initialize(user)
       @user = user
     end
 
-    def perform
+    def call
       return OpenStruct.new(success?: false, user: nil, errors: 'Invalid Login or password') unless @user
-      OpenStruct.new(success?: true, data: {token: jwt_encode(@user), user: @user}, errors: nil)
+
+      OpenStruct.new(success?: true, data: { token: jwt_encode(@user), user: @user }, errors: nil)
     end
   end
 end

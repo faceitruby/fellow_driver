@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Users
   class OmniauthFacebookService < ApplicationService
     def initialize(token)
       @token = token
     end
 
-    def perform
+    def call
       validate_facebook_token
     end
 
@@ -13,9 +15,9 @@ module Users
     def validate_facebook_token
       begin
         graph = Koala::Facebook::API.new(@token)
-        get_user(graph.get_object("me?fields=email"))
+        get_user(graph.get_object('me?fields=email'))
       rescue => e
-        message = e.message.instance_of?(String) ? {error: e.message} : e.message
+        message = e.message.instance_of?(String) ? { error: e.message } : e.message
         OpenStruct.new(success?: false, errors: message)
       end
     end
@@ -29,7 +31,7 @@ module Users
         user.provider = 'facebook'
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
       end
-      OpenStruct.new(success?: true, data: {token: jwt_encode(user), user: user})
+      OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user })
     end
   end
 end
