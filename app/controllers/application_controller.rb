@@ -8,24 +8,23 @@ class ApplicationController < ActionController::API
     render json: json, code: 200
   end
 
-  def render_success_response(data = nil, msg = 'Ok')
+  def render_success_response(data = nil)
     render json: {
         success: true,
-        message: msg,
         data: data
     }, status: :ok
   end
 
-  def render_error_response(msg = 'Bad Request', status = :bad_request)
+  def render_error_response(message = 'Bad Request', status = :bad_request)
     render json: {
         success: false,
-        message: msg,
+        message: message,
         data: nil
     }, status: status
   end
 
   def configure_permitted_parameters
-    added_attrs = [:phone, :email, :password, :password_confirmation]
+    added_attrs = %i[phone email password password_confirmation]
     devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
     devise_parameter_sanitizer.permit :account_update, keys: added_attrs
   end
@@ -33,6 +32,7 @@ class ApplicationController < ActionController::API
   def check_authorize
     token = request.headers['token']
     return render_error_response unless token
+
     user = JsonWebToken.decode(token)
     render_error_response('Token is not valid.') if Time.now.to_i > user[:exp]
   end

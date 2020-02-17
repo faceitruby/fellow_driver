@@ -1,5 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  skip_before_action :check_authorize, only: [:facebook]
+  skip_before_action :check_authorize, only: %i[facebook]
 
   respond_to :json
 
