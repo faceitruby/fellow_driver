@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 module Examples
   class FetchService < ApplicationService
     # @attr_reader params [Hash]
     # - example_id: [Integer] Example ID
     # - example_name: [String] Example name
 
-    # Service should get only one #perform method.
+    # Service should get only one #call method.
     # Other logic should be under private modifier
-    def perform
+    def call
       examples
     end
 
