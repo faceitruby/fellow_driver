@@ -8,7 +8,8 @@ class User < ApplicationRecord
   validates :password, confirmation: true
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :jwt_authenticatable, jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+         :recoverable, :rememberable, :jwt_authenticatable,
+         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   private
 
@@ -19,18 +20,19 @@ class User < ApplicationRecord
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup
     if login = conditions.delete(:login)
-      where(conditions.to_h).where(["lower(phone) = :value OR lower(email) = :value", { :value => login.downcase }]).first
+      where(conditions.to_h).where(["lower(phone) = :value OR lower(email) = :value",
+                                    { value: login.downcase }]).first
     elsif conditions.has_key?(:phone) || conditions.has_key?(:email)
       where(conditions.to_h).first
     end
   end
 
   def email_present?
-    !email.empty?
+    email.present?
   end
 
   def phone_present?
-    !phone.empty?
+    phone.present?
   end
 
   def email_or_phone
