@@ -5,7 +5,7 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST api/users/login
   def create
-    result = Users::SessionService.new(warden.authenticate).call
+    result = Users::SessionService.perform(warden.authenticate)
     result.success? ? render_success_response(result.data) : render_error_response(result.errors)
   end
 end

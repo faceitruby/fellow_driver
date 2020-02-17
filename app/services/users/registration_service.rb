@@ -2,6 +2,12 @@
 
 module Users
   class RegistrationService < ApplicationService
+    # @attr_reader params [Hash]
+    # - email: [String] User email
+    # - phone: [String] User phone number
+    # - password: [String] User password
+    # - password_confirmation: [String]  User password
+
     def call
       user = User.new(@params)
       return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save

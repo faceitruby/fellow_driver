@@ -7,7 +7,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST api/users/signup
   def create
-    result = Users::RegistrationService.new(registration_params).call
+    result = Users::RegistrationService.perform(registration_params)
     result.success? ? render_success_response(result.data) : render_error_response(result.errors)
   end
 
