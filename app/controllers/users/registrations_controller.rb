@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Users::RegistrationsController < Devise::RegistrationsController
   skip_before_action :check_authorize, only: [:create]
 
@@ -5,7 +7,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST api/users/signup
   def create
-    result = Users::RegistrationService.new(params).perform
+    result = Users::RegistrationService.perform(registration_params)
     result.success? ? render_success_response(result.data) : render_error_response(result.errors)
+  end
+
+  private
+
+  def registration_params
+    params.require(:user).permit(:email, :phone, :password)
   end
 end
