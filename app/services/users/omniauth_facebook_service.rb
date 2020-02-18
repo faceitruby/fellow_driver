@@ -2,6 +2,8 @@
 
 module Users
   class OmniauthFacebookService < ApplicationService
+    # @attr_reader params [String] Token
+
     def call
       validate_facebook_token
     end

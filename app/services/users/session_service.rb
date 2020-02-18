@@ -2,6 +2,8 @@
 
 module Users
   class SessionService < ApplicationService
+    # @attr_reader params [User] Authenticated user
+
     def call
       return OpenStruct.new(success?: false, user: nil, errors: 'Invalid Login or password') unless @params
 

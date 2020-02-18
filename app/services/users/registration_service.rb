@@ -6,7 +6,6 @@ module Users
     # - email: [String] User email
     # - phone: [String] User phone number
     # - password: [String] User password
-    # - password_confirmation: [String]  User password
 
     def call
       user = User.new(@params)
