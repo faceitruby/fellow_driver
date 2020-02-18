@@ -10,11 +10,11 @@ class ApplicationController < ActionController::API
     render json: json, code: 200
   end
 
-  def render_success_response(data = nil)
+  def render_success_response(data = nil, status = :ok)
     render json: {
       success: true,
       data: data
-    }, status: :ok
+    }, status: status
   end
 
   def render_error_response(message = 'Bad Request', status = :bad_request)
@@ -27,6 +27,7 @@ class ApplicationController < ActionController::API
 
   def configure_permitted_parameters
     added_attrs = %i[phone email password password_confirmation]
+    added_attrs2 = %i[phone email password password_confirmation avatar]
     devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
     devise_parameter_sanitizer.permit :account_update, keys: added_attrs
   end

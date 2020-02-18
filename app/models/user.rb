@@ -2,12 +2,14 @@
 
 class User < ApplicationRecord
   attr_writer :login
+  has_one_attached :avatar
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
   validates_format_of :phone,
                       with: /\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
   validates :password, confirmation: true
+  validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :jwt_authenticatable,
@@ -21,7 +23,7 @@ class User < ApplicationRecord
 
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup
-    if login = conditions.delete(:login)
+    if (login = conditions.delete(:login))
       where(conditions.to_h).where(['lower(phone) = :value OR lower(email) = :value',
                                     { value: login.downcase }]).first
     elsif conditions.has_key?(:phone) || conditions.has_key?(:email)
