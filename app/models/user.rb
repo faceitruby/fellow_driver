@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  has_many :cars, dependent: :destroy
+  has_many :payments, dependent: :destroy
+
   attr_writer :login
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
   validates_format_of :phone,

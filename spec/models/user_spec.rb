@@ -33,4 +33,12 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  context 'Associations' do
+    %i[cars payments].each do |association|
+      it 'belongs to user by user_id field' do
+        is_expected.to have_many(association)
+      end
+    end
+  end
 end
