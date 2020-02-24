@@ -223,6 +223,10 @@ GEM
     thor (1.0.1)
     thread_safe (0.3.6)
     thread_safe (0.3.6-java)
+    twilio-ruby (5.31.5)
+      faraday (~> 1.0.0)
+      jwt (>= 1.5, <= 2.5)
+      nokogiri (>= 1.6, < 2.0)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
     tzinfo-data (1.2019.3)
@@ -270,6 +274,7 @@ DEPENDENCIES
   shoulda-matchers
   spring
   spring-watcher-listen (~> 2.0.0)
+  twilio-ruby
   tzinfo-data
   web-console (>= 3.3.0)
 
