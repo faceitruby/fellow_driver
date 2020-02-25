@@ -35,7 +35,7 @@ class ApplicationController < ActionController::API
     token = request.headers['token']
     return render_error_response unless token
 
-    @current_user = JsonWebToken.decode(token)
-    render_error_response('Token is not valid.') if Time.now.to_i > @current_user[:expire]
+    user = JsonWebToken.decode(token)
+    render_error_response('Token is not valid.') if Time.now.to_i > user[:expire]
   end
 end

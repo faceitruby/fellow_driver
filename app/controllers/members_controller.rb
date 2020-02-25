@@ -29,7 +29,9 @@ class MembersController < ApplicationController
   private
 
   def set_current_user
-    @user = User.find(@current_user["user_id"])
+    token = request.headers['token']
+    decoded_auth_token = JsonWebToken.decode(token)
+    @user = User.find(decoded_auth_token[:user_id])
   end
 
   def member_params
