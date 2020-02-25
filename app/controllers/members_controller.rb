@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class MembersController < ApplicationController
-  before_action :check_authorize, :set_current_user, only: [:create, :index]
+  before_action :check_authorize, :set_current_user, only: %i[create index]
 
   def index
     members = @user.members
@@ -16,14 +18,13 @@ class MembersController < ApplicationController
   def create
     member = @user.members.new(member_params)
     if member.save
-      message = "#{member['first_name']} #{member['last_name']} added you as family member on FellowDriver. Click the link below to accept the invitation: link."
+      message = "#{member['first_name']} #{member['last_name']} added you as family \
+        member on FellowDriver. Click the link below to accept the invitation: link."
       TwilioTextMessenger.new(message).call
       render json: member
     else
       render json: member.errors
     end
-
-    
   end
 
   private
@@ -35,6 +36,7 @@ class MembersController < ApplicationController
   end
 
   def member_params
-    params.require(:member).permit(:first_name, :last_name, :email, :phone, :birth_day, :relationship)
+    params.require(:member).permit(:first_name, :last_name, :email,
+                                   :phone, :birth_day, :relationship)
   end
 end
