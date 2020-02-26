@@ -18,9 +18,10 @@ class MembersController < ApplicationController
   def create
     member = @user.members.new(member_params)
     if member.save
-      message = "#{member['first_name']} #{member['last_name']} added you as family \
-        member on FellowDriver. Click the link below to accept the invitation: link."
-      TwilioTextMessenger.new(message).call
+#      TODO: uncomment when will be @user['first_name'] and @user['last_name']
+#       message = "#{@user['first_name']} #{@user['last_name']} added you as family \
+# member on FellowDriver. Click the link below to accept the invitation: link."
+#       TwilioTextMessenger.new(message).call
       render json: member
     else
       render json: member.errors

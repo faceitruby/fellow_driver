@@ -9,7 +9,7 @@ class Member < ApplicationRecord
                       with: /\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.'
   validates_format_of :birth_day,
-                      with: /(\d{2})\.(\d{2})\.(\d{4})/,
+                      with: /(\d{2})[\.\/\*\-](\d{2})[\.\/\*\-](\d{4})/,
                       message: 'Birth date must be in xx.xx.xxxx format.'
   validates :relationship, inclusion: %w(daughter son husband wife father mother)
 end
