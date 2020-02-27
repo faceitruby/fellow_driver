@@ -104,16 +104,14 @@ RSpec.describe Users::RegistrationsController, type: :controller do
         update_request
         expect(response).to have_http_status(204)
       end
-      # rubocop:disable Lint/AmbiguousBlockAssociation
       it 'changes user\'s fields' do
         expect do
           update_request
           user.reload
-        end.to change { user.first_name }
-          .and change { user.last_name }
-          .and change { user.address }
+        end.to change(user, :first_name)
+          .and change(user, :last_name)
+          .and change(user, :address)
       end
-      # rubocop:enable Lint/AmbiguousBlockAssociation
     end
     %i[address avatar email phone first_name last_name].each do |field|
       context "with missing #{field}" do

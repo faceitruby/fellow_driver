@@ -5,16 +5,14 @@ RSpec.shared_examples 'with missing fields' do
     update_request
     expect(response).to have_http_status(422)
   end
-  # rubocop:disable Lint/AmbiguousBlockAssociation
   it 'doesn\'t change user\'s fields' do
     user = User.last
     expect do
       update_request
       user.reload
-    end.to not_change { user.phone }
-      .and not_change { user.first_name }
-      .and not_change { user.last_name }
-      .and not_change { user.address }
+    end.to not_change(user, :phone)
+      .and not_change(user, :first_name)
+      .and not_change(user, :last_name)
+      .and not_change(user, :address)
   end
-  # rubocop:enable Lint/AmbiguousBlockAssociation
 end

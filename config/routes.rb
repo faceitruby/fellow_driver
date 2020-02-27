@@ -2,7 +2,7 @@
 
 Rails.application.routes.draw do
   scope :api, defaults: { format: :json } do
-    devise_for :users, skip: %w[registration],
+    devise_for :users, skip: %i[registration session],
                path_names: {
                  sign_in: 'login',
                  sign_out: 'logout',
@@ -20,7 +20,13 @@ Rails.application.routes.draw do
       post 'users/signup', to: 'users/registrations#create', as: :user_registration
       patch 'users/signup', to: 'users/registrations#update'
       put 'users/signup', to: 'users/registrations#update'
+
+      post 'users/login', to: 'users/sessions#create', as: :user_session
+
+      post 'users/address_autocomplete/complete', to: 'users/address_autocomplete#complete', as: :address_autocomplete_complete
     end
+
+
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

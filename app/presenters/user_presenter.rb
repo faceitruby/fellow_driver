@@ -9,7 +9,7 @@ class UserPresenter < ApplicationPresenter
   delegate(*MODEL_ATTRIBUTES, to: :record)
 
   def page_context
-    properties.to_json
+    properties
   end
 
   private

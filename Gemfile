@@ -9,10 +9,14 @@ gem 'devise'
 
 gem 'devise-jwt', '~> 0.5.9'
 
+gem 'google_places_autocomplete'
+
 gem 'koala', '~> 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
+
+gem 'redis'
 
 gem 'rspec-rails'
 # Use postgresql as the database for Active Record

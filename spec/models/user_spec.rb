@@ -32,7 +32,7 @@ RSpec.describe User, type: :model do
       it { is_expected.to_not allow_value(phone).for(:phone) }
     end
 
-    context 'for creating' do
+    context 'when creating' do
       let(:user_without_email_phone) { build(:user, :create_params_only, email: nil, phone: nil) }
 
       context 'when email is set' do
@@ -51,7 +51,7 @@ RSpec.describe User, type: :model do
         end
       end
     end
-    context 'for updating' do
+    context 'when updating' do
       context 'when all params present' do
         it 'valid' do
           expect(build(:user)).to be_valid(:update)
