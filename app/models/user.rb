@@ -10,25 +10,28 @@ class User < ApplicationRecord
   validate :email_or_phone
   validates :password, confirmation: true
   validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
+  validate :avatar_attached?, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :jwt_authenticatable,
          jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
+  # rubocop:disable Lint/AssignmentInCondition
+  def self.find_for_database_authentication(warden_conditions)
+    conditions = warden_conditions.dup
+    if login = conditions.delete(:login)
+      where(conditions.to_h).where(['lower(phone) = :value OR lower(email) = :value',
+                                    { value: login.downcase }]).first
+    elsif conditions.key?(:phone) || conditions.key?(:email)
+      where(conditions.to_h).first
+    end
+  end
+  # rubocop:enable Lint/AssignmentInCondition
+
   private
 
   def login
     @login || phone || email
-  end
-
-  def self.find_for_database_authentication(warden_conditions)
-    conditions = warden_conditions.dup
-    if (login = conditions.delete(:login))
-      where(conditions.to_h).where(['lower(phone) = :value OR lower(email) = :value',
-                                    { value: login.downcase }]).first
-    elsif conditions.has_key?(:phone) || conditions.has_key?(:email)
-      where(conditions.to_h).first
-    end
   end
 
   def email_present?
@@ -41,5 +44,9 @@ class User < ApplicationRecord
 
   def email_or_phone
     errors.add(:email_or_phone, 'Fill in the email or phone field') if email.blank? && phone.blank?
+  end
+
+  def avatar_attached?
+    avatar.attached?
   end
 end

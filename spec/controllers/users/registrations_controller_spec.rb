@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'support/shared/registration_controller_shared'
 
 RSpec.describe Users::RegistrationsController, type: :controller do
   describe 'route' do
@@ -12,102 +13,140 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     it { is_expected.to route(:post, '/api/users/signup').to(action: :create, format: :json) }
     it { is_expected.to route(:put, '/api/users/signup').to(action: :update, format: :json) }
     it { is_expected.to route(:patch, '/api/users/signup').to(action: :update, format: :json) }
-
   end
-  describe 'action' do
+
+  describe 'POST#create' do
     before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
-    let(:create_user_with_email) do
-      post :create, params: { user: { email: 'user@example.com', password: 'password' } }, as: :json
+    let(:send_request) { post :create, params: params, as: :json }
+    let(:params) do
+      {
+        user: {
+          email: email,
+          phone: phone
+        }
+      }
     end
-    let(:create_user_with_phone) do
-      post :create, params: { user: { phone: '123-456-7890', password: 'password' } }, as: :json
-    end
-    let(:create_user_without_phone_email) { post :create, params: { user: { password: 'password' } }, as: :json }
+    let(:email) { Faker::Internet.email }
+    let(:phone) { Faker::Base.numerify('###-###-####') }
 
-    describe '#create' do
-      it 'user with email changes User count' do
-        expect { create_user_with_email }.to change(User, :count)
-      end
-      it 'user with phone changes User count' do
-        expect { create_user_with_phone }.to change(User, :count)
-      end
-      it 'user without email and phone does not change User count' do
-        expect { create_user_without_phone_email }.to_not change(User, :count)
-      end
-      context 'gets status' do
-        it '201 when user has email' do
-          create_user_with_email
-          expect(response).to have_http_status(:created)
-        end
-        it '201 when user has phone' do
-          create_user_with_phone
-          expect(response).to have_http_status(:created)
-        end
-        it '422 when user does not have phone and email' do
-          create_user_without_phone_email
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-      end
-      context 'response' do
-        it 'contain json' do
-          create_user_with_email
-          expect(response.content_type).to include('application/json')
-        end
-      end
+    it 'returns json' do
+      send_request
+      expect(response.content_type).to include('application/json')
     end
 
-    describe '#update' do
-      let(:correct_params) { { user: attributes_for(:correct_user_update) } }
-      let(:wrong_params) { { user: attributes_for(:user_with_missing_fields_update) } }
-      before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
+    context 'with user email' do
+      let(:phone) { nil }
 
-      context 'gets status' do
-        let(:user) { create(:user_email_only) }
-
-        let(:correct_update_request) do
-          put :update, headers: { token: request.headers['token'] }
-        end
-
-        it '204 with correct update request' do
-          post :create, params: { user: { email: 'user@example.com', password: 'password' } }, as: :json
-          request.headers['token'] = JSON.parse(response.body)['data']['token']
-          put :update, params: correct_params
-          expect(response).to have_http_status(204)
-        end
-        it '422 with wrong update request' do
-          post :create, params: { user: { email: 'user@example.com', password: 'password' } }, as: :json
-          request.headers['token'] = JSON.parse(response.body)['data']['token']
-          put :update, params: wrong_params
-          expect(response).to have_http_status(422)
-        end
+      it 'creates user' do
+        expect { send_request }.to change(User, :count)
       end
-      context 'action' do
-        it 'changes user`s fields with correct params' do
-          post :create, params: { user: { email: 'user1@example.com', password: 'password' } }, as: :json
-          request.headers['token'] = JSON.parse(response.body)['data']['token']
-          user = User.last
-          expect do
-            put :update, params: correct_params
-            user.reload
-          end.to change { user.phone }
-                 .and change { user.first_name }
-                 .and change { user.last_name }
-                 .and change { user.address }
-        end
-        it 'does not change user`s fields with correct params' do
-          post :create, params: { user: { email: 'user1@example.com', password: 'password' } }, as: :json
-          request.headers['token'] = JSON.parse(response.body)['data']['token']
-          user = User.last
-          expect do
-            put :update, params: wrong_params
-            user.reload
-          end.to not_change { user.phone }
-             .and not_change { user.first_name }
-             .and not_change { user.last_name }
-             .and not_change { user.address }
-        end
+      it 'gets 201 code' do
+        send_request
+        expect(response).to have_http_status(:created)
       end
+    end
+    context 'with user phone' do
+      let(:email) { nil }
+
+      it 'creates user' do
+        expect { send_request }.to change(User, :count)
+      end
+      it 'gets 201 code' do
+        send_request
+        expect(response).to have_http_status(:created)
+      end
+    end
+    context 'without user email and phone' do
+      let(:email) { nil }
+      let(:phone) { nil }
+
+      it 'doesn\'t create user' do
+        expect { send_request }.to_not change(User, :count)
+      end
+      it 'gets 422 code' do
+        send_request
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+
+  describe 'POST#update' do
+    before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
+
+    let(:create_request) do
+      post :create, params: { user: params[:user].slice(:email, :phone) }, as: :json
+      request.headers['token'] = JSON.parse(response.body)['data']['token']
+    end
+    let(:update_request) { post :update, params: params, as: :json }
+    let(:params) do
+      {
+        user: {
+          email: email,
+          phone: phone,
+          first_name: first_name,
+          last_name: last_name,
+          address: address,
+          avatar: avatar
+        }
+      }
+    end
+    let(:email) { Faker::Internet.email }
+    let(:phone) { Faker::Base.numerify('###-###-####') }
+    let(:first_name) { Faker::Name.first_name }
+    let(:last_name) { Faker::Name.last_name }
+    let(:address) { Faker::Address.full_address }
+    # TODO: CHECK THAT ITS WORK
+    let(:avatar) { Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']) }
+
+    context 'with all fields' do
+      it 'gets 204 code' do
+        create_request
+        update_request
+        expect(response).to have_http_status(204)
+      end
+      # rubocop:disable Lint/AmbiguousBlockAssociation
+      it 'changes user\'s fields' do
+        create_request
+        user = User.last
+        expect do
+          update_request
+          user.reload
+        end.to change { user.first_name }
+          .and change { user.last_name }
+          .and change { user.address }
+      end
+      # rubocop:enable Lint/AmbiguousBlockAssociation
+    end
+    context 'with missing address' do
+      let(:address) { nil }
+
+      it_behaves_like 'with missing fields'
+    end
+    context 'with missing avatar' do
+      let(:avatar) { nil }
+
+      it_behaves_like 'with missing fields'
+    end
+    context 'with missing email' do
+      let(:email) { nil }
+
+      it_behaves_like 'with missing fields'
+    end
+    context 'with missing phone' do
+      let(:phone) { nil }
+
+      it_behaves_like 'with missing fields'
+    end
+    context 'with missing first_name' do
+      let(:first_name) { nil }
+
+      it_behaves_like 'with missing fields'
+    end
+    context 'with missing last_name' do
+      let(:last_name) { nil }
+
+      it_behaves_like 'with missing fields'
     end
   end
 end

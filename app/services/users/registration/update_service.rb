@@ -1,8 +1,8 @@
-
 # frozen_string_literal: true
 
 module Users
   module Registration
+    # Service for update user. Calls from RegistrationController#update
     class UpdateService < ApplicationService
       # @attr_reader params [Hash]
       # - email: [String] User email
@@ -14,19 +14,17 @@ module Users
       # - token: [String] Token from request
 
       def call
-        user = receive_user
-        user.assign_attributes(@params.except('token'))
+        receive_user.assign_attributes(params.except('token'))
 
-        return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
+        return OpenStruct.new(success?: false, user: nil, errors: receive_user.errors) unless receive_user.save
 
-        OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
+        OpenStruct.new(success?: true, data: { token: jwt_encode(receive_user), user: receive_user }, errors: nil)
       end
 
       private
 
       def receive_user
-        decoded = JsonWebToken.decode @params['token']
-        User.find(decoded['user_id'])
+        @receive_user ||= User.find(JsonWebToken.decode(params['token'])['user_id'])
       end
     end
   end

@@ -2,6 +2,7 @@
 
 module Users
   module Registration
+    # Service for user creation
     class CreateService < ApplicationService
       # @attr_reader params [Hash]
       # - email: [String] User email
@@ -9,7 +10,7 @@ module Users
       # - password: [String] User password
 
       def call
-        user = User.new(@params)
+        user = User.new(params)
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
 
         OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
