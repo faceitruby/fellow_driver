@@ -4,7 +4,15 @@ require 'rails_helper'
 
 RSpec.describe Users::RegistrationsController, type: :controller do
   describe 'route' do
+    it { is_expected.to_not route(:get, '/api/users/signup').to(action: :index, format: :json) }
+    it { is_expected.to_not route(:patch, '/api/users/signup').to(action: :show, format: :json) }
+    it { is_expected.to_not route(:get, '/api/users/signup/sign_up').to(action: :new, format: :json) }
+    it { is_expected.to_not route(:get, '/api/users/signup/edit').to(action: :edit, format: :json) }
+    it { is_expected.to_not route(:delete, '/api/users/signup').to(action: :destroy, format: :json) }
     it { is_expected.to route(:post, '/api/users/signup').to(action: :create, format: :json) }
+    it { is_expected.to route(:put, '/api/users/signup').to(action: :update, format: :json) }
+    it { is_expected.to route(:patch, '/api/users/signup').to(action: :update, format: :json) }
+
   end
   describe 'action' do
     before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }

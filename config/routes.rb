@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   scope :api, defaults: { format: :json } do
-    devise_for :users,
+    devise_for :users, skip: %w[registration],
                path_names: {
                    sign_in: 'login',
                    sign_out: 'logout',
@@ -11,8 +11,13 @@ Rails.application.routes.draw do
                   sessions: 'users/sessions',
                   omniauth_social: 'users/memberships'
               }
+
     devise_scope :user do
-      post 'users/auth/facebook', :to => 'users/omniauth_callbacks#facebook'
+      post 'users/auth/facebook', to: 'users/omniauth_callbacks#facebook'
+      
+      post 'users/signup', to: 'users/registrations#create', as: :user_registration
+      patch 'users/signup', to: 'users/registrations#update'
+      put 'users/signup', to: 'users/registrations#update'
     end
   end
 
