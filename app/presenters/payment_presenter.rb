@@ -5,7 +5,7 @@ class PaymentPresenter < ApplicationPresenter
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
 
-  def examples_page_context
+  def payments_page_context
     properties.to_json
   end
 
