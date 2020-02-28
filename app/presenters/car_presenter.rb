@@ -12,6 +12,6 @@ class CarPresenter < ApplicationPresenter
   private
 
   def properties
-    record.attributes.symbolize_keys.slice(*MODEL_ATTRIBUTES)
+    record.attributes.slice(*MODEL_ATTRIBUTES)
   end
 end

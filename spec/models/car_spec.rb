@@ -26,7 +26,7 @@ RSpec.describe Car, type: :model do
   end
 
   context 'Validation' do
-    let(:car) { build(:car) }
+    let(:car) { create(:car) }
     it do
       expect(car).to be_valid
     end

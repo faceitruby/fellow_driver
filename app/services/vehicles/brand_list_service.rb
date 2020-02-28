@@ -4,7 +4,8 @@ module Vehicles
   require 'net/http'
   require 'json'
 
-  class BrandService < ApplicationService
+  # Service for get brands Avto from API
+  class BrandListService < Vehicles::ApplicationService
     def call
       threads = []
       result = []
@@ -14,7 +15,7 @@ module Vehicles
       ]
 
       url.each do |uri|
-        threads << Thread.new{ examples(URI(uri), 'MakeName') }
+        threads << Thread.new { examples(URI(uri), 'MakeName') }
       end
 
       threads.each do |thread|
@@ -23,16 +24,6 @@ module Vehicles
 
       threads.each &:join
       result
-    end
-
-    private
-
-    def examples(url, key)
-      JSON.parse(response(url))['Results'].flat_map { |v| v[key] }
-    end
-
-    def response(uri)
-      Net::HTTP.get(uri)
     end
   end
 end

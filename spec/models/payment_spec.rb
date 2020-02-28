@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Payment, type: :model do
   context 'fields' do
-    %i[ payment_type user_payment user_id].each do |field|
+    %i[payment_type user_payment user_id].each do |field|
       it { is_expected.to have_db_column(field) }
     end
   end

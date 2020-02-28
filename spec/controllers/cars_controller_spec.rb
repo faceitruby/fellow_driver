@@ -43,7 +43,7 @@ RSpec.describe CarsController, type: :controller do
         expect(get: '/api/cars/new').to_not route_to(
           controller: 'cars',
           action: 'new',
-          format: :json,
+          format: :json
         )
       end
 
@@ -52,7 +52,7 @@ RSpec.describe CarsController, type: :controller do
           controller: 'cars',
           action: 'update',
           format: :json,
-          id: '1',
+          id: '1'
         )
       end
 
@@ -61,7 +61,7 @@ RSpec.describe CarsController, type: :controller do
           controller: 'cars',
           action: 'update',
           format: :json,
-          id: '1',
+          id: '1'
         )
       end
 
@@ -70,7 +70,7 @@ RSpec.describe CarsController, type: :controller do
           controller: 'cars',
           action: 'edit',
           format: :json,
-          id: '1',
+          id: '1'
         )
       end
     end

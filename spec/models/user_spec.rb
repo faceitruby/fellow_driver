@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'field' do
-    %i[id email phone encrypted_password reset_password_token reset_password_sent_at
-       remember_created_at created_at updated_at jti provider uid
+    %i[
+      id email phone encrypted_password reset_password_token reset_password_sent_at
+      remember_created_at created_at updated_at jti provider uid
     ].each do |field|
       it { is_expected.to have_db_column(field) }
     end

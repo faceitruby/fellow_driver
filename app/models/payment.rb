@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 class Payment < ApplicationRecord
   belongs_to :user
 
-  validates :user_payment, presence: true
-  validates :payment_type, presence: true
+  validates_presence_of :user_payment, :payment_type
 end

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Payments
   class PreparePaymentService < ApplicationService
     # @attr_reader params [Hash]
-    # - token: [String] Token for current user
+    # - user: [User] Current user
     # - params: [Hash] Hash with paymont information:
     # - - type: [String] paymont type
     # - - card: [Hash] Contain card info
@@ -11,9 +13,9 @@ module Payments
     # - - - cvc: [String] Card cvc
 
     def call
-      result = Payments::StripeClientService.perform(@params[:params])
+      result = Payments::StripeClientService.perform(params)
       if result.success?
-        pm_info = { token: @params[:token], pm_id: result.data[:id], type: result.data[:type] }
+        pm_info = { user: params[:user], pm_id: result.data[:id], type: result.data[:type] }
         user_payment = Payments::SavePaymentService.perform(pm_info)
         OpenStruct.new(success?: true, data: user_payment, errors: nil)
       else
@@ -22,4 +24,3 @@ module Payments
     end
   end
 end
-
