@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Cars
-
   # Service for create car
   class CarCreateService < ApplicationService
     # @attr_reader params [Hash]

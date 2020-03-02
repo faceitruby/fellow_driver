@@ -9,7 +9,7 @@ module Payments
     # - - exp_month: [Integer] Card exp_month
     # - - exp_year: [Integer] Card exp_year
     # - - cvc: [String] Card cvc
-    
+
     def call
       response = Stripe::StripeClient.new.request do
         Stripe::PaymentMethod.create({

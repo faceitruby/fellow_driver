@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :car do
-    association :user, factory: [:user, :correct_user_update]
+    association :user, factory: %i[user correct_user_update]
     manufacturer { Faker::Vehicle.manufacture }
     model { Faker::Vehicle.model }
     year { Faker::Number.number(digits: 4) }
