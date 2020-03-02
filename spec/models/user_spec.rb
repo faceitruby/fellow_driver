@@ -33,34 +33,34 @@ RSpec.describe User, type: :model do
     end
 
     context 'on POST#create' do
-      let(:user_with_email) { build(:user, :email) }
-      let(:user_with_phone) { build(:user, :phone) }
-      let(:user_without_email_phone) { build(:user) }
+      let(:user_without_email_phone) { build(:user, :create_params_only, email: nil, phone: nil) }
 
-      context 'is successful' do
-        it 'with email' do
-          expect(user_with_email).to be_valid(:create)
-        end
-        it 'with phone' do
-          expect(user_with_phone).to be_valid(:create)
+      context 'when email is set' do
+        it 'valid' do
+          expect(build(:user, :create_params_only, phone: nil)).to be_valid(:create)
         end
       end
-      context 'is failed' do
-        it 'without email and phone' do
+      context 'when phone is set' do
+        it 'valid' do
+          expect(build(:user, :create_params_only, email: nil)).to be_valid(:create)
+        end
+      end
+      context 'when both email and phone aren\'t set' do
+        it 'not valid' do
           expect(user_without_email_phone).to_not be_valid(:create)
         end
       end
     end
     context 'on POST#update' do
-      context 'is successful' do
-        it 'with valid params' do
-          expect(build(:user, :all_fields)).to be_valid(:update)
+      context 'when all params present' do
+        it 'valid' do
+          expect(build(:user)).to be_valid(:update)
         end
       end
-      context 'is failed' do
-        %i[first_name last_name email phone address avatar].each do |parameter|
-          it "with missing #{parameter}" do
-            expect(build(:user, parameter => nil)).not_to be_valid(:update)
+      %i[first_name last_name email phone address avatar].each do |field|
+        context "when #{field} is missing" do
+          it 'not valid' do
+            expect(build(:user, field => nil)).not_to be_valid(:update)
           end
         end
       end

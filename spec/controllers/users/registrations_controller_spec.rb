@@ -74,11 +74,11 @@ RSpec.describe Users::RegistrationsController, type: :controller do
   describe 'POST#update' do
     before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
-    let(:create_request) do
-      post :create, params: { user: params[:user].slice(:email, :phone) }, as: :json
-      request.headers['token'] = JSON.parse(response.body)['data']['token']
+    let(:user) { create(:user, :create_params_only, phone: nil) }
+    let(:update_request) do
+      request.headers['token'] = JsonWebToken.encode(user_id: user.id)
+      post :update, params: params, as: :json
     end
-    let(:update_request) { post :update, params: params, as: :json }
     let(:params) do
       {
         user: {
@@ -96,19 +96,15 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     let(:first_name) { Faker::Name.first_name }
     let(:last_name) { Faker::Name.last_name }
     let(:address) { Faker::Address.full_address }
-    # TODO: CHECK THAT ITS WORK
     let(:avatar) { Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']) }
 
-    context 'with all fields' do
+    context 'with all fields provided' do
       it 'gets 204 code' do
-        create_request
         update_request
         expect(response).to have_http_status(204)
       end
       # rubocop:disable Lint/AmbiguousBlockAssociation
       it 'changes user\'s fields' do
-        create_request
-        user = User.last
         expect do
           update_request
           user.reload
@@ -118,35 +114,12 @@ RSpec.describe Users::RegistrationsController, type: :controller do
       end
       # rubocop:enable Lint/AmbiguousBlockAssociation
     end
-    context 'with missing address' do
-      let(:address) { nil }
+    %i[address avatar email phone first_name last_name].each do |field|
+      context "with missing #{field}" do
+        let(field) { nil }
 
-      it_behaves_like 'with missing fields'
-    end
-    context 'with missing avatar' do
-      let(:avatar) { nil }
-
-      it_behaves_like 'with missing fields'
-    end
-    context 'with missing email' do
-      let(:email) { nil }
-
-      it_behaves_like 'with missing fields'
-    end
-    context 'with missing phone' do
-      let(:phone) { nil }
-
-      it_behaves_like 'with missing fields'
-    end
-    context 'with missing first_name' do
-      let(:first_name) { nil }
-
-      it_behaves_like 'with missing fields'
-    end
-    context 'with missing last_name' do
-      let(:last_name) { nil }
-
-      it_behaves_like 'with missing fields'
+        it_behaves_like 'with missing fields'
+      end
     end
   end
 end

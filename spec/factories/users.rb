@@ -3,26 +3,18 @@
 FactoryBot.define do
   factory :user do
     password { 'password' }
+    email { Faker::Internet.email }
+    phone { Faker::Base.numerify('###-###-####') }
+    avatar { Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']) }
+    address { Faker::Address.full_address }
+    first_name { Faker::Name.first_name }
+    last_name { Faker::Name.last_name }
 
-    trait :email do
-      email { Faker::Internet.email }
-    end
-    trait :phone do
-      phone { Faker::Base.numerify('###-###-####') }
-    end
-    trait :avatar do
-      avatar { Rack::Test::UploadedFile.new('/home/developer/avatar.svg') }
-    end
-    trait :address_first_last_names do
-      address { Faker::Address.full_address }
-      first_name { Faker::Name.first_name }
-      last_name { Faker::Name.last_name }
-    end
-    trait :all_fields do
-      email
-      phone
-      avatar
-      address_first_last_names
+    trait :create_params_only do
+      avatar { nil }
+      address { nil }
+      first_name { nil }
+      last_name { nil }
     end
   end
 end
