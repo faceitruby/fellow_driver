@@ -1,6 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-require 'vcr'
+require 'webmock/rspec'
 ENV['RAILS_ENV'] ||= 'test'
 
 require File.expand_path('../config/environment', __dir__)
@@ -31,7 +31,4 @@ Shoulda::Matchers.configure do |config|
   end
 end
 
-VCR.configure do |config|
-  config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
-  config.hook_into :webmock
-end
+WebMock.disable_net_connect!(allow_localhost: true)

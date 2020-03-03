@@ -11,7 +11,7 @@ module Payments
     # - - cvc: [String] Card cvc
 
     def call
-      response = Stripe::StripeClient.new.request do
+      response = stripe_client.request do
         Stripe::PaymentMethod.create({
           type: params['type'],
           card: {
@@ -25,6 +25,13 @@ module Payments
       OpenStruct.new(success?: true, data: { type: response[0]['type'], id: response[0]['id'] }, errors: nil)
     rescue Stripe::InvalidRequestError => e
       OpenStruct.new(success?: false, response: nil, errors: e.error.message)
+    end
+
+    private
+
+    def stripe_client
+      Stripe.api_key = ENV['STRIPE_API_KEY']
+      stripe_client ||= Stripe::StripeClient.new
     end
   end
 end

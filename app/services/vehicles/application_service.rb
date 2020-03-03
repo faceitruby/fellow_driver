@@ -2,6 +2,8 @@
 
 # ApplicationService with common methods for vehicles
 module Vehicles
+  require 'json'
+
   class ApplicationService < ApplicationService
     private
 

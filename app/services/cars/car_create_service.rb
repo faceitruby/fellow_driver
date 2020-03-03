@@ -13,10 +13,16 @@ module Cars
     # - user: [User] Current user
 
     def call
-      car = params['user'].cars.new(params)
+      car = user.cars.new(params)
       return OpenStruct.new(success?: false, data: nil, errors: car.errors) unless car.save
 
       OpenStruct.new(success?: true, data: { car: car }, errors: nil)
+    end
+
+    private
+
+    def user
+      params['user'].presence
     end
   end
 end

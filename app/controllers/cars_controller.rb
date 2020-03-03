@@ -5,7 +5,8 @@ class CarsController < ApplicationController
   before_action :find_car, only: %i[show destroy]
 
   def index
-    render_response(current_user.cars.each { |car| CarPresenter.new(car).cars_page_context })
+    render_response(current_user.cars.map { |car| CarPresenter.new(car).cars_page_context })
+    # render_response(current_user.cars.map { |car| car.present(view_context).cars_page_context })
   end
 
   def show

@@ -217,7 +217,6 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
-    vcr (5.1.0)
     warden (1.2.8)
       rack (>= 2.0.6)
     warden-jwt_auth (0.3.6)
@@ -264,7 +263,6 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   stripe
   tzinfo-data
-  vcr
   web-console (>= 3.3.0)
   webmock
 

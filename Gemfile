@@ -54,7 +54,6 @@ group :test do
   gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
   gem 'faker'
   gem 'shoulda-matchers'
-  gem 'vcr'
   gem 'webmock'
 end
 

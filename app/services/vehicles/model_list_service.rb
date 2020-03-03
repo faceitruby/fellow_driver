@@ -2,7 +2,6 @@
 
 module Vehicles
   require 'net/http'
-  require 'json'
 
   # Service for get models Avto from API by brand
   class ModelListService < Vehicles::ApplicationService

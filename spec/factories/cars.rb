@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :car do
-    association :user, factory: %i[user correct_user_update]
+    user
     manufacturer { Faker::Vehicle.manufacture }
     model { Faker::Vehicle.model }
     year { Faker::Number.number(digits: 4) }

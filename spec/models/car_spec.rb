@@ -20,7 +20,7 @@ RSpec.describe Car, type: :model do
     end
   end
 
-  context 'Atached' do
+  context 'Picture' do
     let(:car) { build(:car) }
     it do
       expect(car.picture).to be_attached
@@ -36,7 +36,7 @@ RSpec.describe Car, type: :model do
     %i[
       manufacturer model year color license_plat_number
     ].each do |field|
-      it do
+      it "is expected not to be valid without #{field}" do
         car[field] = nil
         expect(car).to_not be_valid
       end
