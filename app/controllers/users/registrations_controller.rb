@@ -27,7 +27,8 @@ module Users
     def update_registration_params
       permitted = params.require(:user).permit(:email, :phone, :password, :first_name,
                                                :last_name, :address, :avatar)
-      permitted.merge(token: request.headers['token']) if request.headers['token']
+      permitted.merge!(token: request.headers['token']) if request.headers['token']
+      permitted
     end
   end
 end

@@ -76,7 +76,8 @@ RSpec.describe Users::RegistrationsController, type: :controller do
 
     let(:user) { create(:user, :create_params_only, phone: nil) }
     let(:update_request) do
-      request.headers['token'] = JsonWebToken.encode(user_id: user.id)
+      allow(controller).to receive(:check_authorize).and_return(nil)
+      allow_any_instance_of(Users::Registration::UpdateService).to receive(:receive_user).and_return(user)
       post :update, params: params, as: :json
     end
     let(:params) do
