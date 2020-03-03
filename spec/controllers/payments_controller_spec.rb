@@ -20,23 +20,7 @@ RSpec.describe PaymentsController, type: :controller do
     context 'is valid' do
       it 'register a new payment method' do
         request.headers['token'] = token
-
-        stub_request(:post, 'https://api.stripe.com/v1/payment_methods').
-          with(
-            body: {
-              'card': {
-                'number':'4000 0000 0000 2230',
-                'exp_month': '2',
-                'exp_year':'2021',
-                'cvc': '314'
-              },
-              'type': 'card'},
-            ).
-          to_return(status: 200, body: '{
-            "id": "pm_1DcrLa2eZvKYlo2CVs0UffyP",
-            "type": "card"
-          }', headers:{})
-
+        correct_stub
           expect do
             post :create, params: {
               type: 'card',
@@ -54,25 +38,7 @@ RSpec.describe PaymentsController, type: :controller do
     context 'is not valid' do
       it 'does not register a new payment method' do
         request.headers['token'] = token
-
-        stub_request(:post, 'https://api.stripe.com/v1/payment_methods').
-          with(
-            body: {
-              'card': {
-                'number':'4000 00100 0000 2230',
-                'exp_month': '2',
-                'exp_year':'2021',
-                'cvc': '314'
-              },
-              'type': 'card'},
-            ).
-          to_return(status: 200, body: '{
-            "error": {
-              "message": "Your card number is incorrect.",
-              "type": "invalid_request_error"
-            }
-          }', headers:{})
-
+        bad_stub
         expect do
           post :create, params: {
             type: 'card',
@@ -87,4 +53,42 @@ RSpec.describe PaymentsController, type: :controller do
       end
     end
   end
+end
+
+def correct_stub
+  stub_request(:post, 'https://api.stripe.com/v1/payment_methods').
+  with(
+    body: {
+      'card': {
+        'number':'4000 0000 0000 2230',
+        'exp_month': '2',
+        'exp_year':'2021',
+        'cvc': '314'
+      },
+      'type': 'card'},
+    ).
+  to_return(status: 200, body: '{
+    "id": "pm_1DcrLa2eZvKYlo2CVs0UffyP",
+    "type": "card"
+  }', headers:{})
+end
+
+def bad_stub
+  stub_request(:post, 'https://api.stripe.com/v1/payment_methods').
+  with(
+    body: {
+      'card': {
+        'number':'4000 00100 0000 2230',
+        'exp_month': '2',
+        'exp_year':'2021',
+        'cvc': '314'
+      },
+      'type': 'card'},
+    ).
+  to_return(status: 200, body: '{
+    "error": {
+      "message": "Your card number is incorrect.",
+      "type": "invalid_request_error"
+    }
+  }', headers:{})
 end
