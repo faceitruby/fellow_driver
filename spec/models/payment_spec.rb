@@ -11,9 +11,7 @@ RSpec.describe Payment, type: :model do
 
   context 'Associations' do
     %i[user].each do |association|
-      it 'belongs to user by user_id field' do
-        is_expected.to belong_to(association)
-      end
+      it { is_expected.to belong_to(association) }
     end
   end
 end

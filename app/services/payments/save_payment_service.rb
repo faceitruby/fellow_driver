@@ -10,11 +10,5 @@ module Payments
     def call
       user.payments.create(payment_type: params[:type], user_payment: params[:pm_id])
     end
-
-    private
-
-    def user
-      params[:user].presence
-    end
   end
 end

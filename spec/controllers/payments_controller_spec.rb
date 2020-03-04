@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe PaymentsController, type: :controller do
-  context 'routing' do
+  describe 'Routing' do
     it do
       expect(post: '/api/payments').to route_to(
         controller: 'payments',
@@ -13,82 +13,48 @@ RSpec.describe PaymentsController, type: :controller do
     end
   end
 
-  context 'when card info' do
+  describe 'POST#create' do
+
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
 
-    context 'is valid' do
-      it 'register a new payment method' do
-        request.headers['token'] = token
-        correct_stub
-          expect do
-            post :create, params: {
-              type: 'card',
-              card: {
-                number: '4000 0000 0000 2230',
-                exp_month: 2,
-                exp_year: 2021,
-                cvc: '314'
-              }
-            }
-          end.to change(Payment, :count).by(1)
+    context 'when payment method created' do
+      let(:prepare_service_response) do
+        OpenStruct.new(success?: true, data: { 
+          "user_payment": "pm_1GIsWHDuGMiAOmnfCtEI39ME" 
+          }, errors: nil)
+      end
+
+      it { expect(prepare_request.content_type).to include('application/json') }
+      it { expect(prepare_request).to have_http_status(:created) }
+
+      it 'is expected to return user_payment in data' do
+        prepare_request
+        expected_response = '{"success":true,"data":{"user_payment":"pm_1GIsWHDuGMiAOmnfCtEI39ME"}}'
+        expect(response.body).to eq(expected_response)
       end
     end
 
-    context 'is not valid' do
-      it 'does not register a new payment method' do
-        request.headers['token'] = token
-        bad_stub
-        expect do
-          post :create, params: {
-            type: 'card',
-            card: {
-              number: '4000 00100 0000 2230',
-              exp_month: 2,
-              exp_year: 2021,
-              cvc: '314'
-            }
-          }
-        end.to change(Payment, :count).by(0)
+    context 'when payment method is not created' do
+      let(:prepare_service_response) do
+        OpenStruct.new('success': false,
+          response: nil, errors: 'error messages'
+        )
+      end
+
+      it { expect(prepare_request.content_type).to include('application/json') }
+      it { expect(prepare_request).to have_http_status(:bad_request) }
+      it 'is expected to return error message' do
+        prepare_request
+        expected_response = '{"success":false,"message":"error messages","data":null}'
+        expect(response.body).to eq(expected_response)
       end
     end
   end
 end
 
-def correct_stub
-  stub_request(:post, 'https://api.stripe.com/v1/payment_methods').
-  with(
-    body: {
-      'card': {
-        'number':'4000 0000 0000 2230',
-        'exp_month': '2',
-        'exp_year':'2021',
-        'cvc': '314'
-      },
-      'type': 'card'},
-    ).
-  to_return(status: 200, body: '{
-    "id": "pm_1DcrLa2eZvKYlo2CVs0UffyP",
-    "type": "card"
-  }', headers:{})
-end
-
-def bad_stub
-  stub_request(:post, 'https://api.stripe.com/v1/payment_methods').
-  with(
-    body: {
-      'card': {
-        'number':'4000 00100 0000 2230',
-        'exp_month': '2',
-        'exp_year':'2021',
-        'cvc': '314'
-      },
-      'type': 'card'},
-    ).
-  to_return(status: 200, body: '{
-    "error": {
-      "message": "Your card number is incorrect.",
-      "type": "invalid_request_error"
-    }
-  }', headers:{})
+def prepare_request
+  request.headers['token'] = token
+  allow(Payments::PreparePaymentService).to receive(:perform).and_return(prepare_service_response)
+  post :create
 end

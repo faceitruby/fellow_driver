@@ -22,91 +22,49 @@ RSpec.describe VehiclesController, type: :controller do
     end
   end
 
-  context 'when response from API' do
+  context 'GET#brands' do
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
 
-    context 'is susuccess' do
-      it 'return success for brands' do
-        request.headers['token'] = token
-        car_brands_list_stub
-        bus_brand_list_stub
-        get 'brands'
-        expect(response).to have_http_status(200)
-      end
+    let(:brands_response) do
+      %w[Tesla Jaguar]
+    end
 
-      it 'return success for models by brand' do
-        request.headers['token'] = token
-        models_list_stub
-        get 'models', params: { brand: 'tesla' }
-        expect(response).to have_http_status(200)
-      end
+    it { expect(brands_reques.content_type).to include('application/json') }
+    it { expect(brands_reques).to have_http_status(:success) }
+
+    it 'is expected to return brands names' do
+      expected_response = '["Tesla","Jaguar"]'
+      expect(brands_reques.body).to eq(expected_response)
+    end
+  end
+
+  context 'GET#models' do
+    let(:user) { create(:user) }
+    let(:token) { JsonWebToken.encode(user_id: user.id) }
+
+    let(:models_response) do
+      %w[TT A4 S4]
+    end
+
+    it { expect(models_request.content_type).to include('application/json') }
+    it { expect(models_request).to have_http_status(:success) }
+
+    it 'is expected to return brands names' do
+      expected_response = '["TT","A4","S4"]'
+      expect(models_request.body).to eq(expected_response)
     end
   end
 end
 
-def car_brands_list_stub
-  stub_request(:get, "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json").
-  with(
-    headers: {
-      'Accept'=>'*/*',
-      'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-      'Host'=>'vpic.nhtsa.dot.gov',
-      'User-Agent'=>'Ruby'
-    }).
-  to_return(status: 200, body: '{
-    "Count":1,
-    "Message":"Response returned successfully",
-    "SearchCriteria":"VehicleType: car",
-    "Results":[{
-      "MakeId":440,
-      "MakeName":"Aston Martin",
-      "VehicleTypeId":2,
-      "VehicleTypeName":"PassengerCar"
-      }
-    ]}', headers:{})
+def brands_reques
+  request.headers['token'] = token
+  allow(Vehicles::BrandListService).to receive(:perform).and_return(brands_response)
+  get :brands
 end
 
-def bus_brand_list_stub
-  stub_request(:get, 'https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/bus?format=json').
-  with(
-    headers: {
-      'Accept'=>'*/*',
-      'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-      'Host'=>'vpic.nhtsa.dot.gov',
-      'User-Agent'=>'Ruby'
-    }).
-  to_return(status: 200, body: '{
-    "Count":1,
-    "Message":"Response returned successfully",
-    "SearchCriteria":"VehicleType: bus",
-    "Results":[{
-      "MakeId":449,
-      "MakeName":"Mercedes-Benz",
-      "VehicleTypeId":5,
-      "VehicleTypeName":"Bus"
-      }
-    ]}', headers:{})
-end
-
-def models_list_stub
-  stub_request(:get, 'https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/tesla?format=json').
-  with(
-    headers: {
-      'Accept'=>'*/*',
-      'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-      'Host'=>'vpic.nhtsa.dot.gov',
-      'User-Agent'=>'Ruby'
-    }).
-  to_return(status: 200, body: '{
-    "Count":5,
-    "Message":"Response returned successfully",
-    "SearchCriteria":"Make:tesla",
-    "Results":[{
-      "Make_ID":441,
-      "Make_Name":"Tesla",
-      "Model_ID":1685,
-      "Model_Name":"ModelS"
-      }
-    ]}', headers:{})
+def models_request
+  request.headers['token'] = token
+  allow(Vehicles::ModelListService).to receive(:perform).and_return(models_response)
+  get :models, params: { brand: 'Audi' }
 end

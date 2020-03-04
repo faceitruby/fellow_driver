@@ -22,11 +22,5 @@ module Payments
         result
       end
     end
-
-    private
-
-    def user
-      params[:user].presence
-    end
   end
 end

@@ -6,11 +6,10 @@ class CarsController < ApplicationController
 
   def index
     render_response(current_user.cars.map { |car| CarPresenter.new(car).cars_page_context })
-    # render_response(current_user.cars.map { |car| car.present(view_context).cars_page_context })
   end
 
   def show
-    render_response(@car)
+    render_response(CarPresenter.new(@car).cars_page_context)
   end
 
   def create
