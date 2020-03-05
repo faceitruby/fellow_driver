@@ -12,7 +12,6 @@ module Vehicles
         https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json
         https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/bus?format=json
       ]
-
       url.each do |uri|
         threads << Thread.new { examples(URI(uri), 'MakeName') }
       end
