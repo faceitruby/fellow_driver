@@ -3,28 +3,38 @@
 require 'rails_helper'
 
 RSpec.describe PaymentPresenter do
-  context 'contain fields' do
-    %i[payment_type user_payment].each do |field|
-      it { expect(PaymentPresenter::MODEL_ATTRIBUTES).to include field }
-    end
+  let(:payment) { build(:payment) }
+
+  describe 'MODEL_ATTRIBUTES constant' do
+    subject { described_class::MODEL_ATTRIBUTES }
+    it { is_expected.to eq %i[payment_type user_payment] }
   end
 
-  context '#payments_page_context' do
-    let(:payment) { build(:payment) }
-    subject { PaymentPresenter.new(payment).payments_page_context }
+  describe '#page_content' do
+    subject { described_class.new(payment).payments_page_context }
 
-    it { expect(subject.class).to eq(String) }
+    it { is_expected.to be_instance_of String }
     it 'returns JSON compatible string' do
-      expect { JSON.parse subject }.to_not raise_error(JSON::ParserError)
+      expect(JSON.parse(subject)).to be_present
+    end
+
+    let(:returned) do
+      {
+        payment_type: payment.payment_type,
+        user_payment: payment.user_payment,
+      }.to_json
+    end
+
+    it 'returns JSON compatible string' do
+      expect(subject).to eq(returned)
     end
   end
 
-  describe 'methods' do
-    let(:payment) { build(:payment) }
-    subject { PaymentPresenter.new(payment) }
+  describe 'delegates' do
+    subject { described_class.new(payment) }
 
-    PaymentPresenter::MODEL_ATTRIBUTES.each do |field|
-      it { is_expected.to respond_to(field) }
+    PaymentPresenter::MODEL_ATTRIBUTES.each do |method|
+      it { is_expected.to delegate_method(method).to :record }
     end
   end
 end

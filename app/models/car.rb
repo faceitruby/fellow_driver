@@ -5,4 +5,10 @@ class Car < ApplicationRecord
   has_one_attached :picture
 
   validates_presence_of :manufacturer, :model, :year, :picture, :color, :license_plat_number
+
+  private
+
+  def presenter_class
+    CarPresenter
+  end
 end

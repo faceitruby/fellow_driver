@@ -4,6 +4,9 @@ require 'rails_helper'
 
 RSpec.describe 'CarDeleteService' do
   context 'when car exist' do
+    let(:car_params) do
+      { car: create(:car) }
+    end
     subject { Cars::CarDeleteService.new(car_params).call }
     it { expect(subject.data).to eq({message: 'deleted'}) }
     it { expect(subject.errors).to eq(nil) }
@@ -16,10 +19,4 @@ RSpec.describe 'CarDeleteService' do
     it { expect(subject.errors).to eq('Something went wrong') }
     it { expect(subject.success?).to be false }
   end
-end
-
-def car_params
-  {
-    car: create(:car)
-  }
 end

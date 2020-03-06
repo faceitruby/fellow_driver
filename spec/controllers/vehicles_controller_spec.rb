@@ -4,15 +4,8 @@ require 'rails_helper'
 
 RSpec.describe VehiclesController, type: :controller do
   context 'routing' do
-    it do
-      expect(get: '/api/brands').to route_to(
-        controller: 'vehicles',
-        action: 'brands',
-        format: :json
-      )
-    end
-
-    it do
+    it { expect(get: '/api/brands').to route_to(controller: 'vehicles', action: 'brands', format: :json) }
+    it 'is expected have route api/models/:brand' do
       expect(get: '/api/models/test').to route_to(
         controller: 'vehicles',
         action: 'models',
@@ -30,12 +23,18 @@ RSpec.describe VehiclesController, type: :controller do
       %w[Tesla Jaguar]
     end
 
-    it { expect(brands_reques.content_type).to include('application/json') }
-    it { expect(brands_reques).to have_http_status(:success) }
+    before do
+      request.headers['token'] = token
+      allow(Vehicles::BrandListService).to receive(:perform).and_return(brands_response)
+      get :brands
+    end
+
+    it { expect(response.content_type).to include('application/json') }
+    it { expect(response).to have_http_status(:success) }
 
     it 'is expected to return brands names' do
       expected_response = '["Tesla","Jaguar"]'
-      expect(brands_reques.body).to eq(expected_response)
+      expect(response.body).to eq(expected_response)
     end
   end
 
@@ -46,25 +45,21 @@ RSpec.describe VehiclesController, type: :controller do
     let(:models_response) do
       %w[TT A4 S4]
     end
+    let(:expected_response) { models_response.to_json }
 
-    it { expect(models_request.content_type).to include('application/json') }
-    it { expect(models_request).to have_http_status(:success) }
+    before do
+      request.headers['token'] = token
+      allow(Vehicles::ModelListService).to receive(:perform).
+      with('Audi').
+      and_return(models_response)
+      get :models, params: { brand: 'Audi' }
+    end
+
+    it { expect(response.content_type).to include('application/json') }
+    it { expect(response).to have_http_status(:success) }
 
     it 'is expected to return brands names' do
-      expected_response = '["TT","A4","S4"]'
-      expect(models_request.body).to eq(expected_response)
+      expect(response.body).to eq(expected_response)
     end
   end
-end
-
-def brands_reques
-  request.headers['token'] = token
-  allow(Vehicles::BrandListService).to receive(:perform).and_return(brands_response)
-  get :brands
-end
-
-def models_request
-  request.headers['token'] = token
-  allow(Vehicles::ModelListService).to receive(:perform).and_return(models_response)
-  get :models, params: { brand: 'Audi' }
 end

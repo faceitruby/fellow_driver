@@ -5,11 +5,11 @@ class CarsController < ApplicationController
   before_action :find_car, only: %i[show destroy]
 
   def index
-    render_response(current_user.cars.map { |car| CarPresenter.new(car).cars_page_context })
+    render_response(current_user.cars.map { |car| car.present.cars_page_context })
   end
 
   def show
-    render_response(CarPresenter.new(@car).cars_page_context)
+    render_response(@car.present.cars_page_context)
   end
 
   def create

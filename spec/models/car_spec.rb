@@ -26,19 +26,8 @@ RSpec.describe Car, type: :model do
   context 'Validation' do
     let(:car) { create(:car) }
 
-    it { expect(car).to be_valid }
-
-
-    %i[manufacturer model year color license_plat_number].each do |field|
-      it "is expected not to be valid without #{field}" do
-        car[field] = nil
-        expect(car).to_not be_valid
-      end
-    end
-
-    it do
-      car.picture = nil
-      expect(car).to_not be_valid
+    %i[manufacturer model year color picture license_plat_number].each do |field|
+      it { is_expected.to validate_presence_of(field) }
     end
   end
 end
