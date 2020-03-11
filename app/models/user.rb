@@ -5,7 +5,7 @@ class User < ApplicationRecord
   has_one_attached :avatar
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
   validates_format_of :phone,
-                      with: /\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}/,
+                      with: /\A\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
   validates :password, confirmation: true
@@ -48,5 +48,9 @@ class User < ApplicationRecord
 
   def avatar_attached?
     avatar.attached?
+  end
+
+  def presenter_class
+    UserPresenter
   end
 end

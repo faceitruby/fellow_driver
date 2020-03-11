@@ -16,8 +16,7 @@ module Users
     # more detail https://developers.google.com/places/web-service/autocomplete#place_autocomplete_requests
 
     def call
-      client = GooglePlacesAutocomplete::Client.new(api_key: ENV['GOOGLE_PLACES_API_KEY'])
-      response = client.autocomplete(receive_params)
+      response = autocomplete_client.autocomplete(receive_params)
       return_response(response)
     end
 
@@ -62,6 +61,10 @@ module Users
 
     def language
       I18n.locale
+    end
+
+    def autocomplete_client
+      @autocomplete_client ||= GooglePlacesAutocomplete::Client.new(api_key: ENV['GOOGLE_PLACES_API_KEY'])
     end
   end
 end

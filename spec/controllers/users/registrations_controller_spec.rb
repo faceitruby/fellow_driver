@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'support/shared/registration_controller_shared'
 
 RSpec.describe Users::RegistrationsController, type: :controller do
   describe 'route' do
@@ -16,7 +15,7 @@ RSpec.describe Users::RegistrationsController, type: :controller do
   end
 
   describe 'POST#create' do
-    before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
+    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
     let(:send_request) { post :create, params: params, as: :json }
     let(:params) do
@@ -72,9 +71,9 @@ RSpec.describe Users::RegistrationsController, type: :controller do
   end
 
   describe 'POST#update' do
-    before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
+    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
-    let(:user) { create(:user, :create_params_only, phone: nil) }
+    let(:user) { create(:user, :create, phone: nil) }
     let(:update_request) do
       allow(controller).to receive(:check_authorize).and_return(nil)
       allow_any_instance_of(Users::Registration::UpdateService).to receive(:receive_user).and_return(user)
@@ -117,7 +116,7 @@ RSpec.describe Users::RegistrationsController, type: :controller do
       context "with missing #{field}" do
         let(field) { nil }
 
-        it_behaves_like 'with missing fields'
+        it_behaves_like 'update with missing fields'
       end
     end
   end

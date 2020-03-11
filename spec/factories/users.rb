@@ -10,7 +10,7 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
 
-    trait :create_params_only do
+    trait :create do
       avatar { nil }
       address { nil }
       first_name { nil }

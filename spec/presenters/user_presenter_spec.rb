@@ -14,6 +14,7 @@ RSpec.describe UserPresenter do
     subject { described_class.new(user).page_context }
 
     it { is_expected.to be_instance_of Hash }
+    it { is_expected.to eq user.attributes.symbolize_keys }
   end
 
   describe 'delegates' do

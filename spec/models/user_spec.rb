@@ -17,7 +17,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe 'validations' do
+  describe 'validation' do
     %w[user@example.com user_1@example.com user.1@example.com].each do |email|
       it { is_expected.to allow_value(email).for(:email) }
     end
@@ -33,33 +33,38 @@ RSpec.describe User, type: :model do
     end
 
     context 'when creating' do
-      let(:user_without_email_phone) { build(:user, :create_params_only, email: nil, phone: nil) }
+      let(:user_without_email_phone) { build(:user, :create, email: nil, phone: nil) }
 
-      context 'when email is set' do
-        it 'valid' do
-          expect(build(:user, :create_params_only, phone: nil)).to be_valid(:create)
+      context 'and email is set' do
+        it 'is valid' do
+          expect(build(:user, :create, phone: nil)).to be_valid(:create)
         end
       end
-      context 'when phone is set' do
-        it 'valid' do
-          expect(build(:user, :create_params_only, email: nil)).to be_valid(:create)
+
+      context 'and phone is set' do
+        it 'is valid' do
+          expect(build(:user, :create, email: nil)).to be_valid(:create)
         end
       end
-      context 'when both email and phone aren\'t set' do
-        it 'not valid' do
+
+      context 'and both email and phone are missing' do
+        it 'is not valid' do
           expect(user_without_email_phone).to_not be_valid(:create)
         end
       end
     end
+
     context 'when updating' do
-      context 'when all params present' do
-        it 'valid' do
+
+      context 'and all params are present' do
+        it 'is valid' do
           expect(build(:user)).to be_valid(:update)
         end
       end
+
       %i[first_name last_name email phone address avatar].each do |field|
-        context "when #{field} is missing" do
-          it 'not valid' do
+        context "and #{field} is missing" do
+          it 'is not valid' do
             expect(build(:user, field => nil)).not_to be_valid(:update)
           end
         end

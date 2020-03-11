@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'support/shared/results_shared'
 
-RSpec.describe 'registration update service' do
+RSpec.describe Users::Registration::UpdateService do
   describe '#call' do
-    before(:each) { allow(service).to receive(:receive_user).and_return(user) }
-    let(:user) { create(:user, :create_params_only, phone: nil) }
+    let(:user) { create(:user, :create, phone: nil) }
     let(:service) { Users::Registration::UpdateService.new(user_params) }
     subject { service.call }
+
+    before { allow(service).to receive(:receive_user).and_return(user) }
 
     context 'with all fields provided' do
       let(:user_params) { attributes_for(:user, email: user.email) }
@@ -24,9 +24,10 @@ RSpec.describe 'registration update service' do
           .and change(last_user, :address)
           .and change(last_user, :avatar_attached?)
       end
-      it_behaves_like 'when fields present'
+      it_behaves_like 'provided fields'
     end
-    context 'with missing fields' do
+
+    context 'update with missing fields' do
       let(:user_params) { attributes_for(:user, email: user.email, first_name: nil) }
 
       it { is_expected.to be_instance_of OpenStruct }
@@ -40,7 +41,7 @@ RSpec.describe 'registration update service' do
           .and not_change(last_user, :address)
           .and not_change(last_user, :avatar_attached?)
       end
-      it_behaves_like 'when fields missed'
+      it_behaves_like 'missing fields'
     end
   end
 end

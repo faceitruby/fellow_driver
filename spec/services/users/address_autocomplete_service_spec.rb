@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'support/shared/results_shared'
 
 RSpec.describe Users::AddressAutocompleteService do
   let(:params) { { input: 'search' } }
@@ -36,21 +35,25 @@ RSpec.describe Users::AddressAutocompleteService do
   let(:response) { OpenStruct.new(body: body.to_json) }
 
   describe '#call' do
-    before(:each) do
+    before do
       allow_any_instance_of(GooglePlacesAutocomplete::Client).to receive(:autocomplete).with(an_instance_of(Hash))
                                                                                        .and_return(response)
     end
 
-    context 'when input present' do
-      it { is_expected.to be_instance_of OpenStruct }
-      it_behaves_like 'when fields present'
-    end
-    context 'when input missing' do
-      let(:params) { { language: 'ru' } }
-      let(:response) { OpenStruct.new(body: body_when_missing_input.to_json) }
+    context 'when input' do
 
-      it { is_expected.to be_instance_of OpenStruct }
-      it_behaves_like 'when fields missed'
+      context 'is present' do
+        it { is_expected.to be_instance_of OpenStruct }
+        it_behaves_like 'provided fields'
+      end
+
+      context 'is missed' do
+        let(:params) { { language: 'ru' } }
+        let(:response) { OpenStruct.new(body: body_when_missing_input.to_json) }
+
+        it { is_expected.to be_instance_of OpenStruct }
+        it_behaves_like 'missing fields'
+      end
     end
   end
 end

@@ -10,10 +10,20 @@ module Users
       # - password: [String] User password
 
       def call
-        user = User.new(params)
+        user = User.new(create_params)
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
 
         OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
+      end
+
+      private
+
+      def create_params
+        if params['login'].present?
+          key = params['login'].include?('@') ? 'email' : 'phone'
+          params[key] = params.delete('login')
+        end
+        params
       end
     end
   end

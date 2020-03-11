@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'support/shared/results_shared'
 
 RSpec.describe Users::SessionsController, type: :controller do
   describe 'routes' do
@@ -11,48 +10,53 @@ RSpec.describe Users::SessionsController, type: :controller do
   end
 
   describe 'POST#create' do
-    before(:each) { @request.env['devise.mapping'] = Devise.mappings[:user] }
+    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
     subject { post :create, params: params, as: :json }
 
-    context 'when login is an email ' do
-      let(:user) { create(:user, :create_params_only, phone: nil, password: 'password') }
-      let(:params) { { user: { login: user.email, password: 'password' } } }
+    context 'when login' do
+      before { subject }
 
-      it 'gets 200 code' do
-        subject
-        expect(response).to have_http_status(200)
-      end
-      it_behaves_like 'render success response'
-    end
-    context 'when login is an phone' do
-      let(:user) { create(:user, :create_params_only, email: nil, password: 'password') }
-      let(:params) { { user: { login: user.phone, password: 'password' } } }
+      context 'is an email' do
+        let(:user) { create(:user, :create, phone: nil, password: 'password') }
+        let(:params) { { user: { login: user.email, password: 'password' } } }
 
-      it 'gets 200 code' do
-        subject
-        expect(response).to have_http_status(200)
+        it 'gets 200 code' do
+          expect(response).to have_http_status(200)
+        end
+        it_behaves_like 'success action'
       end
-      it_behaves_like 'render success response'
-    end
-    context 'when login missing' do
-      let(:user) { create(:user, :create_params_only, email: nil, password: 'password') }
-      let(:params) { { user: { password: 'password' } } }
 
-      it 'gets 422 code' do
-        subject
-        expect(response).to have_http_status(422)
+      context 'is an phone' do
+        let(:user) { create(:user, :create, email: nil, password: 'password') }
+        let(:params) { { user: { login: user.phone, password: 'password' } } }
+
+        it 'gets 200 code' do
+          expect(response).to have_http_status(200)
+        end
+        it_behaves_like 'success action'
       end
-      it_behaves_like 'render error response'
+
+      context 'is missing' do
+        let(:user) { create(:user, :create, email: nil, password: 'password') }
+        let(:params) { { user: { password: 'password' } } }
+
+        it 'gets 422 code' do
+          expect(response).to have_http_status(422)
+        end
+        it_behaves_like 'failure action'
+      end
     end
-    context 'when password missing' do
-      let(:user) { create(:user, :create_params_only, email: nil, password: 'password') }
+
+    context 'when password is missing' do
+      let(:user) { create(:user, :create, email: nil, password: 'password') }
       let(:params) { { user: { login: user.phone } } }
 
+      before { subject }
+
       it 'gets 422 code' do
-        subject
         expect(response).to have_http_status(422)
       end
-      it_behaves_like 'render error response'
+      it_behaves_like 'failure action'
     end
   end
 end
