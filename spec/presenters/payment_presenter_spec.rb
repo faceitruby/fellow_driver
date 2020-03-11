@@ -10,23 +10,20 @@ RSpec.describe PaymentPresenter do
     it { is_expected.to eq %i[payment_type user_payment] }
   end
 
-  describe '#page_content' do
+  describe '#payments_page_context' do
     subject { described_class.new(payment).payments_page_context }
 
-    it { is_expected.to be_instance_of String }
-    it 'returns JSON compatible string' do
-      expect(JSON.parse(subject)).to be_present
-    end
+    it { is_expected.to be_instance_of Hash }
 
-    let(:returned) do
+    let(:response) do
       {
         payment_type: payment.payment_type,
         user_payment: payment.user_payment,
-      }.to_json
+      }
     end
 
-    it 'returns JSON compatible string' do
-      expect(subject).to eq(returned)
+    it 'returns Hash with expected fields' do
+      expect(subject).to eq(response)
     end
   end
 

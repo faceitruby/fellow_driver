@@ -6,7 +6,7 @@ class CarPresenter < ApplicationPresenter
   delegate(*MODEL_ATTRIBUTES, to: :record)
 
   def cars_page_context
-    properties.to_json
+    properties
   end
 
   private

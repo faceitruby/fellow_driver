@@ -4,15 +4,18 @@ require 'rails_helper'
 
 RSpec.describe Vehicles::BrandListService do
 
+  let(:service_result) { ['asd', 'ads'] }
   before do
-    allow_any_instance_of(Vehicles::BrandListService).to receive(:examples).and_return(['asd', 'ads'])
+    allow_any_instance_of(Vehicles::BrandListService).to receive(:examples).and_return(service_result)
   end
 
+  subject { Vehicles::BrandListService.perform }
+
   it 'returns Array' do
-    expect(Vehicles::BrandListService.new.call.class).to eq(Array)
+    expect(subject.class).to eq(Array)
   end
 
   it 'returns Array contain both response' do
-    expect(Vehicles::BrandListService.new.call).to eq(['asd', 'ads', 'asd', 'ads'])
+    expect(subject).to eq(service_result*2)
   end
 end

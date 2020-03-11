@@ -10,26 +10,23 @@ RSpec.describe CarPresenter do
     it { is_expected.to eq %i[manufacturer model year color license_plat_number] }
   end
 
-  describe '#page_content' do
+  describe '#cars_page_context' do
     subject { described_class.new(car).cars_page_context }
 
-    it { is_expected.to be_instance_of String }
-    it 'returns JSON compatible string' do
-      expect(JSON.parse(subject)).to be_present
-    end
+    it { is_expected.to be_instance_of Hash }
 
-    let(:returned) do
+    let(:response) do
       {
         manufacturer: car.manufacturer,
         model: car.model,
         year: car.year,
         color: car.color,
         license_plat_number: car.license_plat_number
-      }.to_json
+      }
     end
 
-    it 'returns JSON compatible string' do
-      expect(subject).to eq(returned)
+    it 'returns Hash with expected fields' do
+      expect(subject).to eq(response)
     end
   end
 

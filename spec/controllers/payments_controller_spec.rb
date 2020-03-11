@@ -11,45 +11,39 @@ RSpec.describe PaymentsController, type: :controller do
 
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
-    let(:send_request) { post :create, params: prepare_params }
-    let(:prepare_params) do
+    let(:send_request) { post :create, params: payment_params.merge(user: user) }
+    let(:payment_params) do
       {
         type: 'card',
         card: {
           number: "4000 00100 0000 2230",
-          exp_month: 2,
-          exp_year: 2021,
+          exp_month: '2',
+          exp_year: '2021',
           cvc: '314'
         },
-        user: user
       }
     end
 
+    let(:controller_params) do
+      ActionController::Parameters.new(payment_params)
+    end
+
     let(:params_prepare_servise) do
-      ActionController::Parameters.new({
-        card: {
-          cvc: "314",
-          exp_month: '2',
-          exp_year: '2021',
-          number: "4000 00100 0000 2230"
-        },
-        type: 'card',
-        user: user,
-        controller: 'payments', 
-        action: 'create'
-      })
+      controller_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
     end
 
     before do
       request.headers['token'] = token
+
       allow(Payments::PreparePaymentService).to receive(:perform).
-      with(params_prepare_servise).
-      and_return(prepare_service_response)
+        with(params_prepare_servise).
+        and_return(service_response)
+
       send_request
     end
 
     context 'when payment method created' do
-      let(:prepare_service_response) do
+      let(:service_response) do
         OpenStruct.new(success?: true, data: { 
           user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME' 
           }, errors: nil)
@@ -64,7 +58,7 @@ RSpec.describe PaymentsController, type: :controller do
 
     context 'when payment method is not created' do
       let(:expected_response) { { success: false, message: 'error messages', data: nil }.to_json }
-      let(:prepare_service_response) do
+      let(:service_response) do
         OpenStruct.new('success': false,
           response: nil, errors: 'error messages'
         )

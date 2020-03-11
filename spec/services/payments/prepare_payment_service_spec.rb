@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Payments::PreparePaymentService do
+  let(:user) { create(:user)}
   let(:payment_prepare_params) do
     {
       type: 'card',
@@ -12,14 +13,15 @@ RSpec.describe Payments::PreparePaymentService do
         exp_year: Faker::Number.number(digits: 4),
         cvc: Faker::Number.number(digits: 3)
       },
-      user: create(:user)
     }
   end
 
+  before do
+    allow_any_instance_of(Payments::PreparePaymentService).to receive(:create_payment).and_return(response)
+  end
+
   subject do
-    payment_service = Payments::PreparePaymentService.new(payment_prepare_params)
-    allow(payment_service).to receive(:create_payment).and_return(response)
-    payment_service.call
+    Payments::PreparePaymentService.perform(payment_prepare_params.merge(user: user))
   end
 
   context 'when payment success created' do

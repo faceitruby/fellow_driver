@@ -4,22 +4,26 @@ require 'rails_helper'
 
 RSpec.describe Payments::StripeClientService do
   context 'when payment info correct' do
-    let(:returned) do
+    let(:response) do
       [{
         'id'=> 'pm_qwe',
         'type'=> 'card'
       }]
     end
 
-    subject do
-      payment_service = Payments::StripeClientService.new
-      allow(payment_service).to receive(:stripe_payment_method).and_return(returned)
-      payment_service
+    before do
+      allow_any_instance_of(Payments::StripeClientService).to receive(:stripe_payment_method).and_return(response)
     end
-    it { expect(subject.call.class).to eq(OpenStruct) }
-    it { expect(subject.call.data).to eq({type: 'card', id: 'pm_qwe'}) }
-    it { expect(subject.call.success?).to be true }
-    it { expect(subject.call.errors).to eq(nil) }
+
+    subject do
+      Payments::StripeClientService.perform
+    end
+
+    let(:service_response) { {type: 'card', id: 'pm_qwe'} }
+    it { expect(subject.class).to eq(OpenStruct) }
+    it { expect(subject.data).to eq(service_response) }
+    it { expect(subject.success?).to be true }
+    it { expect(subject.errors).to eq(nil) }
   end
 
   context 'when payment not correct' do
@@ -31,17 +35,18 @@ RSpec.describe Payments::StripeClientService do
       } 
     end
     let(:error) { Stripe::InvalidRequestError.new('', '', http_status: 400, http_body: 'ibody', json_body: error_body) }
-    
-    subject do
-      payment_service = Payments::StripeClientService.new
-      allow(payment_service).to receive(:stripe_payment_method).
-      and_raise(error)
-      payment_service
+
+    before do
+      allow_any_instance_of(Payments::StripeClientService).to receive(:stripe_payment_method).and_raise(error)
     end
 
-    it { expect(subject.call.class).to eq(OpenStruct) }
-    it { expect(subject.call.success?).to be false }
-    it { expect(subject.call.errors).to eq('Invalid card info') }
-    it { expect(subject.call.data).to eq(nil) }
+    subject do
+      Payments::StripeClientService.perform
+    end
+    let(:error_message) { 'Invalid card info' }
+    it { expect(subject.class).to eq(OpenStruct) }
+    it { expect(subject.success?).to be false }
+    it { expect(subject.errors).to eq(error_message) }
+    it { expect(subject.data).to eq(nil) }
   end
 end

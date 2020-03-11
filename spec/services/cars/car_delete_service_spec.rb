@@ -4,19 +4,19 @@ require 'rails_helper'
 
 RSpec.describe 'CarDeleteService' do
   context 'when car exist' do
-    let(:car_params) do
-      { car: create(:car) }
-    end
-    subject { Cars::CarDeleteService.new(car_params).call }
-    it { expect(subject.data).to eq({message: 'deleted'}) }
+    let(:car) { create(:car) }
+    subject { Cars::CarDeleteService.perform(car: car) }
+    let(:message) { {message: 'deleted'} }
+    it { expect(subject.data).to eq(message) }
     it { expect(subject.errors).to eq(nil) }
     it { expect(subject.success?).to be true }
   end
 
   context 'when no exist' do
-    subject { Cars::CarDeleteService.new.call }
+    let(:response_message) { 'Something went wrong' }
+    subject { Cars::CarDeleteService.perform }
     it { expect(subject.data).to eq(nil) }
-    it { expect(subject.errors).to eq('Something went wrong') }
+    it { expect(subject.errors).to eq(response_message) }
     it { expect(subject.success?).to be false }
   end
 end

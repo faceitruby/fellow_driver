@@ -3,16 +3,20 @@
 require 'rails_helper'
 
 RSpec.describe Vehicles::ModelListService do
+  let(:service_result) { ['asd', 'ads'] }
+  let(:brand) { Faker::Vehicle.manufacture }
+
+  before do
+    allow_any_instance_of(Vehicles::ModelListService).to receive(:examples).and_return(service_result)
+  end
 
   subject {
-    models_list_service = Vehicles::ModelListService.new(Faker::Vehicle.manufacture)
-    allow(models_list_service).to receive(:examples).and_return(['asd', 'ads'])
-    models_list_service
+    Vehicles::ModelListService.perform(brand)
   }
 
-  it { expect(subject.call.class).to eq(Array) }
+  it { expect(subject.class).to eq(Array) }
 
   it 'returns Array contain all models for brand' do
-    expect(subject.call).to eq(['asd', 'ads'])
+    expect(subject).to eq(service_result)
   end
 end

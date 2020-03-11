@@ -29,14 +29,10 @@ RSpec.describe VehiclesController, type: :controller do
       get :brands
     end
 
+    let(:expected_response) { '["Tesla","Jaguar"]' }
     it { expect(response.content_type).to include('application/json') }
     it { expect(response).to have_http_status(:success) }
-
-    it 'is expected to return brands names' do
-      expected_response = '["Tesla","Jaguar"]'
-      expect(response.body).to eq(expected_response)
-    end
-  end
+    it { expect(response.body).to eq(expected_response) }  end
 
   context 'GET#models' do
     let(:user) { create(:user) }
@@ -46,13 +42,12 @@ RSpec.describe VehiclesController, type: :controller do
       %w[TT A4 S4]
     end
     let(:expected_response) { models_response.to_json }
+    let(:brand) { 'Audi' }
 
     before do
       request.headers['token'] = token
-      allow(Vehicles::ModelListService).to receive(:perform).
-      with('Audi').
-      and_return(models_response)
-      get :models, params: { brand: 'Audi' }
+      allow(Vehicles::ModelListService).to receive(:perform).with(brand).and_return(models_response)
+      get :models, params: { brand: brand }
     end
 
     it { expect(response.content_type).to include('application/json') }
