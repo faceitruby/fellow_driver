@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Payments::PreparePaymentService do
   let(:user) { create(:user)}
-  let(:payment_prepare_params) do
+  let(:payment_params) do
     {
       type: 'card',
       card: {
@@ -21,7 +21,7 @@ RSpec.describe Payments::PreparePaymentService do
   end
 
   subject do
-    Payments::PreparePaymentService.perform(payment_prepare_params.merge(user: user))
+    Payments::PreparePaymentService.perform(payment_params.merge(user: user))
   end
 
   context 'when payment success created' do

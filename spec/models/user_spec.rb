@@ -37,7 +37,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  context 'Associations' do
+  describe 'associations' do
     %i[cars payments].each do |association|
       it { is_expected.to have_many(association) }
     end

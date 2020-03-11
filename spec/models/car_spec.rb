@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Car, type: :model do
-  context 'fields' do
+  describe 'columns' do
     %i[
       id user_id manufacturer model year color
       license_plat_number created_at updated_at
@@ -12,18 +12,18 @@ RSpec.describe Car, type: :model do
     end
   end
 
-  context 'Associations' do
+  describe 'associations' do
     %i[user].each do |association|
       it { is_expected.to belong_to(association) }
     end
   end
 
-  context 'Picture' do
+  describe 'picture' do
     let(:car) { build(:car) }
     it { expect(car.picture).to be_attached }
   end
 
-  context 'Validation' do
+  describe 'validations' do
     let(:car) { create(:car) }
 
     %i[manufacturer model year color picture license_plat_number].each do |field|

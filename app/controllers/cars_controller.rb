@@ -14,7 +14,7 @@ class CarsController < ApplicationController
 
   def create
     result = Cars::CarCreateService.perform(car_params.merge(user: current_user))
-    result.success? ? render_success_response(result.data) : render_error_response(result.errors)
+    result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors)
   end
 
   def destroy

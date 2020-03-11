@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'CarDeleteService' do
+RSpec.describe Cars::CarDeleteService do
   context 'when car exist' do
     let(:car) { create(:car) }
     subject { Cars::CarDeleteService.perform(car: car) }

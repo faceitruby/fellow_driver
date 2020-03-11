@@ -15,9 +15,7 @@ RSpec.describe Payments::StripeClientService do
       allow_any_instance_of(Payments::StripeClientService).to receive(:stripe_payment_method).and_return(response)
     end
 
-    subject do
-      Payments::StripeClientService.perform
-    end
+    subject { Payments::StripeClientService.perform }
 
     let(:service_response) { {type: 'card', id: 'pm_qwe'} }
     it { expect(subject.class).to eq(OpenStruct) }
@@ -27,13 +25,7 @@ RSpec.describe Payments::StripeClientService do
   end
 
   context 'when payment not correct' do
-    let(:error_body) do
-      {
-        error: {
-          message: 'Invalid card info'
-        }
-      } 
-    end
+    let(:error_body) { { error: { message: 'Invalid card info' } } }
     let(:error) { Stripe::InvalidRequestError.new('', '', http_status: 400, http_body: 'ibody', json_body: error_body) }
 
     before do

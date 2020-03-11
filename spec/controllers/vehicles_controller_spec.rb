@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe VehiclesController, type: :controller do
-  context 'routing' do
+  context 'when routes exist' do
     it { expect(get: '/api/brands').to route_to(controller: 'vehicles', action: 'brands', format: :json) }
     it 'is expected have route api/models/:brand' do
       expect(get: '/api/models/test').to route_to(
@@ -15,7 +15,7 @@ RSpec.describe VehiclesController, type: :controller do
     end
   end
 
-  context 'GET#brands' do
+  describe 'GET#brands' do
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
 
@@ -34,7 +34,7 @@ RSpec.describe VehiclesController, type: :controller do
     it { expect(response).to have_http_status(:success) }
     it { expect(response.body).to eq(expected_response) }  end
 
-  context 'GET#models' do
+  describe 'GET#models' do
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
 

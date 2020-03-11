@@ -15,25 +15,23 @@ RSpec.describe Cars::CarCreateService do
     }
   end
   context 'when car params valid' do
-    context 'response' do
-      subject { Cars::CarCreateService.perform(car_params.merge('user'=> user)) }
-      it { expect(subject.class).to eq(OpenStruct) }
-      it { expect(subject.data[:car].class).to eq(Car) }
-      it { expect(subject.errors).to eq(nil) }
-      it { expect(subject.success?).to be true }
-      it { expect { subject }.to change(Car, :count).by(1) }
-    end
+    subject { Cars::CarCreateService.perform(car_params.merge(user: user)) }
+    it { expect(subject.class).to eq(OpenStruct) }
+    it { expect(subject.data[:car].class).to eq(Hash) }
+    it { expect(subject.errors).to eq(nil) }
+    it { expect(subject.success?).to be true }
+    it { expect { subject }.to change(Car, :count).by(1) }
   end
 
   context 'when car params invalid' do
     %w[manufacturer model year picture color license_plat_number].each do |field|
       context "response for invalid #{field}" do
-        let(:invakid_params) do
+        let(:invalid_params) do
           car_params[field] = nil
           car_params
         end
         let(:response) { ["can't be blank"] }
-        subject { Cars::CarCreateService.perform(invakid_params.merge('user'=> user)) }
+        subject { Cars::CarCreateService.perform(invalid_params.merge(user: user)) }
 
         it { expect(subject.class).to eq(OpenStruct) }
         it { expect(subject.data).to eq(nil) }

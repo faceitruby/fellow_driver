@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe PaymentsController, type: :controller do
-  describe 'Routing' do
+  describe 'routing' do
     it { expect(post: '/api/payments').to route_to(controller: 'payments', format: :json, action: 'create') }
   end
 
@@ -12,43 +12,33 @@ RSpec.describe PaymentsController, type: :controller do
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
     let(:send_request) { post :create, params: payment_params.merge(user: user) }
-    let(:payment_params) do
-      {
-        type: 'card',
-        card: {
-          number: "4000 00100 0000 2230",
-          exp_month: '2',
-          exp_year: '2021',
-          cvc: '314'
-        },
-      }
-    end
-
-    let(:controller_params) do
-      ActionController::Parameters.new(payment_params)
-    end
-
-    let(:params_prepare_servise) do
-      controller_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
+    let(:payments_params) { ActionController::Parameters.new(payment_params) }
+    let(:card_info) { { number: '4000 00100 0000 2230', exp_month: '2', exp_year: '2021', cvc: '314' } }
+    let(:payment_params) { { type: 'card', card: card_info } }
+    let(:user_payment_servise) do
+      payments_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
     end
 
     before do
       request.headers['token'] = token
 
       allow(Payments::PreparePaymentService).to receive(:perform).
-        with(params_prepare_servise).
+        with(user_payment_servise).
         and_return(service_response)
 
       send_request
     end
 
     context 'when payment method created' do
+
+      let(:expected_response) { { success: true, data: {user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'} }.to_json }
+
       let(:service_response) do
         OpenStruct.new(success?: true, data: { 
           user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME' 
           }, errors: nil)
       end
-      let(:expected_response) { { success: true, data: {user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'} }.to_json }
+
       it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:created) }
       it 'is expected to return user_payment in data' do

@@ -16,13 +16,13 @@ module Cars
       car = user.cars.new(params)
       return OpenStruct.new(success?: false, data: nil, errors: car.errors) unless car.save
 
-      OpenStruct.new(success?: true, data: { car: car }, errors: nil)
+      OpenStruct.new(success?: true, data: { car: car.present.cars_page_context }, errors: nil)
     end
 
     private
 
     def user
-      params['user'].presence
+      params[:user].presence
     end
   end
 end
