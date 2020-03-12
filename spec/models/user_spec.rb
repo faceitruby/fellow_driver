@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'field' do
-    %i[id email phone encrypted_password reset_password_token reset_password_sent_at
-       remember_created_at created_at updated_at jti provider uid
+    %i[
+      id email phone encrypted_password reset_password_token reset_password_sent_at
+      remember_created_at created_at updated_at jti provider uid
     ].each do |field|
       it { is_expected.to have_db_column(field) }
     end
@@ -31,6 +34,12 @@ RSpec.describe User, type: :model do
       %w[123--456-7890 qwe-asd-zxcv 1234567890 123-456-789O].each do |phone|
         it { is_expected.to_not allow_value(phone).for(:phone) }
       end
+    end
+  end
+
+  describe 'associations' do
+    %i[cars payments].each do |association|
+      it { is_expected.to have_many(association) }
     end
   end
 end

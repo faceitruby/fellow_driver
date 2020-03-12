@@ -10,11 +10,11 @@ class ApplicationController < ActionController::API
     render json: json, code: 200
   end
 
-  def render_success_response(data = nil)
+  def render_success_response(data = nil, status = :ok)
     render json: {
       success: true,
       data: data
-    }, status: :ok
+    }, status: status
   end
 
   def render_error_response(message = 'Bad Request', status = :bad_request)
@@ -37,5 +37,9 @@ class ApplicationController < ActionController::API
 
     user = JsonWebToken.decode(token)
     render_error_response('Token is not valid.') if Time.now.to_i > user[:expire]
+  end
+
+  def current_user
+    User.find(JsonWebToken.decode(request.headers['token'])[:user_id])
   end
 end

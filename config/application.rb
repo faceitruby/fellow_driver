@@ -25,6 +25,7 @@ module FellowDriver
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
     config.api_only = true
+    config.active_storage.replace_on_assign_to_many = false
     # config.middleware.use ActionDispatch::Session::CookieStore
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers

@@ -50,8 +50,12 @@ group :development do
 end
 
 group :test do
+  gem 'database_cleaner', '~> 1.7'
+  gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
+  gem 'faker'
   gem 'shoulda-matchers'
 end
 
+gem 'stripe'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

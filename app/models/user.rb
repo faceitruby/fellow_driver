@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  has_many :cars, dependent: :destroy
+  has_many :payments, dependent: :destroy
+
   attr_writer :login
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
   validates_format_of :phone,
@@ -10,8 +13,8 @@ class User < ApplicationRecord
   validates :password, confirmation: true
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :jwt_authenticatable,
-         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+        :recoverable, :rememberable, :jwt_authenticatable,
+        jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   private
 

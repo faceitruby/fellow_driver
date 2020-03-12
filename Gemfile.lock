@@ -66,7 +66,10 @@ GEM
     builder (3.2.4)
     byebug (11.1.1)
     concurrent-ruby (1.1.5)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     crass (1.0.6)
+    database_cleaner (1.8.3)
     devise (4.7.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -92,11 +95,19 @@ GEM
     dry-core (0.4.9)
       concurrent-ruby (~> 1.0)
     erubi (1.9.0)
+    factory_bot (5.1.1)
+      activesupport (>= 4.2.0)
+    factory_bot_rails (5.1.1)
+      factory_bot (~> 5.1.0)
+      railties (>= 4.2.0)
+    faker (2.10.2)
+      i18n (>= 1.6, < 2)
     faraday (1.0.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.12.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    hashdiff (1.0.1)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     jbuilder (2.9.1)
@@ -187,6 +198,7 @@ GEM
       rspec-support (~> 3.9.0)
     rspec-support (3.9.2)
     ruby_dep (1.5.0)
+    safe_yaml (1.0.5)
     shoulda-matchers (4.3.0)
       activesupport (>= 4.2.0)
     spring (2.1.0)
@@ -200,6 +212,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    stripe (5.15.0)
     thor (1.0.1)
     thread_safe (0.3.6)
     tzinfo (1.2.6)
@@ -216,6 +229,10 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
+    webmock (3.8.2)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
@@ -228,9 +245,12 @@ DEPENDENCIES
   awesome_print (~> 1.8)
   bootsnap (>= 1.4.2)
   byebug
+  database_cleaner (~> 1.7)
   devise
   devise-jwt (~> 0.5.9)
   dotenv-rails
+  factory_bot_rails (~> 5.1, >= 5.1.1)
+  faker
   jbuilder (~> 2.7)
   koala (~> 3.0)
   listen (>= 3.0.5, < 3.2)
@@ -241,8 +261,10 @@ DEPENDENCIES
   shoulda-matchers
   spring
   spring-watcher-listen (~> 2.0.0)
+  stripe
   tzinfo-data
   web-console (>= 3.3.0)
+  webmock
 
 RUBY VERSION
    ruby 2.6.5p114
