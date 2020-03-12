@@ -38,4 +38,8 @@ class ApplicationController < ActionController::API
     user = JsonWebToken.decode(token)
     render_error_response('Token is not valid.') if Time.now.to_i > user[:expire]
   end
+
+  def current_user
+    User.find(JsonWebToken.decode(request.headers['token'])[:user_id])
+  end
 end

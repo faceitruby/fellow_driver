@@ -83,6 +83,7 @@ GEM
     byebug (11.1.1)
     concurrent-ruby (1.1.5)
     crass (1.0.6)
+    database_cleaner (1.8.3)
     devise (4.7.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -236,6 +237,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    stripe (5.15.0)
     thor (1.0.1)
     thread_safe (0.3.6)
     tzinfo (1.2.6)
@@ -265,6 +267,7 @@ DEPENDENCIES
   aws-sdk-s3
   bootsnap (>= 1.4.2)
   byebug
+  database_cleaner (~> 1.7)
   devise
   devise-jwt (~> 0.5.9)
   dotenv-rails
@@ -282,6 +285,7 @@ DEPENDENCIES
   shoulda-matchers
   spring
   spring-watcher-listen (~> 2.0.0)
+  stripe
   tzinfo-data
   web-console (>= 3.3.0)
 

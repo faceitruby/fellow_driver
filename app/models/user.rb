@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  has_many :cars, dependent: :destroy
+  has_many :payments, dependent: :destroy
+
   attr_writer :login
   has_one_attached :avatar
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
@@ -13,8 +16,8 @@ class User < ApplicationRecord
   validate :avatar_attached?, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :jwt_authenticatable,
-         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+        :recoverable, :rememberable, :jwt_authenticatable,
+        jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   # rubocop:disable Lint/AssignmentInCondition
   def self.find_for_database_authentication(warden_conditions)

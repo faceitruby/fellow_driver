@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  describe 'fields' do
-    %i[id email phone encrypted_password reset_password_token reset_password_sent_at
-       remember_created_at created_at updated_at jti provider uid first_name
-       last_name address].each do |field|
+  describe 'field' do
+    %i[
+      id email phone encrypted_password reset_password_token reset_password_sent_at
+      remember_created_at created_at updated_at jti provider uid first_name last_name address
+    ].each do |field|
       it { is_expected.to have_db_column(field) }
     end
   end
@@ -69,6 +70,12 @@ RSpec.describe User, type: :model do
           end
         end
       end
+    end
+  end
+
+  describe 'associations' do
+    %i[cars payments].each do |association|
+      it { is_expected.to have_many(association) }
     end
   end
 end

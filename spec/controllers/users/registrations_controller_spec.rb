@@ -73,7 +73,7 @@ RSpec.describe Users::RegistrationsController, type: :controller do
   describe 'POST#update' do
     before { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
-    let(:user) { create(:user, :create, phone: nil) }
+    let!(:user) { create(:user, :create, phone: nil) }
     let(:update_request) do
       allow(controller).to receive(:check_authorize).and_return(nil)
       allow_any_instance_of(Users::Registration::UpdateService).to receive(:receive_user).and_return(user)
