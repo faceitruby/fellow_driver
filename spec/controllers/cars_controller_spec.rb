@@ -55,81 +55,48 @@ RSpec.describe CarsController, type: :controller do
 
   describe 'POST#create' do
     let(:send_request) { post :create, params: { car: car_params } }
-    context 'when car success saved' do
-      let(:car_params) do
-        {
-          manufacturer: Faker::Vehicle.manufacture,
-          model: Faker::Vehicle.model,
-          year:  Faker::Number.number(digits: 4),
-          color:  Faker::Color.hex_color,
-          license_plat_number:  Faker::Number.number(digits: 4),
-          picture:  Rack::Test::UploadedFile.new('spec/support/assets/test-image.jpeg', 'image/jpeg')
-        }
-      end
-
-      let(:response_car) do
-        {
-          manufacturer: car_params[:manufacturer],
-          model: car_params[:model],
-          year: car_params[:year],
-          color: car_params[:color],
-          license_plat_number: car_params[:license_plat_number].to_s
-        }
-      end
-
-      let(:service_responce) do
-        {
-          success: true,
-          data: {
-            car: response_car
+    context 'when car' do
+      context 'is saved' do
+        let(:car_params) do
+          {
+            manufacturer: Faker::Vehicle.manufacture,
+            model: Faker::Vehicle.model,
+            year:  Faker::Number.number(digits: 4),
+            color:  Faker::Color.hex_color,
+            license_plat_number:  Faker::Number.number(digits: 4),
+            picture:  Rack::Test::UploadedFile.new('spec/support/assets/test-image.jpeg', 'image/jpeg')
           }
-        }
+        end
+
+        before do
+          request.headers['token'] = token
+          send_request
+        end
+
+        it { expect(response.content_type).to include('application/json') }
+        it { expect(response).to have_http_status(:created) }
       end
 
-      let(:expected_response) do
-        service_responce.to_json
-      end
+      context 'is not saved' do
+        let(:error_message) { { picture: ["can't be blank"] } }
+        let(:expected_response) { service_responce.to_json }
+        let(:car_params) do
+          {
+            manufacturer: Faker::Vehicle.manufacture,
+            model: Faker::Vehicle.model,
+            year:  Faker::Number.number(digits: 4),
+            color:  Faker::Color.hex_color,
+            license_plat_number:  Faker::Number.number(digits: 4),
+          }
+        end
 
-      before do
-        request.headers['token'] = token
-        send_request
-      end
+        before do
+          request.headers['token'] = token
+          send_request
+        end
 
-      it { expect(response).to have_http_status(:created) }
-      it 'return JSON with operation status and car info' do
-        expect(response.body).to eq(expected_response)
-      end
-    end
-
-    context 'when car not saved' do
-      let(:error_message) { { picture: ["can't be blank"] } }
-      let(:expected_response) { service_responce.to_json }
-      let(:car_params) do
-        {
-          manufacturer: Faker::Vehicle.manufacture,
-          model: Faker::Vehicle.model,
-          year:  Faker::Number.number(digits: 4),
-          color:  Faker::Color.hex_color,
-          license_plat_number:  Faker::Number.number(digits: 4),
-        }
-      end
-
-      let(:service_responce) do
-        {
-          success: false,
-          message: error_message,
-          data: nil
-        }
-      end
-
-      before do
-        request.headers['token'] = token
-        send_request
-      end
-
-      it { expect(response).to have_http_status(:bad_request) }
-      it 'is expected to return JSON with operation status and error message' do
-        expect(response.body).to eq(expected_response)
+        it { expect(response.content_type).to include('application/json') }
+        it { expect(response).to have_http_status(:bad_request) }
       end
     end
   end
@@ -144,15 +111,9 @@ RSpec.describe CarsController, type: :controller do
       request.headers['token'] = token
     end
 
+    it { expect(send_request).to have_http_status(:no_content) }
     it 'is expected to returns hash with status && message' do
       expect(send_request.body).to eq(expected_response)
-    end
-
-    it 'deletes car' do
-      expect do
-        send_request
-      end.to(change { Car.count }.by(-1)) &&
-          have_http_status(:no_content)
     end
   end
 end
