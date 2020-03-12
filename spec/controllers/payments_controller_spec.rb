@@ -8,7 +8,6 @@ RSpec.describe PaymentsController, type: :controller do
   end
 
   describe 'POST#create' do
-
     let(:user) { create(:user) }
     let(:token) { JsonWebToken.encode(user_id: user.id) }
     let(:send_request) { post :create, params: payment_params.merge(user: user) }
@@ -30,9 +29,7 @@ RSpec.describe PaymentsController, type: :controller do
     end
 
     context 'when payment method created' do
-
       let(:expected_response) { { success: true, data: {user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'} }.to_json }
-
       let(:service_response) do
         OpenStruct.new(success?: true, data: { 
           user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME' 

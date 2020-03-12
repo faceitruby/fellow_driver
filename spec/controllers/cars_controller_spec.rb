@@ -55,17 +55,20 @@ RSpec.describe CarsController, type: :controller do
 
   describe 'POST#create' do
     let(:send_request) { post :create, params: { car: car_params } }
+    let(:car_params) do
+      {
+        manufacturer: Faker::Vehicle.manufacture,
+        model: Faker::Vehicle.model,
+        year:  Faker::Number.number(digits: 4),
+        color:  Faker::Color.hex_color,
+        license_plat_number:  Faker::Number.number(digits: 4),
+      }
+    end
+
     context 'when car' do
       context 'is saved' do
         let(:car_params) do
-          {
-            manufacturer: Faker::Vehicle.manufacture,
-            model: Faker::Vehicle.model,
-            year:  Faker::Number.number(digits: 4),
-            color:  Faker::Color.hex_color,
-            license_plat_number:  Faker::Number.number(digits: 4),
-            picture:  Rack::Test::UploadedFile.new('spec/support/assets/test-image.jpeg', 'image/jpeg')
-          }
+            super().merge(picture: Rack::Test::UploadedFile.new('spec/support/assets/test-image.jpeg', 'image/jpeg'))
         end
 
         before do
@@ -78,18 +81,6 @@ RSpec.describe CarsController, type: :controller do
       end
 
       context 'is not saved' do
-        let(:error_message) { { picture: ["can't be blank"] } }
-        let(:expected_response) { service_responce.to_json }
-        let(:car_params) do
-          {
-            manufacturer: Faker::Vehicle.manufacture,
-            model: Faker::Vehicle.model,
-            year:  Faker::Number.number(digits: 4),
-            color:  Faker::Color.hex_color,
-            license_plat_number:  Faker::Number.number(digits: 4),
-          }
-        end
-
         before do
           request.headers['token'] = token
           send_request

@@ -32,7 +32,8 @@ RSpec.describe VehiclesController, type: :controller do
     let(:expected_response) { '["Tesla","Jaguar"]' }
     it { expect(response.content_type).to include('application/json') }
     it { expect(response).to have_http_status(:success) }
-    it { expect(response.body).to eq(expected_response) }  end
+    it { expect(response.body).to eq(expected_response) }
+  end
 
   describe 'GET#models' do
     let(:user) { create(:user) }
