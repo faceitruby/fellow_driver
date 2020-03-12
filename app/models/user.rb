@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  has_many :members
+  has_one :family
 
   attr_writer :login
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
@@ -11,7 +11,7 @@ class User < ApplicationRecord
   validate :email_or_phone
   validates :password, confirmation: true
   include Devise::JWT::RevocationStrategies::JTIMatcher
-  devise :database_authenticatable, :registerable,
+  devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :jwt_authenticatable,
          jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
@@ -41,5 +41,9 @@ class User < ApplicationRecord
 
   def email_or_phone
     errors.add(:email_or_phone, 'Fill in the email or phone field') if email.blank? && phone.blank?
+  end
+
+  def presenter_class
+    InvitePresenter
   end
 end
