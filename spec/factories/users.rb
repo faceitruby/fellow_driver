@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :user do
-    factory :valid_user do
-      email { 'mail@exapmle.com' }
-    end
+    password { 'password' }
+    email { Faker::Internet.email }
+    phone { Faker::Base.numerify('###-###-####') }
   end
 end

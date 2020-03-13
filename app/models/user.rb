@@ -2,6 +2,8 @@
 
 class User < ApplicationRecord
   has_one :family
+  has_many :cars, dependent: :destroy
+  has_many :payments, dependent: :destroy
 
   attr_writer :login
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
