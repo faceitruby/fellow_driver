@@ -12,7 +12,6 @@ class Users::InvitationsController < ApplicationController
     else
       render_error_response(result.errors)
     end
-    # result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors)
   end
 
   def update
@@ -28,7 +27,7 @@ class Users::InvitationsController < ApplicationController
   private
 
   def invite_params
-    params.require(:user).permit(:email, :phone, :skip_invitation)
+    params.require(:user).permit(:email, :phone, :member_type, :skip_invitation)
   end
 
   def accept_invitation_params
