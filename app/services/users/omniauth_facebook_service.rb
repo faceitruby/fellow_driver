@@ -11,7 +11,7 @@ module Users
     private
 
     def validate_facebook_token
-      graph = Koala::Facebook::API.new(@params)
+      graph = Koala::Facebook::API.new(access_token)
       get_user(graph.get_object('me?fields=email'))
     rescue => e
       OpenStruct.new(success?: false, errors: e.message)
@@ -27,6 +27,10 @@ module Users
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
       end
       OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user })
+    end
+
+    def access_token
+      params['access_token']
     end
   end
 end

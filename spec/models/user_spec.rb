@@ -37,13 +37,13 @@ RSpec.describe User, type: :model do
       let(:user_without_email_phone) { build(:user, :create, email: nil, phone: nil) }
 
       context 'and email is set' do
-        it 'is valid' do
+        it 'and is valid' do
           expect(build(:user, :create, phone: nil)).to be_valid(:create)
         end
       end
 
       context 'and phone is set' do
-        it 'is valid' do
+        it 'and is valid' do
           expect(build(:user, :create, email: nil)).to be_valid(:create)
         end
       end
@@ -56,9 +56,8 @@ RSpec.describe User, type: :model do
     end
 
     context 'when updating' do
-
       context 'and all params are present' do
-        it 'is valid' do
+        it 'and valid' do
           expect(build(:user)).to be_valid(:update)
         end
       end

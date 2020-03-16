@@ -4,14 +4,14 @@ require 'rails_helper'
 
 RSpec.describe Users::Registration::CreateService do
   describe '#call' do
-    subject { Users::Registration::CreateService.new(user_params).call }
+    subject { described_class.new(user_params).call }
 
     context 'with email provided' do
       let(:user_params) { attributes_for(:user, :create, phone: nil) }
 
       it { is_expected.to be_instance_of OpenStruct }
       it 'creates user' do
-        expect { subject }.to change(User, :count)
+        expect { subject }.to change(User, :count).by(1)
       end
       it_behaves_like 'provided fields'
     end
@@ -21,7 +21,7 @@ RSpec.describe Users::Registration::CreateService do
 
       it { is_expected.to be_instance_of OpenStruct }
       it 'creates user' do
-        expect { subject }.to change(User, :count)
+        expect { subject }.to change(User, :count).by(1)
       end
       it_behaves_like 'provided fields'
     end

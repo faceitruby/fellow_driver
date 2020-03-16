@@ -19,11 +19,10 @@ module Users
       private
 
       def create_params
-        if params['login'].present?
-          key = params['login'].include?('@') ? 'email' : 'phone'
-          params[key] = params.delete('login')
-        end
-        params
+        return params unless params['login'].present?
+
+        key = params['login'].include?('@') ? 'email' : 'phone'
+        params.merge(key => params.delete('login'))
       end
     end
   end

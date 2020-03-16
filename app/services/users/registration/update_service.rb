@@ -14,17 +14,17 @@ module Users
       # - token: [String] Token from request
 
       def call
-        receive_user.assign_attributes(params.except('token'))
+        user.assign_attributes(params.except('token'))
 
-        return OpenStruct.new(success?: false, user: nil, errors: receive_user.errors) unless receive_user.save
+        return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
 
-        OpenStruct.new(success?: true, data: { token: jwt_encode(receive_user), user: receive_user }, errors: nil)
+        OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
       end
 
       private
 
-      def receive_user
-        @receive_user ||= User.find(JsonWebToken.decode(params['token'])['user_id'])
+      def user
+        @user ||= User.find(JsonWebToken.decode(params['token'])['user_id'])
       end
     end
   end

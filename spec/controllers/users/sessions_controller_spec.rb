@@ -10,19 +10,19 @@ RSpec.describe Users::SessionsController, type: :controller do
   end
 
   describe 'POST#create' do
+    let(:send_request) { post :create, params: params, as: :json }
+    subject { response }
+
     before { @request.env['devise.mapping'] = Devise.mappings[:user] }
-    subject { post :create, params: params, as: :json }
 
     context 'when login' do
-      before { subject }
+      before { send_request }
 
       context 'is an email' do
         let(:user) { create(:user, :create, phone: nil, password: 'password') }
         let(:params) { { user: { login: user.email, password: 'password' } } }
 
-        it 'gets 200 code' do
-          expect(response).to have_http_status(200)
-        end
+        it { is_expected.to have_http_status(200) }
         it_behaves_like 'success action'
       end
 
@@ -30,9 +30,7 @@ RSpec.describe Users::SessionsController, type: :controller do
         let(:user) { create(:user, :create, email: nil, password: 'password') }
         let(:params) { { user: { login: user.phone, password: 'password' } } }
 
-        it 'gets 200 code' do
-          expect(response).to have_http_status(200)
-        end
+        it { is_expected.to have_http_status(200) }
         it_behaves_like 'success action'
       end
 
@@ -40,9 +38,7 @@ RSpec.describe Users::SessionsController, type: :controller do
         let(:user) { create(:user, :create, email: nil, password: 'password') }
         let(:params) { { user: { password: 'password' } } }
 
-        it 'gets 422 code' do
-          expect(response).to have_http_status(422)
-        end
+        it { is_expected.to have_http_status(422) }
         it_behaves_like 'failure action'
       end
     end
@@ -51,11 +47,9 @@ RSpec.describe Users::SessionsController, type: :controller do
       let(:user) { create(:user, :create, email: nil, password: 'password') }
       let(:params) { { user: { login: user.phone } } }
 
-      before { subject }
+      before { send_request }
 
-      it 'gets 422 code' do
-        expect(response).to have_http_status(422)
-      end
+      it { is_expected.to have_http_status(422) }
       it_behaves_like 'failure action'
     end
   end

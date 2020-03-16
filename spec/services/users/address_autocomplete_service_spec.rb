@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe Users::AddressAutocompleteService do
   let(:params) { { input: 'search' } }
-  subject { described_class.new(params).call }
   let(:body) do
     {
       predictions: [
@@ -33,6 +32,7 @@ RSpec.describe Users::AddressAutocompleteService do
     }
   end
   let(:response) { OpenStruct.new(body: body.to_json) }
+  subject { described_class.new(params).call }
 
   describe '#call' do
     before do
@@ -41,7 +41,6 @@ RSpec.describe Users::AddressAutocompleteService do
     end
 
     context 'when input' do
-
       context 'is present' do
         it { is_expected.to be_instance_of OpenStruct }
         it_behaves_like 'provided fields'

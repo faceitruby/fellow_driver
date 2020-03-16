@@ -34,21 +34,3 @@ RSpec.shared_examples 'failure action' do
     expect(subject.parsed_body['message']).to be_present
   end
 end
-
-# Update user examples
-RSpec.shared_examples 'update with missing fields' do
-  it 'gets 422 code' do
-    update_request
-    expect(response).to have_http_status(422)
-  end
-  it 'doesn\'t change user\'s fields' do
-    user = User.last
-    expect do
-      update_request
-      user.reload
-    end.to not_change(user, :phone)
-      .and not_change(user, :first_name)
-      .and not_change(user, :last_name)
-      .and not_change(user, :address)
-  end
-end

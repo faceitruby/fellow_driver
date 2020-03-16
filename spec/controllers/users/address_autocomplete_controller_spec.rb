@@ -44,7 +44,9 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
     end
     let(:input) { 'some search' }
     let(:google_response) { OpenStruct.new(body: body.to_json) }
-    subject { post :complete, params: params, as: :json }
+    let(:send_request) { post :complete, params: params, as: :json }
+    subject { response }
+
     before do
       @request.env['devise.mapping'] = Devise.mappings[:user]
       allow_any_instance_of(GooglePlacesAutocomplete::Client).to receive(:autocomplete).with(an_instance_of(Hash))
@@ -52,25 +54,20 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
     end
 
     context 'when token is missing' do
-      before { subject }
+      before { send_request }
 
-      it 'gets 400 code' do
-        expect(response).to have_http_status(400)
-      end
-
+      it { is_expected.to have_http_status(400) }
       it_behaves_like 'failure action'
     end
 
     context 'when input' do
       before do
         allow(controller).to receive(:check_authorize).and_return(nil)
-        subject
+        send_request
       end
 
       context 'is present' do
-        it 'gets 200 code' do
-          expect(response).to have_http_status(200)
-        end
+        it { is_expected.to have_http_status(200) }
         it_behaves_like 'success action'
       end
 
@@ -78,10 +75,7 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
         let(:input) {}
         let(:google_response) { OpenStruct.new(body: body_when_missing_input.to_json) }
 
-        it 'gets 422 code' do
-          expect(response).to have_http_status(422)
-        end
-
+        it { is_expected.to have_http_status(422) }
         it_behaves_like 'failure action'
       end
     end

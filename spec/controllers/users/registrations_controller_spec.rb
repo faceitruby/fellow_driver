@@ -2,6 +2,24 @@
 
 require 'rails_helper'
 
+# Update user examples
+RSpec.shared_examples 'update with missing fields' do
+  it 'gets 422 code' do
+    send_request
+    expect(response).to have_http_status(422)
+  end
+  it 'doesn\'t change user\'s fields' do
+    user = User.last
+    expect do
+      send_request
+      user.reload
+    end.to not_change(user, :phone)
+      .and not_change(user, :first_name)
+      .and not_change(user, :last_name)
+      .and not_change(user, :address)
+  end
+end
+
 RSpec.describe Users::RegistrationsController, type: :controller do
   describe 'route' do
     it { is_expected.to_not route(:get, '/api/users/signup').to(action: :index, format: :json) }
@@ -15,8 +33,6 @@ RSpec.describe Users::RegistrationsController, type: :controller do
   end
 
   describe 'POST#create' do
-    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
-
     let(:send_request) { post :create, params: params, as: :json }
     let(:params) do
       {
@@ -29,6 +45,8 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     let(:email) { Faker::Internet.email }
     let(:phone) { Faker::Base.numerify('###-###-####') }
 
+    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
+
     it 'returns json' do
       send_request
       expect(response.content_type).to include('application/json')
@@ -38,24 +56,26 @@ RSpec.describe Users::RegistrationsController, type: :controller do
       let(:phone) { nil }
 
       it 'creates user' do
-        expect { send_request }.to change(User, :count)
+        expect { send_request }.to change(User, :count).by(1)
       end
       it 'gets 201 code' do
         send_request
         expect(response).to have_http_status(:created)
       end
     end
+
     context 'with user phone' do
       let(:email) { nil }
 
       it 'creates user' do
-        expect { send_request }.to change(User, :count)
+        expect { send_request }.to change(User, :count).by(1)
       end
       it 'gets 201 code' do
         send_request
         expect(response).to have_http_status(:created)
       end
     end
+
     context 'without user email and phone' do
       let(:email) { nil }
       let(:phone) { nil }
@@ -71,14 +91,8 @@ RSpec.describe Users::RegistrationsController, type: :controller do
   end
 
   describe 'POST#update' do
-    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
-
     let!(:user) { create(:user, :create, phone: nil) }
-    let(:update_request) do
-      allow(controller).to receive(:check_authorize).and_return(nil)
-      allow_any_instance_of(Users::Registration::UpdateService).to receive(:receive_user).and_return(user)
-      post :update, params: params, as: :json
-    end
+    let(:send_request) { post :update, params: params, as: :json }
     let(:params) do
       {
         user: {
@@ -98,20 +112,27 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     let(:address) { Faker::Address.full_address }
     let(:avatar) { Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']) }
 
+    before do
+      @request.env['devise.mapping'] = Devise.mappings[:user]
+      allow(controller).to receive(:check_authorize).and_return(nil)
+      allow_any_instance_of(Users::Registration::UpdateService).to receive(:user).and_return(user)
+    end
+
     context 'with all fields provided' do
       it 'gets 204 code' do
-        update_request
+        send_request
         expect(response).to have_http_status(204)
       end
       it 'changes user\'s fields' do
         expect do
-          update_request
+          send_request
           user.reload
         end.to change(user, :first_name)
           .and change(user, :last_name)
           .and change(user, :address)
       end
     end
+
     %i[address avatar email phone first_name last_name].each do |field|
       context "with missing #{field}" do
         let(field) { nil }
