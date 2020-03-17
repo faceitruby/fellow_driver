@@ -3,7 +3,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  def present(context = ActionView::Base.new)
+  def present(context = ApplicationController.renderer)
     return self unless presenter_class
 
     @present ||= presenter_class.new(self, context)

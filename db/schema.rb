@@ -69,6 +69,9 @@ ActiveRecord::Schema.define(version: 2020_02_25_090609) do
     t.string "jti", null: false
     t.string "provider"
     t.string "uid"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "address"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
