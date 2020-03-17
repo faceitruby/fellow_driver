@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.5'
 
 gem 'devise'
-
+gem 'devise_invitable'
 gem 'devise-jwt', '~> 0.5.9'
 
 gem 'koala', '~> 3.0'

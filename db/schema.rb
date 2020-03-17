@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_25_090609) do
+ActiveRecord::Schema.define(version: 2020_03_17_121741) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,11 @@ ActiveRecord::Schema.define(version: 2020_02_25_090609) do
     t.index ["user_id"], name: "index_cars_on_user_id"
   end
 
+  create_table "friends", force: :cascade do |t|
+    t.integer "friend_id"
+    t.integer "user_id"
+  end
+
   create_table "payments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "payment_type"
@@ -69,7 +74,19 @@ ActiveRecord::Schema.define(version: 2020_02_25_090609) do
     t.string "jti", null: false
     t.string "provider"
     t.string "uid"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invitations_count"], name: "index_users_on_invitations_count"
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

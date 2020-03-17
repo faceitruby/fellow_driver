@@ -3,6 +3,10 @@
 class User < ApplicationRecord
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
+  has_and_belongs_to_many :friends, class_name: 'User',
+                                    join_table: 'friends',
+                                    association_foreign_key: 'friend_id'
+
 
   attr_writer :login
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
@@ -12,8 +16,8 @@ class User < ApplicationRecord
   validate :email_or_phone
   validates :password, confirmation: true
   include Devise::JWT::RevocationStrategies::JTIMatcher
-  devise :database_authenticatable, :registerable,
-        :recoverable, :rememberable, :jwt_authenticatable,
+  devise :invitable, :database_authenticatable, :registerable,
+        :recoverable, :rememberable, :jwt_authenticatable, :invitable,
         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   private
