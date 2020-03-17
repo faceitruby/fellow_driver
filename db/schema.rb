@@ -48,11 +48,6 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.index ["user_id"], name: "index_cars_on_user_id"
   end
 
-  create_table "friends", force: :cascade do |t|
-    t.integer "friend_id"
-    t.integer "user_id"
-  end
-
   create_table "payments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "payment_type"
@@ -60,6 +55,11 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "trusted_drivers", force: :cascade do |t|
+    t.integer "trusted_driver_id"
+    t.integer "user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.string "jti", null: false
     t.string "provider"
     t.string "uid"
+<<<<<<< HEAD
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
@@ -82,6 +83,11 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.string "invited_by_type"
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
+=======
+    t.string "first_name"
+    t.string "last_name"
+    t.string "address"
+>>>>>>> 2388fa5... Add user update (#7)
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invitations_count"], name: "index_users_on_invitations_count"
