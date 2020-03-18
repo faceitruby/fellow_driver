@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json_web_token'
+
 # ApplicationService with jwt_encode and jwt_decode methods
 class Users::ApplicationService < ApplicationService
   private
