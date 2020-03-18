@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TwilioTextMessenger
+class TwilioTextMessenger < ApplicationService
   attr_reader :message
 
   def initialize(message)
