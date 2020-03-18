@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'redis'
-
 module Users
   # Service for autocomplete addresses using Google Place Autocomplete
   class AddressAutocompleteService < ApplicationService
@@ -13,7 +11,7 @@ module Users
     # - lat [String] Latitude (optional)
     # - lng [String] Longitude (optional)
     #
-    # more detail https://developers.google.com/places/web-service/autocomplete#place_autocomplete_requests
+    # @see https://developers.google.com/places/web-service/autocomplete#place_autocomplete_requests
 
     def call
       response = autocomplete_client.autocomplete(receive_params)
