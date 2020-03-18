@@ -3,15 +3,21 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.5'
 
+gem 'aws-sdk-s3', require: false
+
 gem 'devise'
 gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
 
 gem 'devise-jwt', '~> 0.5.9'
 
+gem 'google_places_autocomplete'
+
 gem 'koala', '~> 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
+
+gem 'redis'
 
 gem 'rspec-rails'
 gem 'twilio-ruby'
@@ -39,6 +45,8 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails'
+  gem 'factory_bot_rails'
+  gem 'faker'
 end
 
 group :development do
@@ -53,8 +61,6 @@ end
 
 group :test do
   gem 'database_cleaner', '~> 1.7'
-  gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
-  gem 'faker'
   gem 'shoulda-matchers'
 end
 

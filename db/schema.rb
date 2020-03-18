@@ -86,6 +86,9 @@ ActiveRecord::Schema.define(version: 2020_03_11_105311) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.bigint "family_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "address"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["family_id"], name: "index_users_on_family_id"
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

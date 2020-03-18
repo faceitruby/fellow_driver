@@ -1,11 +1,15 @@
+# frozen_string_literal: true
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
+require 'faker'
+require 'support/shared/shared_examples'
 ENV['RAILS_ENV'] ||= 'test'
 
 require File.expand_path('../config/environment', __dir__)
 
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
 require 'support/database_cleaner'
 
@@ -17,10 +21,11 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
   config.include FactoryBot::Syntax::Methods
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
+  config.include Devise::Test::ControllerHelpers, type: :controller
 end
 
 Shoulda::Matchers.configure do |config|
