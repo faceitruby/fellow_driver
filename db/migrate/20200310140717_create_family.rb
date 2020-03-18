@@ -3,6 +3,7 @@ class CreateFamily < ActiveRecord::Migration[6.0]
     create_table :families do |t|
       t.integer :user_id
       t.integer :owner
+      t.integer :member_type
 
       t.timestamps
     end

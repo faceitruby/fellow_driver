@@ -27,7 +27,7 @@ class Users::InvitationsController < ApplicationController
   private
 
   def invite_params
-    params.require(:user).permit(:email, :phone, :member_type, :skip_invitation)
+    params.permit(:email, :phone, :member_type, :skip_invitation)
   end
 
   def accept_invitation_params

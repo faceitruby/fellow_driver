@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_12_135759) do
+ActiveRecord::Schema.define(version: 2020_03_11_105311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,8 +48,13 @@ ActiveRecord::Schema.define(version: 2020_03_12_135759) do
     t.index ["user_id"], name: "index_cars_on_user_id"
   end
 
-# Could not dump table "families" because of following StandardError
-#   Unknown type 'member_type' for column 'member_type'
+  create_table "families", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "owner"
+    t.integer "member_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "payments", force: :cascade do |t|
     t.bigint "user_id", null: false
