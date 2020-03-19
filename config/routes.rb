@@ -30,6 +30,11 @@ Rails.application.routes.draw do
     get 'models/:brand', to: 'vehicles#models'
     resources :cars, except: %i[update new]
     resources :payments, only: %i[create]
+    resources :trusted_drivers, only: %i[create destroy]
+    resources :trusted_driver_requests, only: %i[create destroy index]
+    resources :facebook_friends, only: %i[index]
+    get 'trusted_drivers', to: 'trusted_drivers#trusted_drivers'
+    get 'trusted_for', to: 'trusted_drivers#trusted_for'
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

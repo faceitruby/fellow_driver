@@ -36,8 +36,7 @@ RSpec.describe Users::AddressAutocompleteService do
 
   describe '#call' do
     before do
-      allow_any_instance_of(GooglePlacesAutocomplete::Client).to receive(:autocomplete).with(an_instance_of(Hash))
-                                                                                       .and_return(response)
+      allow_any_instance_of(GooglePlacesAutocomplete::Client).to receive(:autocomplete).with(an_instance_of(Hash)).and_return(response)
     end
 
     context 'when input' do

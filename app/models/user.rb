@@ -3,16 +3,26 @@
 class User < ApplicationRecord
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
-  has_and_belongs_to_many :trusted_drivers, class_name: 'User',
-                                    join_table: 'trusted_drivers',
-                                    association_foreign_key: 'user_id'
 
+  has_many :trusted_drivers,
+            foreign_key: :trust_driver_id,
+            class_name: :TrustedDriver
+  has_many :trust_drivers,
+            foreign_key: :trusted_driver_id,
+            class_name: :TrustedDriver
+
+  has_many :trusted_driver_requests_as_requestor,
+            foreign_key: :requestor_id,
+            class_name: :TrustedDriverRequest
+  has_many :trusted_driver_requests_as_receiver,
+            foreign_key: :receiver_id,
+            class_name: :TrustedDriverRequest
 
   attr_writer :login
   has_one_attached :avatar
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
   validates_format_of :phone,
-                      with: /\A\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
+                      with: /\A(\+[0-9]{1,2})?\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
   validates :password, confirmation: true
@@ -34,6 +44,10 @@ class User < ApplicationRecord
     end
   end
   # rubocop:enable Lint/AssignmentInCondition
+
+  def name
+    first_name.to_s + ' ' + last_name.to_s
+  end
 
   private
 

@@ -12,7 +12,7 @@ RSpec.describe Payments::PreparePaymentService do
         exp_month: Faker::Number.number(digits: 1),
         exp_year: Faker::Number.number(digits: 4),
         cvc: Faker::Number.number(digits: 3)
-      },
+      }
     }
   end
 

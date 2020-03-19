@@ -7,7 +7,7 @@ RSpec.describe CarPresenter do
 
   describe 'MODEL_ATTRIBUTES constant' do
     subject { described_class::MODEL_ATTRIBUTES }
-    it { is_expected.to eq %i[manufacturer model year color license_plat_number] }
+    it { is_expected.to eq %i[id manufacturer model year color license_plat_number] }
   end
 
   describe '#cars_page_context' do
@@ -17,11 +17,13 @@ RSpec.describe CarPresenter do
 
     let(:response) do
       {
+        id: car.id,
         manufacturer: car.manufacturer,
         model: car.model,
         year: car.year,
         color: car.color,
-        license_plat_number: car.license_plat_number
+        license_plat_number: car.license_plat_number,
+        picture: Rails.application.routes.url_helpers.rails_blob_path(car.picture, only_path: true)
       }
     end
 

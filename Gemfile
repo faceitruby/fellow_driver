@@ -9,20 +9,23 @@ gem 'devise'
 gem 'devise_invitable'
 gem 'devise-jwt', '~> 0.5.9'
 
+gem 'geocoder', '~> 1.3', '>= 1.3.7'
 gem 'google_places_autocomplete'
-
+gem 'haml-rails'
 gem 'koala', '~> 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 
 gem 'redis'
+gem 'resque'
 
 gem 'rspec-rails'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.2', '>= 1.2.2'
 # Use Puma as the app server
 gem 'puma', '~> 4.1'
+gem 'twilio-ruby'
 # Use SCSS for stylesheets
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
@@ -60,6 +63,7 @@ end
 group :test do
   gem 'database_cleaner', '~> 1.7'
   gem 'shoulda-matchers'
+  gem 'resque_spec'
 end
 
 gem 'stripe'
