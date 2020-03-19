@@ -76,5 +76,7 @@ RSpec.describe User, type: :model do
     %i[cars payments].each do |association|
       it { is_expected.to have_many(association) }
     end
+
+    it { is_expected.to have_one(:family) }
   end
 end
