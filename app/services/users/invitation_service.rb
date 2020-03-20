@@ -8,14 +8,15 @@ module Users
         invite.create_family(family_params.merge(owner: current_user.id))
         invite.update_attribute(:family_id, invite.family.id)
         invite.update_attribute(:invited_by_id, current_user.id)
-        p "="*20, invite.raw_invitation_token, "="*20   #for testing
+        # p "="*20, invite.raw_invitation_token, "="*20   #for testing
         message = "#{invite['first_name']} #{invite['last_name']} added you as family\
         member on FellowDriver. Click the link below to accept the invitation:\
         http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}"
-        p message
+        # p message
         Twilio::TwilioTextMessenger.perform(message)
         return OpenStruct.new(success?: true,
-                              data: { user: invite.present.invite_page_context },
+                              data: { invite_token: invite.raw_invitation_token,
+                                      user: invite.present.invite_page_context },
                               errors: nil)
       else
         return OpenStruct.new(success?: false, data: nil, errors: invite.errors)
