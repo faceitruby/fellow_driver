@@ -12,7 +12,6 @@ module Users
         message = "#{invite['first_name']} #{invite['last_name']} added you as family\
         member on FellowDriver. Click the link below to accept the invitation:\
         http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}"
-        # p message
         Twilio::TwilioTextMessenger.perform(message)
         return OpenStruct.new(success?: true,
                               data: { invite_token: invite.raw_invitation_token,
