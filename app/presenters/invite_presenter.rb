@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class InvitePresenter < ApplicationPresenter
-  MODEL_ATTRIBUTES = %i[first_name last_name phone email invited_by_id family_id].freeze
+  MODEL_ATTRIBUTES = %i[id first_name last_name phone email invited_by_id family_id].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
 

@@ -7,7 +7,6 @@ class Users::InvitationsController < ApplicationController
     result = Users::InvitationService.perform(
         invite_params.merge(current_user: current_user)
     )
-    # pp result
     if result.success?
       render_success_response(result.data, :created)
     else
