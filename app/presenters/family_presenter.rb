@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 class FamilyPresenter < ApplicationPresenter
   MODEL_ATTRIBUTES = %i[user_id member_type].freeze

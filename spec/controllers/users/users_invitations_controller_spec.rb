@@ -7,15 +7,15 @@ RSpec.describe Users::InvitationsController, type: :controller do
   let(:token) { JsonWebToken.encode(user_id: user.id) }
   let(:params) do
     {
-      "first_name": Faker::Name.first_name,
-      "last_name": Faker::Name.last_name,
-      "phone": Faker::Base.numerify('###-###-####'),
-      "email": Faker::Internet.email,
-      "member_type": Family.member_types.keys.sample,
-      "avatar": Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']),
-      "address": Faker::Address.full_address,
-      "password": "password",
-      "password_confirmation": "password"
+        'first_name': Faker::Name.first_name,
+        'last_name': Faker::Name.last_name,
+        'phone': Faker::Base.numerify('###-###-####'),
+        'email': Faker::Internet.email,
+        'member_type': Family.member_types.keys.sample,
+        'avatar': Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']),
+        'address': Faker::Address.full_address,
+        'password': 'password',
+        'password_confirmation': 'password'
     }
   end
   let(:send_post_request) { post :create,

@@ -9,7 +9,7 @@ RSpec.describe FamiliesController, type: :controller do
 
   let(:current_user) { create(:user) }
   let(:user) { create(:user) }
-  let(:family) { create(:family, owner: current_user.id) }
+  let(:family) { create(:family) }
   let(:token) { JsonWebToken.encode(user_id: current_user.id) }
 
   describe 'GET#index' do
