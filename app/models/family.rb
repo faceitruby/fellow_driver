@@ -4,6 +4,9 @@ class Family < ApplicationRecord
   enum member_type: %w[mother father son daughter]
 
   validates :member_type, inclusion: {in: member_types.keys}
-
   validates :user_id, :owner, :member_type, presence: true
+
+  def presenter_class
+    FamilyPresenter
+  end
 end

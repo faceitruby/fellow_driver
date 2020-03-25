@@ -27,10 +27,22 @@ class Users::InvitationsController < ApplicationController
   private
 
   def invite_params
-    params.permit(:avatar, :first_name, :last_name, :email, :phone, :member_type, :skip_invitation)
+    params.permit(:avatar,
+                  :first_name,
+                  :last_name,
+                  :email,
+                  :phone,
+                  :member_type,
+                  :skip_invitation)
   end
 
   def accept_invitation_params
-    params.permit(:avatar, :address, :email, :phone, :password, :password_confirmation, :invitation_token)
+    params.permit(:avatar,
+                  :address,
+                  :email,
+                  :phone,
+                  :password,
+                  :password_confirmation,
+                  :invitation_token)
   end
 end

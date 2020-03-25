@@ -35,6 +35,8 @@ RSpec.describe Users::InvitationsController, type: :controller do
       allow(Twilio::TwilioTextMessenger).to receive(:perform)
     end
 
+    subject { response }
+
     it 'returns json' do
       send_post_request
       expect(response.content_type).to include('application/json')
@@ -52,7 +54,6 @@ RSpec.describe Users::InvitationsController, type: :controller do
 
     context 'with correct request' do
       before { send_post_request }
-      subject { response }
 
       it { expect(response).to have_http_status(:created) }
       it_behaves_like 'success action'
@@ -60,7 +61,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
 
     context 'with incorrect request' do
       before { send_incorrect_post_request }
-      subject { response }
+
       it_behaves_like 'failure action'
     end
   end
@@ -71,6 +72,8 @@ RSpec.describe Users::InvitationsController, type: :controller do
       request.headers['token'] = token
       allow(Twilio::TwilioTextMessenger).to receive(:perform)
     end
+
+    subject { response }
 
     it 'returns json' do
       send_put_request
@@ -85,8 +88,6 @@ RSpec.describe Users::InvitationsController, type: :controller do
         send_put_request
       end
 
-      subject { response }
-
       it { expect(response).to have_http_status(:accepted) }
       it_behaves_like 'success action'
     end
@@ -96,8 +97,6 @@ RSpec.describe Users::InvitationsController, type: :controller do
         send_post_request
         send_put_request
       end
-
-      subject { response }
 
       it_behaves_like 'failure action'
     end

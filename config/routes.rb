@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     get 'models/:brand', to: 'vehicles#models'
     resources :cars, except: %i[update new]
     resources :payments, only: %i[create]
+    get 'families', to: 'families#index'
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
