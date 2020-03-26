@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json_web_token'
+
 class ApplicationController < ActionController::API
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :check_authorize
@@ -33,10 +35,12 @@ class ApplicationController < ActionController::API
 
   def check_authorize
     token = request.headers['token']
-    return render_error_response unless token
+    return render_error_response('Token is missing', 401) unless token
 
     user = JsonWebToken.decode(token)
-    render_error_response('Token is not valid.') if Time.now.to_i > user[:expire]
+    render_error_response('Token is not valid', 422) if Time.now.to_i > user[:expire]
+  rescue JWT::DecodeError
+    render_error_response('Token is not valid', 422)
   end
 
   def current_user

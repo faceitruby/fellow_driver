@@ -34,40 +34,76 @@ RSpec.describe User, type: :model do
     end
 
     context 'when creating' do
-      let(:user_without_email_phone) { build(:user, :create, email: nil, phone: nil) }
+      subject { user }
 
-      context 'and email is set' do
-        it 'and is valid' do
-          expect(build(:user, :create, phone: nil)).to be_valid(:create)
-        end
+      context 'with email is set' do
+        let(:user) { build(:user, :create, phone: nil) }
+
+        it { is_expected.to be_valid(:create) }
       end
 
-      context 'and phone is set' do
-        it 'and is valid' do
-          expect(build(:user, :create, email: nil)).to be_valid(:create)
-        end
+      context 'with phone is set' do
+        let(:user) { build(:user, :create, email: nil) }
+
+        it { is_expected.to be_valid(:create) }
       end
 
-      context 'and both email and phone are missing' do
-        it 'is not valid' do
-          expect(user_without_email_phone).to_not be_valid(:create)
+      context 'with both email and phone are missing' do
+        let(:user) { build(:user, :create, email: nil, phone: nil) }
+
+        it { is_expected.to_not be_valid(:create) }
+      end
+
+      context 'with missing password' do
+        context 'and provider' do
+          let(:user) { build(:user, :create, phone: nil, password: nil) }
+
+          it { is_expected.to_not be_valid(:create) }
+        end
+
+        context 'but with provider' do
+          let(:user) { build(:user, :create, phone: nil, password: nil, provider: 'facebook') }
+
+          it { is_expected.to be_valid(:create) }
         end
       end
     end
 
     context 'when updating' do
-      context 'and all params are present' do
-        it 'and valid' do
-          expect(build(:user)).to be_valid(:update)
-        end
+      subject { user }
+
+      context 'with all params are present' do
+        let(:user) { build(:user) }
+
+        it { is_expected.to be_valid(:update) }
       end
 
       %i[first_name last_name email phone address avatar].each do |field|
-        context "and #{field} is missing" do
-          it 'is not valid' do
-            expect(build(:user, field => nil)).not_to be_valid(:update)
-          end
+        context "with #{field} is missing" do
+          let(:user) { build(:user, field => nil) }
+
+          it { is_expected.to_not be_valid(:update) }
         end
+      end
+
+      context 'and email has been taken' do
+        let!(:user) { create(:user, phone: nil) }
+        subject { build(:user, email: user.email) }
+
+        it { is_expected.to_not be_valid(:update) }
+      end
+
+      context 'and phone number has been taken' do
+        let!(:user) { create(:user, email: nil) }
+        subject { build(:user, phone: user.phone) }
+
+        it { is_expected.to_not be_valid(:update) }
+      end
+
+      context 'with missing password' do
+        let(:user) { build(:user, password: nil) }
+
+        it { is_expected.to be_valid(:update) }
       end
     end
   end

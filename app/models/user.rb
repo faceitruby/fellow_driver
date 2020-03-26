@@ -12,8 +12,11 @@ class User < ApplicationRecord
                       with: /\A\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
-  validates :password, confirmation: true
+  validates :password, presence: true, on: :create, if: -> { provider.blank? }
   validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
+  # Uniqueness can`t be checked on create, because user inputs only one of email|phone, and other is nil.
+  # Validation always be failed with nil is not unique
+  validates_uniqueness_of :email, :phone, on: :update
   validate :avatar_attached?, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :invitable, :database_authenticatable, :registerable,

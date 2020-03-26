@@ -2,7 +2,8 @@
 
 module Users
   class OmniauthFacebookService < ApplicationService
-    # @attr_reader params [String] Token
+    # @attr_reader params [Hash]
+    # - access_token: [String] Token
 
     def call
       validate_facebook_token
@@ -13,7 +14,7 @@ module Users
     def validate_facebook_token
       graph = Koala::Facebook::API.new(access_token)
       get_user(graph.get_object('me?fields=email'))
-    rescue => e
+    rescue StandardError => e
       OpenStruct.new(success?: false, errors: e.message)
     end
 
