@@ -8,7 +8,7 @@ module Users
 
     # POST api/users/login
     def create
-      result = Users::SessionService.perform(warden.authenticate)
+      result = Users::SessionService.perform(user: warden.authenticate)
       result.success? ? render_success_response(result.data) : render_error_response(result.errors, 422)
     end
   end

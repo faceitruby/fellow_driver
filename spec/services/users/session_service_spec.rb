@@ -7,7 +7,8 @@ RSpec.describe Users::SessionService do
     context 'when authenticated user' do
       context 'is provided' do
         let(:user) { build(:user, :create, email: 'user@example.com', phone: nil) }
-        subject { described_class.new(user).call }
+        let(:params) { { user: user } }
+        subject { described_class.new(params).call }
 
         it { is_expected.to be_instance_of OpenStruct }
         it_behaves_like 'provided fields'

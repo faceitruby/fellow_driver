@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'json_web_token'
 
 # Update user examples
 RSpec.shared_examples 'update with missing fields' do
@@ -38,12 +39,14 @@ RSpec.describe Users::RegistrationsController, type: :controller do
       {
         user: {
           email: email,
-          phone: phone
+          phone: phone,
+          password: password
         }
       }
     end
     let(:email) { Faker::Internet.email }
     let(:phone) { Faker::Base.numerify('###-###-####') }
+    let(:password) { 'password' }
 
     before { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
@@ -73,6 +76,18 @@ RSpec.describe Users::RegistrationsController, type: :controller do
       it 'gets 201 code' do
         send_request
         expect(response).to have_http_status(:created)
+      end
+    end
+
+    context 'with missing password' do
+      let(:password) { nil }
+
+      it 'doesn\'t create user' do
+        expect { send_request }.to_not change(User, :count)
+      end
+      it 'gets 422 code' do
+        send_request
+        expect(response).to have_http_status(422)
       end
     end
 
@@ -112,10 +127,12 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     let(:address) { Faker::Address.full_address }
     let(:avatar) { Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']) }
 
-    before do
+    before do |test|
       @request.env['devise.mapping'] = Devise.mappings[:user]
-      allow(controller).to receive(:check_authorize).and_return(nil)
-      allow_any_instance_of(Users::Registration::UpdateService).to receive(:user).and_return(user)
+      unless test.metadata[:real_token]
+        allow(controller).to receive(:check_authorize).and_return(nil)
+        allow_any_instance_of(Users::Registration::UpdateService).to receive(:user).and_return(user)
+      end
     end
 
     context 'with all fields provided' do
@@ -138,6 +155,31 @@ RSpec.describe Users::RegistrationsController, type: :controller do
         let(field) { nil }
 
         it_behaves_like 'update with missing fields'
+      end
+    end
+
+    context 'with missing token', :real_token do
+      it 'gets 401 code' do
+        send_request
+        expect(response).to have_http_status(401)
+      end
+    end
+
+    context 'with wrong token', :real_token do
+      it 'gets 422 code' do
+        @request.headers['token'] = 'wrong_token'
+        send_request
+        expect(response).to have_http_status(422)
+      end
+    end
+
+    context 'with correct token', :real_token do
+      let(:token) { JsonWebToken.encode(user_id: user.id) }
+
+      it 'gets 204 code' do
+        @request.headers['token'] = token
+        send_request
+        expect(response).to have_http_status(204)
       end
     end
   end
