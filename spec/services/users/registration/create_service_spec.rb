@@ -11,7 +11,6 @@ RSpec.describe Users::Registration::CreateService do
 
       it { is_expected.to be_instance_of OpenStruct }
       it 'creates user' do
-        pp user_params
         expect { subject }.to change(User, :count).by(1)
       end
       it_behaves_like 'provided fields'
@@ -22,7 +21,6 @@ RSpec.describe Users::Registration::CreateService do
 
       it { is_expected.to be_instance_of OpenStruct }
       it 'creates user' do
-        pp user_params
         expect { subject }.to change(User, :count).by(1)
       end
       it_behaves_like 'provided fields'
