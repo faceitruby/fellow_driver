@@ -9,6 +9,7 @@ FactoryBot.define do
     address { Faker::Address.full_address }
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
+    member_type { 'owner' }
 
     trait :create do
       avatar { nil }

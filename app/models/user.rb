@@ -13,6 +13,7 @@ class User < ApplicationRecord
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
   validates :password, presence: true, on: :create, if: -> { provider.blank? }
+  validates :member_type, presence: true, on: :create
   validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
   # Uniqueness can`t be checked on create, because user inputs only one of email|phone, and other is nil.
   # Validation always be failed with nil is not unique
@@ -22,6 +23,8 @@ class User < ApplicationRecord
   devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :jwt_authenticatable,
          jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+
+  enum member_type: %w[mother father son daughter owner]
 
   # rubocop:disable Lint/AssignmentInCondition
   def self.find_for_database_authentication(warden_conditions)
@@ -59,6 +62,6 @@ class User < ApplicationRecord
 
   def presenter_class
     UserPresenter
-    InvitePresenter
+    # InvitePresenter
   end
 end

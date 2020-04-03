@@ -2,19 +2,25 @@
 
 module Users
   class InvitationService < ApplicationService
+    # @attr_reader params [Hash]
+    # - first_name: [String]
+    # - last_name: [String]
+    # - phone: [string]
+    # - member_type: [integer]
+    # - current_user: [User] Current user
+
     def call
       invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
       if invite.errors.empty?
-        invite.create_family(family_params.merge(owner: current_user.id))
-        invite.update_attribute(:family_id, invite.family.id)
-        invite.update_attribute(:invited_by_id, current_user.id)
-        message = "#{invite['first_name']} #{invite['last_name']} added you as family\
+        invite.update_columns(family_id: current_user.family.id,
+                              invited_by_id: current_user.id)
+        message = "#{current_user['first_name']} #{current_user['last_name']} added you as family\
         member on FellowDriver. Click the link below to accept the invitation:\
         http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}"
         Twilio::TwilioTextMessenger.perform(message)
         return OpenStruct.new(success?: true,
                               data: { invite_token: invite.raw_invitation_token,
-                                      user: invite.present.invite_page_context },
+                                      user: invite.present.page_context },
                               errors: nil)
       else
         return OpenStruct.new(success?: false, data: nil, errors: invite.errors)
@@ -24,15 +30,7 @@ module Users
     private
 
     def invite_params
-      params.permit(:first_name, :last_name, :email, :phone, :skip_invitation)
-    end
-
-    def family_params
-      params.permit(:member_type)
-    end
-
-    def current_user
-      params[:current_user].presence
+      params.except(:current_user)
     end
   end
 end

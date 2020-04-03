@@ -13,5 +13,9 @@ module Users
     def jwt_decode(token)
       JsonWebToken.decode(token)
     end
+
+    def current_user
+      params[:current_user]
+    end
   end
 end

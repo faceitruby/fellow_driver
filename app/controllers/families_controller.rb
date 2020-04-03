@@ -4,7 +4,7 @@ class FamiliesController < ApplicationController
   skip_before_action :check_authorize
 
   def index
-    family = Family.where("owner = ?", current_user.id)
-    render_response(family.map { |member| member.present.family_page_context })
+    family = current_user.family
+    render_response(family.users.each { |member| member.present.page_context })
   end
 end

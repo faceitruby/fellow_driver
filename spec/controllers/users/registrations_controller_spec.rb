@@ -58,9 +58,11 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     context 'with user email' do
       let(:phone) { nil }
 
-      it 'creates user' do
-        expect { send_request }.to change(User, :count).by(1)
+      it 'creates user and family' do
+        expect { send_request }.to change(User, :count).by(1) &&
+                                   change(Family, :count).by(1)
       end
+
       it 'gets 201 code' do
         send_request
         expect(response).to have_http_status(:created)
@@ -70,9 +72,11 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     context 'with user phone' do
       let(:email) { nil }
 
-      it 'creates user' do
-        expect { send_request }.to change(User, :count).by(1)
+      it 'creates user and family' do
+        expect { send_request }.to change(User, :count).by(1) &&
+                                   change(Family, :count).by(1)
       end
+
       it 'gets 201 code' do
         send_request
         expect(response).to have_http_status(:created)
@@ -82,8 +86,9 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     context 'with missing password' do
       let(:password) { nil }
 
-      it 'doesn\'t create user' do
-        expect { send_request }.to_not change(User, :count)
+      it 'doesn\'t create user and family' do
+        expect { send_request }.to_not change(User, :count) &&
+                                       change(Family, :count)
       end
       it 'gets 422 code' do
         send_request
@@ -95,8 +100,9 @@ RSpec.describe Users::RegistrationsController, type: :controller do
       let(:email) { nil }
       let(:phone) { nil }
 
-      it 'doesn\'t create user' do
-        expect { send_request }.to_not change(User, :count)
+      it 'doesn\'t create user and family' do
+        expect { send_request }.to_not change(User, :count) &&
+                                       change(Family, :count)
       end
       it 'gets 422 code' do
         send_request
