@@ -115,6 +115,10 @@ RSpec.describe User, type: :model do
       it { is_expected.to have_many(association) }
     end
 
-    it { is_expected.to have_one(:family) }
+    it { is_expected.to belong_to(:family) }
+  end
+
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:member_type)}
   end
 end

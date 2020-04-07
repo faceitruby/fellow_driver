@@ -49,7 +49,6 @@ ActiveRecord::Schema.define(version: 2020_03_28_121307) do
   end
 
   create_table "families", force: :cascade do |t|
-    t.integer "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

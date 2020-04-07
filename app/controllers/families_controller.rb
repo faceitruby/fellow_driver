@@ -5,6 +5,6 @@ class FamiliesController < ApplicationController
 
   def index
     family = current_user.family
-    render_response(family.users.each { |member| member.present.page_context })
+    render_response(family.present.family_page_context)
   end
 end

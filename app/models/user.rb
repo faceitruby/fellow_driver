@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  has_one :family
+
+  MEMBER_TYPES = %i[mother father son daughter owner].freeze
+
+  belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
 
@@ -24,7 +27,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :jwt_authenticatable,
          jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
-  enum member_type: %w[mother father son daughter owner]
+  enum member_type: MEMBER_TYPES
 
   # rubocop:disable Lint/AssignmentInCondition
   def self.find_for_database_authentication(warden_conditions)
@@ -62,6 +65,5 @@ class User < ApplicationRecord
 
   def presenter_class
     UserPresenter
-    # InvitePresenter
   end
 end

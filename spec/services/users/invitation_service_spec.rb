@@ -3,8 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Users::InvitationService do
-  let(:current_user) { create(:user) }
-  let(:family) { create(:family) }
+  let!(:current_user) { create(:user) }
   let(:invite_params) do
     {
       first_name: Faker::Name.first_name,
@@ -13,23 +12,19 @@ RSpec.describe Users::InvitationService do
       email: Faker::Internet.email,
       member_type: User.member_types.keys.sample,
       avatar: Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']),
-      address: Faker::Address.full_address,
-      family_id: current_user.family.id
+      address: Faker::Address.full_address
     }
   end
 
   before do
     allow(Twilio::TwilioTextMessenger).to receive(:perform)
-    current_user
-    family
   end
+  subject { Users::InvitationService.perform(
+      invite_params.merge(current_user: current_user)) }
 
   context 'when current user invites new user' do
     context 'with correct params' do
       let(:phone) { Faker::Base.numerify('###-###-####') }
-
-      subject { Users::InvitationService.perform(
-          invite_params.merge(current_user: current_user)) }
 
       it 'returns OpenStruct object' do
         expect(subject.class).to eq(OpenStruct)
@@ -53,9 +48,6 @@ RSpec.describe Users::InvitationService do
 
     context 'with incorrect params' do
       let(:phone) { nil }
-
-      subject { Users::InvitationService.perform(
-          invite_params.merge(current_user: current_user)) }
 
       it 'returns OpenStruct object' do
         expect(subject.class).to eq(OpenStruct)

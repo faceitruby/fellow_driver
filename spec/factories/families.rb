@@ -2,6 +2,5 @@
 
 FactoryBot.define do
   factory :family do
-    user_id { User.last.id }
   end
 end

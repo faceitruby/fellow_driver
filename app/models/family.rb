@@ -3,5 +3,7 @@
 class Family < ApplicationRecord
   has_many :users
 
-  validates :user_id, presence: true
+  def presenter_class
+    FamilyPresenter
+  end
 end

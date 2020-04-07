@@ -9,7 +9,12 @@ FactoryBot.define do
     address { Faker::Address.full_address }
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
-    member_type { 'owner' }
+    member_type { :owner }
+    family
+
+    factory :user_with_invite do
+      invitation_token { 'a90c8e9dc410c770afb6dada52fd9abfd646f70b675589bc5fb7a6e5a3dfe4a0' }
+    end
 
     trait :create do
       avatar { nil }

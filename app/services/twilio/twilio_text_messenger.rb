@@ -2,20 +2,30 @@
 
 module Twilio
   class TwilioTextMessenger < ApplicationService
+    # @attr_reader params [Hash]
+    # - body: [String] Message text
+    # - phone: [String] Phone number
 
     def call
-      client = twilio_client
-      client.messages.create({
+      twilio_client.messages.create({
         from: ENV['twilio_phone_number'],
-        to: '+111111111111',
-        body: params
+        to: phone,
+        body: message
       })
     end
 
     private
 
     def twilio_client
-      Twilio::REST::Client.new
+      @twilio_client ||= Twilio::REST::Client.new
+    end
+
+    def message
+      params[:body]
+    end
+
+    def phone
+      params[:phone]
     end
   end
 end

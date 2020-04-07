@@ -12,11 +12,10 @@ module Users
 
       def call
         user = User.new(create_params)
+        user.build_family
 
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
 
-        user.create_family
-        user.update_attribute('family_id', user.family.id)
         OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
       rescue ActiveRecord::RecordNotUnique => e
         OpenStruct.new(success?: false, user: nil, errors: error(e.message))
