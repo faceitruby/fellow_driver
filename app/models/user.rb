@@ -21,8 +21,7 @@ class User < ApplicationRecord
   attr_writer :login
   has_one_attached :avatar
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
-  validates_format_of :phone,
-                      with: /\A(\+[0-9]{1,2})?\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
+  validates_format_of :phone, with: /\A(\+[0-9]{1,2})?\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
   validates :password, confirmation: true
@@ -45,10 +44,13 @@ class User < ApplicationRecord
   end
   # rubocop:enable Lint/AssignmentInCondition
 
+<<<<<<< HEAD
   def name
     first_name.to_s + ' ' + last_name.to_s
   end
 
+=======
+>>>>>>> development
   private
 
   def login

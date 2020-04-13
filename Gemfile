@@ -12,6 +12,7 @@ gem 'devise-jwt', '~> 0.5.9'
 gem 'geocoder', '~> 1.3', '>= 1.3.7'
 gem 'google_places_autocomplete'
 gem 'haml-rails'
+
 gem 'koala', '~> 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
