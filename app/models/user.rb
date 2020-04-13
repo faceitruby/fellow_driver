@@ -24,10 +24,14 @@ class User < ApplicationRecord
   validates_format_of :phone, with: /\A(\+[0-9]{1,2})?\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
-  validates :password, confirmation: true
+  validates :password, presence: true, on: :create, if: -> { provider.blank? }
   validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
+  # Uniqueness can`t be checked on create, because user inputs only one of email|phone, and other is nil.
+  # Validation always be failed with nil is not unique
+  validates_uniqueness_of :email, :phone, on: :update
   validate :avatar_attached?, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
+
   devise :invitable, :database_authenticatable, :registerable,
         :recoverable, :rememberable, :jwt_authenticatable, :invitable,
         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
@@ -44,13 +48,10 @@ class User < ApplicationRecord
   end
   # rubocop:enable Lint/AssignmentInCondition
 
-<<<<<<< HEAD
   def name
     first_name.to_s + ' ' + last_name.to_s
   end
 
-=======
->>>>>>> development
   private
 
   def login

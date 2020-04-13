@@ -15,7 +15,6 @@ module Users
 
       def call
         user.assign_attributes(params.except('token'))
-
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
 
         OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)

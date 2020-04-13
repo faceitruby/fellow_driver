@@ -56,7 +56,7 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
     context 'when token is missing' do
       before { send_request }
 
-      it { is_expected.to have_http_status(400) }
+      it { is_expected.to have_http_status(401) }
       it_behaves_like 'failure action'
     end
 
