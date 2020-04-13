@@ -10,33 +10,40 @@ module Users
     # - current_user: [User] Current user
 
     def call
-      @invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
-      if @invite.errors.empty?
-        @invite.update_columns(family_id: current_user.family.id,
-                              invited_by_id: current_user.id)
-        @message = "#{current_user['first_name']} #{current_user['last_name']} added you as family\
-        member on FellowDriver. Click the link below to accept the invitation:\
-        http://localhost:3000/api/users/invitation/accept?invitation_token=#{@invite.raw_invitation_token}"
-        Twilio::TwilioTextMessenger.perform(twilio_params)
+      invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
+      if invite.errors.empty?
+        update_fields(invite)
+        Twilio::TwilioTextMessenger.perform(twilio_params(invite))
         return OpenStruct.new(success?: true,
-                              data: { invite_token: @invite.raw_invitation_token,
-                                      user: @invite.present.page_context },
+                              data: { invite_token: invite.raw_invitation_token,
+                                      user: invite.present.page_context },
                               errors: nil)
       else
-        return OpenStruct.new(success?: false, data: nil, errors: @invite.errors)
+        return OpenStruct.new(success?: false, data: nil, errors: invite.errors)
       end
     end
 
     private
 
+    def update_fields(invite)
+      invite.update_columns(family_id: current_user.family.id,
+                            invited_by_id: current_user.id)
+    end
+
+    def message(invite)
+      "#{current_user['first_name']} #{current_user['last_name']} added you as family\
+        member on FellowDriver. Click the link below to accept the invitation:\
+        http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}"
+    end
+
     def invite_params
       params.except(:current_user)
     end
 
-    def twilio_params
+    def twilio_params(invite)
       {
-          body: @message,
-          phone: @invite.phone
+          body: message(invite),
+          phone: params[:phone].presence
       }
     end
   end

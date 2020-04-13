@@ -12,6 +12,8 @@ module Twilio
         to: phone,
         body: message
       })
+    rescue Twilio::REST::TwilioError => e
+      OpenStruct.new(success?: false, errors: e.message)
     end
 
     private
@@ -21,11 +23,11 @@ module Twilio
     end
 
     def message
-      params[:body]
+      params[:body].presence
     end
 
     def phone
-      params[:phone]
+      params[:phone].presence
     end
   end
 end

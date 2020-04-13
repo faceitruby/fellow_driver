@@ -3,15 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe Family, type: :model do
-  let(:user) { create(:user) }
-
-  context 'assotiation' do
-    it { is_expected.to have_many(:users) }
+  describe 'columns' do
+    %i[id created_at updated_at].each do |field|
+      it { is_expected.to have_db_column(field) }
+    end
   end
 
-  context 'creating' do
-    it 'should increase Family count in DB by 1' do
-      expect{ user }.to change{ Family.count }.by(1)
-    end
+  describe 'assotiation' do
+    it { is_expected.to have_many(:users) }
   end
 end

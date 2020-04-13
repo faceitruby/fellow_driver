@@ -7,7 +7,7 @@ RSpec.describe FamilyPresenter do
 
   describe 'MODEL_ATTRIBUTES constant' do
     it 'contains all model fields' do
-      expect(FamilyPresenter::MODEL_ATTRIBUTES).to eq Family.attribute_names.map(&:to_sym)
+      expect(described_class::MODEL_ATTRIBUTES).to eq Family.attribute_names.map(&:to_sym)
     end
   end
 
@@ -22,7 +22,7 @@ RSpec.describe FamilyPresenter do
   describe 'delegates' do
     subject { described_class.new(user) }
 
-    FamilyPresenter::MODEL_ATTRIBUTES.each do |method|
+    described_class::MODEL_ATTRIBUTES.each do |method|
       it { is_expected.to delegate_method(method).to :record }
     end
   end

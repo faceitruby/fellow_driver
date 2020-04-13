@@ -12,8 +12,7 @@ class FamilyPresenter < ApplicationPresenter
   private
 
   def family_members
-    family = Family.find(record.id)
-    family.users.sort
+    record.users.sort
   end
 
   def properties

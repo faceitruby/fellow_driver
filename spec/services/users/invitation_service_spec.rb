@@ -19,10 +19,11 @@ RSpec.describe Users::InvitationService do
   before do
     allow(Twilio::TwilioTextMessenger).to receive(:perform)
   end
-  subject { Users::InvitationService.perform(
+
+  subject { described_class.perform(
       invite_params.merge(current_user: current_user)) }
 
-  context 'when current user invites new user' do
+  describe 'when current user invites new user' do
     context 'with correct params' do
       let(:phone) { Faker::Base.numerify('###-###-####') }
 
