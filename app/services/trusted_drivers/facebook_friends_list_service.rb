@@ -28,7 +28,7 @@ module TrustedDrivers
     def friends_uid
       graph = Koala::Facebook::API.new(access_token)
       friends = graph.get_object('me', fields: 'friends')['friends']['data']
-      friends_list = friends.map { |friend| User.find_by(uid: friend['id']) }
+      friends.map { |friend| User.find_by(uid: friend['id']) }
     end
 
     def access_token

@@ -8,7 +8,6 @@ module TrustedDrivers
 
     def call
       if trusted_driver.save
-        # current_user.trusted_drivers << trusted_driver
         TrustedDrivers::Requests::DeleteService.perform(trusted_driver_request)
         OpenStruct.new(success?: true, data: { message: 'created' }, errors: nil)
       else

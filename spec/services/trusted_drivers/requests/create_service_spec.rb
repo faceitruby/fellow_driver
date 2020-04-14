@@ -6,12 +6,12 @@ require 'rails_helper'
 RSpec.shared_examples 'trusted_driver_request create' do
   before do
     allow(TrustedDrivers::Messages::PrepareMessageService).to receive(:perform)
-    .with(messages_params)
-    .and_return(OpenStruct.new(success?: true, data: {}))
+      .with(messages_params)
+      .and_return(OpenStruct.new(success?: true, data: {}))
 
     allow(TrustedDrivers::UserSearchService).to receive(:perform)
-    .with(user_search_params)
-    .and_return(user_search_response)
+      .with(user_search_params)
+      .and_return(user_search_response)
   end
 
   it { expect(subject.class).to eq(OpenStruct) }
@@ -38,7 +38,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
 
     context 'when user exist' do
       context 'by phone' do
-        subject { TrustedDrivers::Requests::CreateService.perform(phone: receiver.phone, current_user: requestor)}
+        subject { TrustedDrivers::Requests::CreateService.perform(phone: receiver.phone, current_user: requestor) }
         let(:user_search_params) do
           {
             phone: receiver.phone
@@ -63,7 +63,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
           OpenStruct.new(success?: true, data: { user: receiver }, errors: nil)
         end
 
-        subject { TrustedDrivers::Requests::CreateService.perform(email: receiver.email, current_user: requestor)}
+        subject { TrustedDrivers::Requests::CreateService.perform(email: receiver.email, current_user: requestor) }
 
         it_behaves_like 'trusted_driver_request create'
       end
@@ -75,7 +75,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
           OpenStruct.new(success?: true, data: { user: receiver }, errors: nil)
         end
 
-        subject { TrustedDrivers::Requests::CreateService.perform(uid: receiver.uid, current_user: requestor)}
+        subject { TrustedDrivers::Requests::CreateService.perform(uid: receiver.uid, current_user: requestor) }
 
         it_behaves_like 'trusted_driver_request create'
       end
@@ -83,9 +83,9 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
 
     context 'when user not exist' do
       before do
-        allow(TrustedDrivers::Requests::InvitationService).to receive(:perform).
-        with(invite_params).
-        and_return(invite_response)
+        allow(TrustedDrivers::Requests::InvitationService).to receive(:perform)
+          .with(invite_params)
+          .and_return(invite_response)
       end
 
       context 'by phone' do
@@ -105,21 +105,28 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
 
         let(:invite_response) do
           receiver.phone = invite_params[:phone]
-          OpenStruct.new(success?: true, data: {
-          invite_token: 'invite.raw_invitation_token',
-          user: receiver
-          }, errors: nil)
+          OpenStruct.new(
+            success?: true,
+            data: {
+              invite_token: 'invite.raw_invitation_token',
+              user: receiver
+            },
+            errors: nil
+          )
         end
 
         it_behaves_like 'trusted_driver_request create'
       end
 
       context 'by email' do
-        subject { TrustedDrivers::Requests::CreateService.perform(email: user_search_params[:email], current_user: requestor)}
+        subject do
+          TrustedDrivers::Requests::CreateService.perform(
+            email: user_search_params[:email],
+            current_user: requestor
+          )
+        end
 
         let(:user_search_params) { { email: Faker::Internet.email } }
-
-
         let(:user_search_response) do
           OpenStruct.new(success?: false, data: nil, errors: nil)
         end
@@ -133,10 +140,15 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
 
         let(:invite_response) do
           receiver.email = invite_params[:email]
-          OpenStruct.new(success?: true, data: {
-          invite_token: 'invite.raw_invitation_token',
-          user: receiver
-          }, errors: nil)
+
+          OpenStruct.new(
+            success?: true,
+            data: {
+              invite_token: 'raw_invitation_token',
+              user: receiver
+            },
+            errors: nil
+          )
         end
 
         it_behaves_like 'trusted_driver_request create'
@@ -156,7 +168,6 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       end
 
       let(:user_search_response) { OpenStruct.new(success?: false, data: nil, errors: nil) }
-
 
       context 'email' do
         subject do
@@ -197,11 +208,13 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       context 'when user not exist' do
         before do
           allow(TrustedDrivers::Requests::InvitationService).to receive(:perform)
-          .with(invite_params)
-          .and_return(invite_response)
+            .with(invite_params)
+            .and_return(invite_response)
         end
 
-        subject { TrustedDrivers::Requests::CreateService.perform(uid: user_search_params[:uid], current_user: requestor)}
+        subject do
+          TrustedDrivers::Requests::CreateService.perform(uid: user_search_params[:uid], current_user: requestor)
+        end
 
         let(:user_search_params) { { uid: Faker::Number.number(digits: 15) } }
 

@@ -11,7 +11,9 @@ RSpec.describe TrustedDrivers::Messages::SendEmailService do
     allow_any_instance_of(Resque).to receive(:enqueue).with(InviteEmailJob, requestor, receiver, 'url')
   end
 
-  subject { TrustedDrivers::Messages::SendEmailService.perform( { current_user: requestor, user_receiver: receiver })}
+  subject do
+    TrustedDrivers::Messages::SendEmailService.perform({ current_user: requestor, user_receiver: receiver })
+  end
 
   it { expect(subject).to eq(nil) }
 end

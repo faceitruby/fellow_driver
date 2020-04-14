@@ -4,16 +4,18 @@ require 'rails_helper'
 
 # OpenStruct returned from services
 RSpec.shared_examples 'trusted_driver_messages create' do
-
   it { expect(subject.class).to eq(String) }
   it { expect(subject).to eq(result) }
 end
 
 RSpec.describe TrustedDrivers::Messages::CreateService do
-  let(:current_user) { create(:user)}
-  let(:user_receiver) { create(:user)}
+  let(:current_user) { create(:user) }
+  let(:user_receiver) { create(:user) }
   subject do
-     TrustedDrivers::Messages::CreateService.perform(current_user: current_user,user_receiver: user_receiver)
+    TrustedDrivers::Messages::CreateService.perform(
+      current_user: current_user,
+      user_receiver: user_receiver
+    )
   end
 
   context 'when user' do

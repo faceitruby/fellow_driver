@@ -4,7 +4,6 @@ require 'rails_helper'
 
 # OpenStruct returned from services
 RSpec.shared_examples 'prepare_message' do
-
   it { expect(subject.class).to eq(OpenStruct) }
   it { expect(subject.errors).to eq(nil) }
   it { expect(subject.success?).to be true }
@@ -15,13 +14,12 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
   let(:requestor) { create(:user) }
   let(:receiver) { create(:user, :facebook) }
 
-    before do
-      allow(TrustedDrivers::Messages::SendEmailService).to receive(:perform)
-      .and_return(nil)
+  before do
+    allow(TrustedDrivers::Messages::SendEmailService).to receive(:perform).and_return(nil)
 
-      allow_any_instance_of(TrustedDrivers::Messages::PrepareMessageService).to receive(:send_phone_message)
+    allow_any_instance_of(TrustedDrivers::Messages::PrepareMessageService).to receive(:send_phone_message)
       .and_return({ phone_message: 'phone request sended' })
-    end
+  end
 
   context 'when receiver have' do
     context 'phone' do
@@ -33,7 +31,9 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       let(:result) { { phone_message: 'phone request sended' } }
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver_phone) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor, user_receiver: receiver_phone)
+      end
 
       it_behaves_like 'prepare_message'
     end
@@ -47,7 +47,12 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       let(:result) { { email_message: 'email request sended' } }
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver_email) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(
+          current_user: requestor,
+          user_receiver: receiver_email
+        )
+      end
 
       it_behaves_like 'prepare_message'
     end
@@ -65,13 +70,18 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       before do
         allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-        .with(current_user: requestor, user_receiver: receiver_uid)
-        .and_return(result_message)
+          .with(current_user: requestor, user_receiver: receiver_uid)
+          .and_return(result_message)
       end
 
       let(:result) { { facebook_message: { message: result_message, uid: receiver_uid.uid } } }
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver_uid) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(
+          current_user: requestor,
+          user_receiver: receiver_uid
+        )
+      end
 
       it_behaves_like 'prepare_message'
     end
@@ -89,7 +99,12 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
         }
       end
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver_phone_email) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(
+          current_user: requestor,
+          user_receiver: receiver_phone_email
+        )
+      end
 
       it_behaves_like 'prepare_message'
     end
@@ -106,8 +121,8 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       before do
         allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-        .with(current_user: requestor, user_receiver: receiver_phone_uid)
-        .and_return(result_message)
+          .with(current_user: requestor, user_receiver: receiver_phone_uid)
+          .and_return(result_message)
       end
 
       let(:result) do
@@ -117,7 +132,12 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
         }
       end
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver_phone_uid) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(
+          current_user: requestor,
+          user_receiver: receiver_phone_uid
+        )
+      end
 
       it_behaves_like 'prepare_message'
     end
@@ -134,8 +154,8 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       before do
         allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-        .with(current_user: requestor, user_receiver: receiver_email_uid)
-        .and_return(result_message)
+          .with(current_user: requestor, user_receiver: receiver_email_uid)
+          .and_return(result_message)
       end
 
       let(:result) do
@@ -145,11 +165,15 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
         }
       end
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver_email_uid) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(
+          current_user: requestor,
+          user_receiver: receiver_email_uid
+        )
+      end
 
       it_behaves_like 'prepare_message'
     end
-
 
     context 'phone, email and uid' do
       let(:result_message) do
@@ -158,8 +182,8 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       before do
         allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-        .with(current_user: requestor, user_receiver: receiver)
-        .and_return(result_message)
+          .with(current_user: requestor, user_receiver: receiver)
+          .and_return(result_message)
       end
 
       let(:result) do
@@ -170,7 +194,9 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
         }
       end
 
-      subject { TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor,user_receiver: receiver) }
+      subject do
+        TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor, user_receiver: receiver)
+      end
 
       it_behaves_like 'prepare_message'
     end
