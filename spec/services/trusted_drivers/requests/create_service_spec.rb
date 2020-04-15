@@ -41,11 +41,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
     context 'when user exist' do
       context 'by phone' do
         let(:params) { { phone: receiver.phone, current_user: requestor } }
-        let(:user_search_params) do
-          {
-            phone: receiver.phone
-          }
-        end
+        let(:user_search_params) { { phone: receiver.phone } }
 
         let(:user_search_response) do
           OpenStruct.new(success?: true, data: { user: receiver }, errors: nil)
@@ -55,11 +51,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       end
 
       context 'by email' do
-        let(:user_search_params) do
-          {
-            email: receiver.email
-          }
-        end
+        let(:user_search_params) { { email: receiver.email } }
 
         let(:user_search_response) do
           OpenStruct.new(success?: true, data: { user: receiver }, errors: nil)
