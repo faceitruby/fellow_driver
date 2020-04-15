@@ -9,6 +9,8 @@ gem 'devise'
 
 gem 'devise-jwt', '~> 0.5.9'
 
+gem 'geocoder'
+
 gem 'google_places_autocomplete'
 
 gem 'koala', '~> 3.0'

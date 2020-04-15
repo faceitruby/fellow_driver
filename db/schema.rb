@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_25_090609) do
+ActiveRecord::Schema.define(version: 2020_04_15_130956) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,13 @@ ActiveRecord::Schema.define(version: 2020_02_25_090609) do
     t.index ["user_id"], name: "index_cars_on_user_id"
   end
 
+  create_table "passengers", force: :cascade do |t|
+    t.bigint "passenger_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["passenger_id"], name: "index_passengers_on_passenger_id"
+  end
+
   create_table "payments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "payment_type"
@@ -55,6 +62,29 @@ ActiveRecord::Schema.define(version: 2020_02_25_090609) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "ride_messages", force: :cascade do |t|
+    t.string "message"
+    t.integer "kind", limit: 2
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "rides", force: :cascade do |t|
+    t.bigint "driver_id", null: false
+    t.bigint "requestor_id", null: false
+    t.integer "passengers", array: true
+    t.integer "status", limit: 2
+    t.point "start_address"
+    t.point "end_address"
+    t.datetime "date"
+    t.integer "payment"
+    t.text "message"
+    t.string "city"
+    t.string "state"
+    t.index ["driver_id"], name: "index_rides_on_driver_id"
+    t.index ["requestor_id"], name: "index_rides_on_requestor_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -81,4 +111,6 @@ ActiveRecord::Schema.define(version: 2020_02_25_090609) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cars", "users"
   add_foreign_key "payments", "users"
+  add_foreign_key "rides", "users", column: "driver_id"
+  add_foreign_key "rides", "users", column: "requestor_id"
 end
