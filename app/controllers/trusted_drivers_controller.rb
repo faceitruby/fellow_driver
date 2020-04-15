@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TrustedDriversController < ApplicationController
-  def trusted_drivers
+  def index
     render_response(current_user.trusted_drivers.map do |trusted|
       User.find(trusted.trusted_driver_id).present.page_context
     end)
@@ -14,7 +14,9 @@ class TrustedDriversController < ApplicationController
   end
 
   def create
-    result = TrustedDrivers::CreateService.perform(trusted_driver_request: trusted_driver_request, current_user: current_user)
+    result = TrustedDrivers::CreateService.perform(
+      trusted_driver_request: trusted_driver_request, current_user: current_user
+    )
     render_success_response(result.data, :created)
   end
 

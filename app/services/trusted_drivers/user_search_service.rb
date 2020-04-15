@@ -30,15 +30,21 @@ module TrustedDrivers
     end
 
     def find_by_email
-      @user = User.find_by(email: email) if email
+      return unless email
+
+      @user = User.find_by(email: email)
     end
 
     def find_by_uid
-      @user = User.find_by(uid: uid) if uid
+      return unless uid
+
+      @user = User.find_by(uid: uid)
     end
 
     def find_by_phone
-      @user = User.find_by(phone: phone) if phone
+      return unless phone
+
+      @user = User.find_by(phone: phone)
     end
   end
 end

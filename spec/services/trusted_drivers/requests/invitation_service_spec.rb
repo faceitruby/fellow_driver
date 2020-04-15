@@ -11,21 +11,23 @@ RSpec.shared_examples 'trusted_driver_request invite' do
 end
 
 RSpec.describe TrustedDrivers::Requests::InvitationService do
-  context 'when success invited' do
-    context 'by email' do
-      let(:email) { Faker::Internet.email }
+  subject { TrustedDrivers::Requests::InvitationService.perform(params) }
 
-      subject { TrustedDrivers::Requests::InvitationService.perform(email: email) }
+  describe '#call' do
+    context 'when success invited' do
+      context 'by email' do
+        let(:email) { Faker::Internet.email }
+        let(:params) { { email: email } }
 
-      it_behaves_like 'trusted_driver_request invite'
-    end
+        it_behaves_like 'trusted_driver_request invite'
+      end
 
-    context 'by phone' do
-      let(:phone) { Faker::Base.numerify('+#####-###-####') }
+      context 'by phone' do
+        let(:phone) { Faker::Base.numerify('+#####-###-####') }
+        let(:params) { { phone: phone } }
 
-      subject { TrustedDrivers::Requests::InvitationService.perform(phone: phone) }
-
-      it_behaves_like 'trusted_driver_request invite'
+        it_behaves_like 'trusted_driver_request invite'
+      end
     end
   end
 end

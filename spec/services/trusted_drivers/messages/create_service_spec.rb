@@ -11,37 +11,42 @@ end
 RSpec.describe TrustedDrivers::Messages::CreateService do
   let(:current_user) { create(:user) }
   let(:user_receiver) { create(:user) }
-  subject do
-    TrustedDrivers::Messages::CreateService.perform(
-      current_user: current_user,
-      user_receiver: user_receiver
-    )
+
+  let(:result) do
+    <<~MSG
+      #{current_user.name} is inviting you to connect on KydRides.
+      Please click the link to accept the invitation:
+      #{url}
+    MSG
   end
 
-  context 'when user' do
-    context 'exist before' do
-      let(:result) do
-        "#{current_user.name} is inviting you to connect on KydRides.\
-        Please click the link to accept the invitation:\
-        #{ENV['HOST_ADDRESS']}/api/trusted_driver_requests"
+  let(:params) do
+    {
+      current_user: current_user,
+      user_receiver: user_receiver
+    }
+  end
+
+  subject { TrustedDrivers::Messages::CreateService.perform(params) }
+
+  describe '#call' do
+    context 'when user' do
+      context 'exist before' do
+        let(:url) { "#{ENV['HOST_ADDRESS']}/api/trusted_driver_requests" }
+
+        it_behaves_like 'trusted_driver_messages create'
       end
 
-      it_behaves_like 'trusted_driver_messages create'
-    end
+      context 'now created' do
+        let(:token) { 'token' }
+        let(:url) { "#{ENV['HOST_ADDRESS']}/api/users/invitation/accept?invitation_token=#{token}" }
 
-    context 'now created' do
-      before do
-        allow_any_instance_of(TrustedDrivers::Messages::CreateService).to receive(:token).and_return(token)
+        before do
+          allow_any_instance_of(TrustedDrivers::Messages::CreateService).to receive(:token).and_return(token)
+        end
+
+        it_behaves_like 'trusted_driver_messages create'
       end
-
-      let(:token) { 'token' }
-      let(:result) do
-        "#{current_user.name} is inviting you to connect on KydRides.\
-        Please click the link to accept the invitation:\
-        #{ENV['HOST_ADDRESS']}/api/users/invitation/accept?invitation_token=#{token}"
-      end
-
-      it_behaves_like 'trusted_driver_messages create'
     end
   end
 end

@@ -13,6 +13,14 @@ end
 RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
   let(:requestor) { create(:user) }
   let(:receiver) { create(:user, :facebook) }
+  let(:params) do
+    {
+      current_user: requestor,
+      user_receiver: user_receiver
+    }
+  end
+
+  subject { TrustedDrivers::Messages::PrepareMessageService.perform(params) }
 
   before do
     allow(TrustedDrivers::Messages::SendEmailService).to receive(:perform).and_return(nil)
@@ -21,184 +29,144 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       .and_return({ phone_message: 'phone request sended' })
   end
 
-  context 'when receiver have' do
-    context 'phone' do
-      let(:receiver_phone) do
-        receiver[:email] = nil
-        receiver[:uid] = nil
-        receiver
+  describe '#call' do
+    context 'when receiver have' do
+      context 'phone' do
+        let(:user_receiver) do
+          receiver[:email] = nil
+          receiver[:uid] = nil
+          receiver
+        end
+
+        let(:result) { { phone_message: 'phone request sended' } }
+
+        it_behaves_like 'prepare_message'
       end
 
-      let(:result) { { phone_message: 'phone request sended' } }
+      context 'email' do
+        let(:user_receiver) do
+          receiver[:phone] = nil
+          receiver[:uid] = nil
+          receiver
+        end
 
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor, user_receiver: receiver_phone)
+        let(:result) { { email_message: 'email request sended' } }
+
+        it_behaves_like 'prepare_message'
       end
 
-      it_behaves_like 'prepare_message'
-    end
+      context 'uid' do
+        let(:user_receiver) do
+          receiver[:phone] = nil
+          receiver[:email] = nil
+          receiver
+        end
 
-    context 'email' do
-      let(:receiver_email) do
-        receiver[:phone] = nil
-        receiver[:uid] = nil
-        receiver
+        let(:result_message) do
+          'Invite message'
+        end
+
+        before do
+          allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
+            .with(current_user: requestor, user_receiver: user_receiver)
+            .and_return(result_message)
+        end
+
+        let(:result) { { facebook_message: { message: result_message, uid: user_receiver.uid } } }
+
+        it_behaves_like 'prepare_message'
       end
 
-      let(:result) { { email_message: 'email request sended' } }
+      context 'phone and email' do
+        let(:user_receiver) do
+          receiver[:uid] = nil
+          receiver
+        end
 
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(
-          current_user: requestor,
-          user_receiver: receiver_email
-        )
+        let(:result) do
+          {
+            phone_message: 'phone request sended',
+            email_message: 'email request sended'
+          }
+        end
+
+        it_behaves_like 'prepare_message'
       end
 
-      it_behaves_like 'prepare_message'
-    end
+      context 'phone and uid' do
+        let(:user_receiver) do
+          receiver[:email] = nil
+          receiver
+        end
 
-    context 'uid' do
-      let(:receiver_uid) do
-        receiver[:phone] = nil
-        receiver[:email] = nil
-        receiver
+        let(:result_message) do
+          'Invite message'
+        end
+
+        before do
+          allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
+            .with(current_user: requestor, user_receiver: user_receiver)
+            .and_return(result_message)
+        end
+
+        let(:result) do
+          {
+            phone_message: 'phone request sended',
+            facebook_message: { message: result_message, uid: user_receiver.uid }
+          }
+        end
+
+        it_behaves_like 'prepare_message'
       end
 
-      let(:result_message) do
-        'Invite message'
+      context 'email and uid' do
+        let(:user_receiver) do
+          receiver[:phone] = nil
+          receiver
+        end
+
+        let(:result_message) do
+          'Invite message'
+        end
+
+        before do
+          allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
+            .with(current_user: requestor, user_receiver: user_receiver)
+            .and_return(result_message)
+        end
+
+        let(:result) do
+          {
+            email_message: 'email request sended',
+            facebook_message: { message: result_message, uid: user_receiver.uid }
+          }
+        end
+
+        it_behaves_like 'prepare_message'
       end
 
-      before do
-        allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-          .with(current_user: requestor, user_receiver: receiver_uid)
-          .and_return(result_message)
+      context 'phone, email and uid' do
+        let(:user_receiver) { receiver }
+        let(:result_message) do
+          'Invite message'
+        end
+
+        before do
+          allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
+            .with(current_user: requestor, user_receiver: user_receiver)
+            .and_return(result_message)
+        end
+
+        let(:result) do
+          {
+            phone_message: 'phone request sended',
+            email_message: 'email request sended',
+            facebook_message: { message: result_message, uid: receiver.uid }
+          }
+        end
+
+        it_behaves_like 'prepare_message'
       end
-
-      let(:result) { { facebook_message: { message: result_message, uid: receiver_uid.uid } } }
-
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(
-          current_user: requestor,
-          user_receiver: receiver_uid
-        )
-      end
-
-      it_behaves_like 'prepare_message'
-    end
-
-    context 'phone and email' do
-      let(:receiver_phone_email) do
-        receiver[:uid] = nil
-        receiver
-      end
-
-      let(:result) do
-        {
-          phone_message: 'phone request sended',
-          email_message: 'email request sended'
-        }
-      end
-
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(
-          current_user: requestor,
-          user_receiver: receiver_phone_email
-        )
-      end
-
-      it_behaves_like 'prepare_message'
-    end
-
-    context 'phone and uid' do
-      let(:receiver_phone_uid) do
-        receiver[:email] = nil
-        receiver
-      end
-
-      let(:result_message) do
-        'Invite message'
-      end
-
-      before do
-        allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-          .with(current_user: requestor, user_receiver: receiver_phone_uid)
-          .and_return(result_message)
-      end
-
-      let(:result) do
-        {
-          phone_message: 'phone request sended',
-          facebook_message: { message: result_message, uid: receiver_phone_uid.uid }
-        }
-      end
-
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(
-          current_user: requestor,
-          user_receiver: receiver_phone_uid
-        )
-      end
-
-      it_behaves_like 'prepare_message'
-    end
-
-    context 'email and uid' do
-      let(:receiver_email_uid) do
-        receiver[:phone] = nil
-        receiver
-      end
-
-      let(:result_message) do
-        'Invite message'
-      end
-
-      before do
-        allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-          .with(current_user: requestor, user_receiver: receiver_email_uid)
-          .and_return(result_message)
-      end
-
-      let(:result) do
-        {
-          email_message: 'email request sended',
-          facebook_message: { message: result_message, uid: receiver_email_uid.uid }
-        }
-      end
-
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(
-          current_user: requestor,
-          user_receiver: receiver_email_uid
-        )
-      end
-
-      it_behaves_like 'prepare_message'
-    end
-
-    context 'phone, email and uid' do
-      let(:result_message) do
-        'Invite message'
-      end
-
-      before do
-        allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
-          .with(current_user: requestor, user_receiver: receiver)
-          .and_return(result_message)
-      end
-
-      let(:result) do
-        {
-          phone_message: 'phone request sended',
-          email_message: 'email request sended',
-          facebook_message: { message: result_message, uid: receiver.uid }
-        }
-      end
-
-      subject do
-        TrustedDrivers::Messages::PrepareMessageService.perform(current_user: requestor, user_receiver: receiver)
-      end
-
-      it_behaves_like 'prepare_message'
     end
   end
 end

@@ -1,9 +1,9 @@
 class TrustedDriverRequest < ApplicationRecord
-  belongs_to :requestor, class_name: :User
-  belongs_to :receiver, class_name: :User
+  belongs_to :requestor, class_name: 'User'
+  belongs_to :receiver, class_name: 'User'
 
-  validate :trusted_driver
-  validate :not_trusted_driver_requested
+  validate :trusted_driver, on: create
+  validate :not_trusted_driver_requested, on: create
 
   private
 

@@ -31,6 +31,8 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
     }
   end
 
+  subject { TrustedDrivers::Requests::CreateService.perform(params) }
+
   context 'when valid request' do
     let(:change_count) { 1 }
     let(:success) { true }
@@ -38,7 +40,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
 
     context 'when user exist' do
       context 'by phone' do
-        subject { TrustedDrivers::Requests::CreateService.perform(phone: receiver.phone, current_user: requestor) }
+        let(:params) { { phone: receiver.phone, current_user: requestor } }
         let(:user_search_params) do
           {
             phone: receiver.phone
@@ -63,7 +65,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
           OpenStruct.new(success?: true, data: { user: receiver }, errors: nil)
         end
 
-        subject { TrustedDrivers::Requests::CreateService.perform(email: receiver.email, current_user: requestor) }
+        let(:params) { { email: receiver.email, current_user: requestor } }
 
         it_behaves_like 'trusted_driver_request create'
       end
@@ -75,7 +77,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
           OpenStruct.new(success?: true, data: { user: receiver }, errors: nil)
         end
 
-        subject { TrustedDrivers::Requests::CreateService.perform(uid: receiver.uid, current_user: requestor) }
+        let(:params) { { uid: receiver.uid, current_user: requestor } }
 
         it_behaves_like 'trusted_driver_request create'
       end
@@ -89,9 +91,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       end
 
       context 'by phone' do
-        subject do
-          TrustedDrivers::Requests::CreateService.perform(phone: user_search_params[:phone], current_user: requestor)
-        end
+        let(:params) { { phone: user_search_params[:phone], current_user: requestor } }
 
         let(:user_search_params) { { phone: Faker::Base.numerify('+#####-###-####') } }
         let(:user_search_response) { OpenStruct.new(success?: false, data: nil, errors: nil) }
@@ -119,12 +119,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       end
 
       context 'by email' do
-        subject do
-          TrustedDrivers::Requests::CreateService.perform(
-            email: user_search_params[:email],
-            current_user: requestor
-          )
-        end
+        let(:params) { { email: user_search_params[:email], current_user: requestor } }
 
         let(:user_search_params) { { email: Faker::Internet.email } }
         let(:user_search_response) do
@@ -170,9 +165,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       let(:user_search_response) { OpenStruct.new(success?: false, data: nil, errors: nil) }
 
       context 'email' do
-        subject do
-          TrustedDrivers::Requests::CreateService.perform(email: user_search_params[:email], current_user: requestor)
-        end
+        let(:params) { { email: user_search_params[:email], current_user: requestor } }
 
         let(:user_search_params) { { email: 'wrong' } }
 
@@ -187,9 +180,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       end
 
       context 'phone' do
-        subject do
-          TrustedDrivers::Requests::CreateService.perform(phone: user_search_params[:phone], current_user: requestor)
-        end
+        let(:params) { { phone: user_search_params[:phone], current_user: requestor } }
 
         let(:user_search_params) { { phone: 'wrong' } }
 
@@ -212,9 +203,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
             .and_return(invite_response)
         end
 
-        subject do
-          TrustedDrivers::Requests::CreateService.perform(uid: user_search_params[:uid], current_user: requestor)
-        end
+        let(:params) { { uid: user_search_params[:uid], current_user: requestor } }
 
         let(:user_search_params) { { uid: Faker::Number.number(digits: 15) } }
 

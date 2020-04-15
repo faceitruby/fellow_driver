@@ -12,7 +12,7 @@ class TrustedDriverRequestPresenter < ApplicationPresenter
   private
 
   def requestor_fields
-    User.find(properties[:requestor_id]).present.page_context.slice(:id, :email, :avatar, :first_name, :last_name, :phone)
+    User.find(record.requestor_id).present.page_context.slice(:id, :email, :avatar, :first_name, :last_name, :phone)
   end
 
   def properties

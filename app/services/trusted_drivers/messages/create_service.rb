@@ -15,9 +15,11 @@ module TrustedDrivers
       private
 
       def create_message
-        "#{current_user.name} is inviting you to connect on KydRides.\
-        Please click the link to accept the invitation:\
-        #{link}"
+        <<~MSG
+          #{current_user.name} is inviting you to connect on KydRides.
+          Please click the link to accept the invitation:
+          #{link}
+        MSG
       end
 
       def token

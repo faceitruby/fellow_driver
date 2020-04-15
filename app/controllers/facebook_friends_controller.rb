@@ -2,7 +2,7 @@
 
 class FacebookFriendsController < ApplicationController
   def index
-    result = TrustedDrivers::FacebookFriendsListService.perform(
+    result = TrustedDrivers::Facebook::FetchFriendsService.perform(
       current_user: current_user, access_token: request.headers['facebooktoken'], near: request.headers['near']
     )
     if result.success?

@@ -6,17 +6,17 @@ class User < ApplicationRecord
 
   has_many :trusted_drivers,
             foreign_key: :trust_driver_id,
-            class_name: :TrustedDriver
+            class_name: 'TrustedDriver'
   has_many :trust_drivers,
             foreign_key: :trusted_driver_id,
-            class_name: :TrustedDriver
+            class_name: 'TrustedDriver'
 
   has_many :trusted_driver_requests_as_requestor,
             foreign_key: :requestor_id,
-            class_name: :TrustedDriverRequest
+            class_name: 'TrustedDriverRequest'
   has_many :trusted_driver_requests_as_receiver,
             foreign_key: :receiver_id,
-            class_name: :TrustedDriverRequest
+            class_name: 'TrustedDriverRequest'
 
   attr_writer :login
   has_one_attached :avatar
@@ -49,7 +49,7 @@ class User < ApplicationRecord
   # rubocop:enable Lint/AssignmentInCondition
 
   def name
-    first_name.to_s + ' ' + last_name.to_s
+    first_name + ' ' + last_name
   end
 
   private

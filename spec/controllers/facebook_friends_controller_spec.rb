@@ -32,9 +32,9 @@ RSpec.describe FacebookFriendsController, type: :controller do
     end
 
     before do
-      allow(TrustedDrivers::FacebookFriendsListService).to receive(:perform)
-      .with(facebook_friends_params)
-      .and_return(service_response)
+      allow(TrustedDrivers::Facebook::FetchFriendsService).to receive(:perform)
+        .with(facebook_friends_params)
+        .and_return(service_response)
 
       request.headers['token'] = token
       request.headers['facebooktoken'] = access_token

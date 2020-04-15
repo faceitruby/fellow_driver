@@ -7,9 +7,7 @@ class CarPresenter < ApplicationPresenter
 
   def cars_page_context
     properties
-    if record.picture.attached?
-      properties.merge(picture: Rails.application.routes.url_helpers.rails_blob_path(record.picture, only_path: true))
-    end
+    properties.merge(picture: url_helpers.rails_blob_path(record.picture, only_path: true)) if record.picture.attached?
   end
 
   private

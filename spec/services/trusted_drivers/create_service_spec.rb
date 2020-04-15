@@ -10,32 +10,40 @@ RSpec.shared_examples 'trusted_driver_create' do
 end
 
 RSpec.describe TrustedDrivers::CreateService do
-  let(:trusted_driver_request) { create(:trusted_driver_request) }
-
-  context 'when params valid' do
-    subject do
-      TrustedDrivers::CreateService.perform(
-        trusted_driver_request: trusted_driver_request,
-        current_user: trusted_driver_request.receiver
-      )
-    end
-
-    let(:success) { true }
-    let(:change_count) { 1 }
-
-    it { expect(subject.errors).to eq(nil) }
-    it_behaves_like 'trusted_driver_create'
+  let(:params) do
+    {
+      trusted_driver_request: trusted_driver_request,
+      current_user: trusted_driver_request.receiver
+    }
   end
 
-  context 'when params not valid' do
-    subject do
-      TrustedDrivers::CreateService.perform(trusted_driver_request: nil, current_user: trusted_driver_request.receiver)
+  subject { TrustedDrivers::CreateService.perform(params) }
+
+  describe '#call' do
+    context 'when params valid' do
+      let(:trusted_driver_request) { create(:trusted_driver_request) }
+
+      let(:success) { true }
+      let(:change_count) { 1 }
+
+      it { expect(subject.errors).to eq(nil) }
+      it_behaves_like 'trusted_driver_create'
     end
 
-    let(:success) { false }
-    let(:change_count) { 0 }
+    context 'when params not valid' do
+      let(:current_user) { create(:user) }
+      let(:params) do
+        {
+          trusted_driver_request: nil,
+          current_user: current_user
+        }
+      end
 
-    it { expect(subject.errors).to_not eq(nil) }
-    it_behaves_like 'trusted_driver_create'
+      let(:success) { false }
+      let(:change_count) { 0 }
+
+      it { expect(subject.errors).to_not eq(nil) }
+      it_behaves_like 'trusted_driver_create'
+    end
   end
 end
