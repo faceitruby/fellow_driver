@@ -6,7 +6,7 @@ RSpec.describe TrustedDrivers::Requests::DeleteService do
   let(:trusted_driver_request) { create(:trusted_driver_request) }
   let(:params) { { trusted_driver_request: trusted_driver_request } }
 
-  subject { TrustedDrivers::Requests::DeleteService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     let(:message) { { message: 'deleted' } }

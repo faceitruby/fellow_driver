@@ -11,7 +11,7 @@ RSpec.shared_examples 'trusted_driver_request invite' do
 end
 
 RSpec.describe TrustedDrivers::Requests::InvitationService do
-  subject { TrustedDrivers::Requests::InvitationService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     context 'when success invited' do

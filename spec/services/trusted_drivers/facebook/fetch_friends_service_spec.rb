@@ -23,20 +23,20 @@ RSpec.describe TrustedDrivers::Facebook::FetchFriendsService do
     }
   end
 
-  subject { TrustedDrivers::Facebook::FetchFriendsService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     context 'when user search' do
       let(:service_response) { [friend] }
 
       before do
-        allow_any_instance_of(TrustedDrivers::Facebook::FetchFriendsService).to receive(:friends_uid)
+        allow_any_instance_of(described_class).to receive(:friends_uid)
           .and_return(service_response)
       end
 
       context 'friends near' do
         before do
-          allow_any_instance_of(TrustedDrivers::Facebook::FetchFriendsService).to receive(:in_radius?)
+          allow_any_instance_of(described_class).to receive(:in_radius?)
             .and_return(in_radius_response)
         end
 

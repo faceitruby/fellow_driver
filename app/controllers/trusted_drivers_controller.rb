@@ -17,7 +17,7 @@ class TrustedDriversController < ApplicationController
     result = TrustedDrivers::CreateService.perform(
       trusted_driver_request: trusted_driver_request, current_user: current_user
     )
-    render_success_response(result.data, :created)
+    result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors)
   end
 
   def destroy

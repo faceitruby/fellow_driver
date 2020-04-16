@@ -7,11 +7,12 @@ module TrustedDrivers
     # - trusted_driver_request: [TrustedDriverRequest] Object request to add how trusted_driver
 
     def call
-      if trusted_driver.save
+      if trusted_driver_request && receiver_id == current_user.id
+        trusted_driver.save
         trusted_driver_request.update(accepted: true)
         OpenStruct.new(success?: true, data: { message: 'created' }, errors: nil)
       else
-        OpenStruct.new(success?: false, data: nil, errors: trusted_driver.errors)
+        OpenStruct.new(success?: false, data: nil, errors: 'something went wrong')
       end
     end
 

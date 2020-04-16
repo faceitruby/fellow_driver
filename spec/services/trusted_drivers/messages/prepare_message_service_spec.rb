@@ -20,51 +20,34 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
     }
   end
 
-  subject { TrustedDrivers::Messages::PrepareMessageService.perform(params) }
+  subject { described_class.perform(params) }
 
   before do
     allow(TrustedDrivers::Messages::SendEmailService).to receive(:perform).and_return(nil)
 
-    allow_any_instance_of(TrustedDrivers::Messages::PrepareMessageService).to receive(:send_phone_message)
+    allow_any_instance_of(described_class).to receive(:send_phone_message)
       .and_return({ phone_message: 'phone request sended' })
   end
 
   describe '#call' do
     context 'when receiver have' do
       context 'phone' do
-        let(:user_receiver) do
-          receiver[:email] = nil
-          receiver[:uid] = nil
-          receiver
-        end
-
+        let(:user_receiver) { build(:user, email: nil) }
         let(:result) { { phone_message: 'phone request sended' } }
 
         it_behaves_like 'prepare_message'
       end
 
       context 'email' do
-        let(:user_receiver) do
-          receiver[:phone] = nil
-          receiver[:uid] = nil
-          receiver
-        end
-
+        let(:user_receiver) { build(:user, phone: nil) }
         let(:result) { { email_message: 'email request sended' } }
 
         it_behaves_like 'prepare_message'
       end
 
       context 'uid' do
-        let(:user_receiver) do
-          receiver[:phone] = nil
-          receiver[:email] = nil
-          receiver
-        end
-
-        let(:result_message) do
-          'Invite message'
-        end
+        let(:user_receiver) { build(:user, :facebook, phone: nil, email:nil) }
+        let(:result_message) { 'Invite message' }
 
         before do
           allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
@@ -78,10 +61,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'phone and email' do
-        let(:user_receiver) do
-          receiver[:uid] = nil
-          receiver
-        end
+        let(:user_receiver) { build(:user) }
 
         let(:result) do
           {
@@ -94,14 +74,8 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'phone and uid' do
-        let(:user_receiver) do
-          receiver[:email] = nil
-          receiver
-        end
-
-        let(:result_message) do
-          'Invite message'
-        end
+        let(:user_receiver) { build(:user, :facebook, email: nil) }
+        let(:result_message) { 'Invite message' }
 
         before do
           allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
@@ -120,14 +94,8 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'email and uid' do
-        let(:user_receiver) do
-          receiver[:phone] = nil
-          receiver
-        end
-
-        let(:result_message) do
-          'Invite message'
-        end
+        let(:user_receiver) { build(:user, :facebook, phone: nil) }
+        let(:result_message) { 'Invite message' }
 
         before do
           allow(TrustedDrivers::Messages::CreateService).to receive(:perform)
@@ -147,9 +115,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
       context 'phone, email and uid' do
         let(:user_receiver) { receiver }
-        let(:result_message) do
-          'Invite message'
-        end
+        let(:result_message) { 'Invite message' }
 
         before do
           allow(TrustedDrivers::Messages::CreateService).to receive(:perform)

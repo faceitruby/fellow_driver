@@ -8,11 +8,11 @@ RSpec.describe TrustedDrivers::Messages::SendEmailService do
   let(:params) { { current_user: requestor, user_receiver: receiver } }
 
   before do
-    allow_any_instance_of(TrustedDrivers::Messages::SendEmailService).to receive(:url).and_return('url')
+    allow_any_instance_of(described_class).to receive(:url).and_return('url')
     allow_any_instance_of(Resque).to receive(:enqueue).with(InviteEmailJob, requestor, receiver, 'url')
   end
 
-  subject { TrustedDrivers::Messages::SendEmailService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     it { expect(subject).to eq(nil) }

@@ -17,7 +17,7 @@ RSpec.describe TrustedDrivers::CreateService do
     }
   end
 
-  subject { TrustedDrivers::CreateService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     context 'when params valid' do

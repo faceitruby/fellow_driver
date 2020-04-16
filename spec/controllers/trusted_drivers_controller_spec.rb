@@ -52,7 +52,49 @@ RSpec.describe TrustedDriversController, type: :controller do
   end
 
   describe 'POST#create' do
+    let(:send_request) { post :create, params: { trusted_triver_request: { id: trusted_driver_request.id } } }
+    let(:token) { JsonWebToken.encode(user_id: current_user.id) }
+    let(:trusted_driver_request) { create(:trusted_driver_request) }
+    let(:service_params) do
+      {
+        trusted_driver_request: trusted_driver_request,
+        current_user: current_user
+      }
+    end
 
+    let(:result) do
+      OpenStruct.new({
+        success?: status,
+        data: data,
+        errors: errors
+      })
+    end
+
+    before do
+      request.headers['token'] = token
+
+      allow(TrustedDrivers::CreateService).to receive(:perform).with(service_params).and_return(result)
+
+      send_request
+    end
+
+    context 'trusted driver created' do
+      let(:current_user) { trusted_driver_request.receiver }
+      let(:status) { true}
+      let(:data) { { message: 'created' } }
+      let(:errors) { nil }
+
+      it { expect(response).to have_http_status(:created) }
+    end
+
+    context 'trusted_driver not created' do
+      let(:current_user) { create(:user) }
+      let(:status) { false}
+      let(:data) { nil }
+      let(:errors) { 'someting went wrong' }
+
+      it { expect(response).to have_http_status(:bad_request) }
+    end
   end
 
   describe 'delete#destroy' do

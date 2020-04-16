@@ -27,7 +27,7 @@ RSpec.describe TrustedDrivers::Messages::CreateService do
     }
   end
 
-  subject { TrustedDrivers::Messages::CreateService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     context 'when user' do
@@ -42,7 +42,7 @@ RSpec.describe TrustedDrivers::Messages::CreateService do
         let(:url) { "#{ENV['HOST_ADDRESS']}/api/users/invitation/accept?invitation_token=#{token}" }
 
         before do
-          allow_any_instance_of(TrustedDrivers::Messages::CreateService).to receive(:token).and_return(token)
+          allow_any_instance_of(described_class).to receive(:token).and_return(token)
         end
 
         it_behaves_like 'trusted_driver_messages create'

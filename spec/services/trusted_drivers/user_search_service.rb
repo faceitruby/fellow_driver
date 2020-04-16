@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.shared_examples 'user search' do
-  subject { TrustedDrivers::UserSearchService.perform(search_params) }
+  subject { described_class.perform(search_params) }
 
   it { expect(subject.class).to eq(OpenStruct) }
   it { expect(subject.errors).to eq(error) }

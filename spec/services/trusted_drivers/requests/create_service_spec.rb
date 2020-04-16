@@ -31,7 +31,7 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
     }
   end
 
-  subject { TrustedDrivers::Requests::CreateService.perform(params) }
+  subject { described_class.perform(params) }
 
   context 'when valid request' do
     let(:change_count) { 1 }

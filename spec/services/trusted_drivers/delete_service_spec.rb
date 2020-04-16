@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe TrustedDrivers::DeleteService do
   let(:params) { { trusted_driver: trusted_driver } }
-  subject { TrustedDrivers::DeleteService.perform(params) }
+  subject { described_class.perform(params) }
 
   describe '#call' do
     let(:trusted_driver) { create(:trusted_driver) }
