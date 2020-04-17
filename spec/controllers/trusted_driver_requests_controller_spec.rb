@@ -4,9 +4,9 @@ require 'rails_helper'
 
 RSpec.describe TrustedDriverRequestsController, type: :controller do
   describe 'routing' do
-    it { expect(post: '/api/trusted_driver_requests').to route_to(controller: 'trusted_driver_requests',format: :json, action: 'create') }
-    it { expect(delete: '/api/trusted_driver_requests/1').to route_to(controller: 'trusted_driver_requests',  format: :json, action: 'destroy', id: '1')}
-    it { expect(get: '/api/trusted_driver_requests').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'index')}
+    it { expect(post: '/api/trusted_driver_requests').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'create') }
+    it { expect(delete: '/api/trusted_driver_requests/1').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'destroy', id: '1') }
+    it { expect(get: '/api/trusted_driver_requests').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'index') }
   end
 
   let(:sender) { create(:user) }
@@ -52,17 +52,17 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
       context 'with valid params' do
         let(:service_response) do
           OpenStruct.new({
-          success?: true,
-            data: {
-              message: 'success sent request'
-            }
-          })
+                           success?: true,
+                           data: {
+                             message: 'success sent request'
+                           }
+                         })
         end
 
         let(:trusted_driver_request_response) do
           {
             success: true,
-            data:service_response.data
+            data: service_response.data
           }.to_json
         end
 
@@ -71,13 +71,12 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
       end
 
       context 'with invalid params' do
-
         let(:service_response) do
           OpenStruct.new({
-            success?: false,
-            data: nil,
-            errors: 'not valid request'
-          })
+                           success?: false,
+                           data: nil,
+                           errors: 'not valid request'
+                         })
         end
 
         let(:trusted_driver_request_response) do

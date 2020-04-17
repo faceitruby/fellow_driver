@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe TrustedDriversController, type: :controller do
   describe 'routing' do
-    it { expect(post: '/api/trusted_drivers').to route_to(controller: 'trusted_drivers',format: :json, action: 'create') }
-    it { expect(delete: '/api/trusted_drivers/1').to route_to(controller: 'trusted_drivers',  format: :json, action: 'destroy', id: '1')}
-    it { expect(get: '/api/trusted_drivers').to route_to(controller: 'trusted_drivers', format: :json, action: 'index')}
-    it { expect(get: '/api/trusted_drivers/trusted_for').to route_to(controller: 'trusted_drivers', format: :json, action: 'trusted_for')}
+    it { expect(post: '/api/trusted_drivers').to route_to(controller: 'trusted_drivers', format: :json, action: 'create') }
+    it { expect(delete: '/api/trusted_drivers/1').to route_to(controller: 'trusted_drivers', format: :json, action: 'destroy', id: '1') }
+    it { expect(get: '/api/trusted_drivers').to route_to(controller: 'trusted_drivers', format: :json, action: 'index') }
+    it { expect(get: '/api/trusted_drivers/trusted_for').to route_to(controller: 'trusted_drivers', format: :json, action: 'trusted_for') }
   end
 
   describe 'GET#index' do
@@ -64,10 +64,10 @@ RSpec.describe TrustedDriversController, type: :controller do
 
     let(:result) do
       OpenStruct.new({
-        success?: status,
-        data: data,
-        errors: errors
-      })
+                       success?: status,
+                       data: data,
+                       errors: errors
+                     })
     end
 
     before do
@@ -80,7 +80,7 @@ RSpec.describe TrustedDriversController, type: :controller do
 
     context 'trusted driver created' do
       let(:current_user) { trusted_driver_request.receiver }
-      let(:status) { true}
+      let(:status) { true }
       let(:data) { { message: 'created' } }
       let(:errors) { nil }
 
@@ -89,7 +89,7 @@ RSpec.describe TrustedDriversController, type: :controller do
 
     context 'trusted_driver not created' do
       let(:current_user) { create(:user) }
-      let(:status) { false}
+      let(:status) { false }
       let(:data) { nil }
       let(:errors) { 'someting went wrong' }
 
