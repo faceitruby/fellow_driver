@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 module Users
-  class Users::InvitationsController < ApplicationController
+  class InvitationsController < ApplicationController
     skip_before_action :check_authorize
 
     def create
-      result = Users::InvitationService.perform(
-          invite_params.merge(current_user: current_user)
-      )
+      result = Users::InvitationService.perform(invite_params.merge(current_user: current_user))
       if result.success?
         render_success_response(result.data, :created)
       else
@@ -18,8 +16,7 @@ module Users
     def update
       user = User.accept_invitation!(accept_invitation_params)
       if user.errors.empty?
-        render_success_response({ user: user.present.page_context },
-                                :accepted)
+        render_success_response({ user: user.present.page_context }, :accepted)
       else
         render_error_response(user.errors, :unprocessable_entity)
       end

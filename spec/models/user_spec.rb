@@ -119,6 +119,6 @@ RSpec.describe User, type: :model do
   end
 
   describe 'enums' do
-    it { is_expected.to define_enum_for(:member_type)}
+    it { is_expected.to define_enum_for(:member_type) }
   end
 end

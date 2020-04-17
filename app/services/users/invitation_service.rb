@@ -14,12 +14,12 @@ module Users
       if invite.errors.empty?
         update_fields(invite)
         Twilio::TwilioTextMessenger.perform(twilio_params(invite))
-        return OpenStruct.new(success?: true,
-                              data: { invite_token: invite.raw_invitation_token,
-                                      user: invite.present.page_context },
-                              errors: nil)
+        OpenStruct.new(success?: true,
+                       data: { invite_token: invite.raw_invitation_token,
+                               user: invite.present.page_context },
+                       errors: nil)
       else
-        return OpenStruct.new(success?: false, data: nil, errors: invite.errors)
+        OpenStruct.new(success?: false, data: nil, errors: invite.errors)
       end
     end
 
@@ -31,9 +31,11 @@ module Users
     end
 
     def message(invite)
-      "#{current_user['first_name']} #{current_user['last_name']} added you as family\
-        member on FellowDriver. Click the link below to accept the invitation:\
-        http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}"
+      <<~MSG
+        #{current_user['first_name']} #{current_user['last_name']} added you as family 
+        member on FellowDriver. Click the link below to accept the invitation:
+        http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}
+      MSG
     end
 
     def invite_params
@@ -42,8 +44,8 @@ module Users
 
     def twilio_params(invite)
       {
-          body: message(invite),
-          phone: params[:phone].presence
+        body: message(invite),
+        phone: params[:phone].presence
       }
     end
   end

@@ -12,8 +12,7 @@ RSpec.describe Users::Registration::CreateService do
 
         it { is_expected.to be_instance_of OpenStruct }
         it 'creates user and family' do
-          expect { subject }.to change(User, :count).by(1) &&
-                                change(Family, :count).by(1)
+          expect { subject }.to change(User, :count).by(1) && change(Family, :count).by(1)
         end
         it_behaves_like 'provided fields'
       end
@@ -24,8 +23,7 @@ RSpec.describe Users::Registration::CreateService do
 
         it { is_expected.to be_instance_of OpenStruct }
         it 'doesn\'t create user and family' do
-          expect { subject }.to_not change(User, :count) &&
-                                    change(Family, :count)
+          expect { subject }.to_not change(User, :count) && change(Family, :count)
         end
         it_behaves_like 'missing fields'
       end
@@ -37,8 +35,7 @@ RSpec.describe Users::Registration::CreateService do
 
         it { is_expected.to be_instance_of OpenStruct }
         it 'creates user family' do
-          expect { subject }.to change(User, :count).by(1) &&
-                                    change(Family, :count).by(1)
+          expect { subject }.to change(User, :count).by(1) && change(Family, :count).by(1)
         end
         it_behaves_like 'provided fields'
       end
@@ -49,8 +46,7 @@ RSpec.describe Users::Registration::CreateService do
 
         it { is_expected.to be_instance_of OpenStruct }
         it 'doesn\'t create user family' do
-          expect { subject }.to_not change(User, :count) &&
-                                    change(Family, :count)
+          expect { subject }.to_not change(User, :count) && change(Family, :count)
         end
         it_behaves_like 'missing fields'
       end
@@ -61,8 +57,7 @@ RSpec.describe Users::Registration::CreateService do
 
       it { is_expected.to be_instance_of OpenStruct }
       it 'doesn\'t create user family' do
-        expect { subject }.to_not change(User, :count) &&
-                                  change(Family, :count)
+        expect { subject }.to_not change(User, :count) && change(Family, :count)
       end
       it_behaves_like 'missing fields'
     end

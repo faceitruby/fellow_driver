@@ -7,16 +7,16 @@ RSpec.describe Users::InvitationsController, type: :controller do
   let(:token) { JsonWebToken.encode(user_id: current_user.id) }
   let(:params) do
     {
-        user: {
-            first_name: Faker::Name.first_name,
-            last_name: Faker::Name.last_name,
-            phone: Faker::Base.numerify('###-###-####'),
-            email: Faker::Internet.email,
-            avatar: Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']),
-            address: Faker::Address.full_address,
-            member_type: User.member_types.keys.sample,
-            password: 'password'
-        }
+      user: {
+        first_name: Faker::Name.first_name,
+        last_name: Faker::Name.last_name,
+        phone: Faker::Base.numerify('###-###-####'),
+        email: Faker::Internet.email,
+        avatar: Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']),
+        address: Faker::Address.full_address,
+        member_type: User.member_types.keys.sample,
+        password: 'password'
+      }
     }
   end
 
@@ -26,9 +26,11 @@ RSpec.describe Users::InvitationsController, type: :controller do
   end
 
   describe 'POST#create' do
-    let(:send_request) { post :create,
-                              params: params.merge(current_user: current_user),
-                              as: :json }
+    let(:send_request) do
+      post :create,
+           params: params.merge(current_user: current_user),
+           as: :json
+    end
 
     subject { response }
 
@@ -43,12 +45,10 @@ RSpec.describe Users::InvitationsController, type: :controller do
         expect(response.content_type).to include('application/json')
       end
       it 'invited user has the same family as inviter' do
-        expect(response.parsed_body['data']['user']['family_id']).
-            to eq(current_user.family_id)
+        expect(response.parsed_body['data']['user']['family_id']).to eq(current_user.family_id)
       end
       it 'new user was invited by current_user' do
-        expect(response.parsed_body['data']['user']['invited_by_id']).
-            to eq(current_user.id)
+        expect(response.parsed_body['data']['user']['invited_by_id']).to eq(current_user.id)
       end
       it { expect(response).to have_http_status(:created) }
       it_behaves_like 'success action'
@@ -57,9 +57,11 @@ RSpec.describe Users::InvitationsController, type: :controller do
 
   describe 'PUT#update' do
     let(:user) { create(:user, skip_invitation: true) }
-    let(:send_request) { put :update,
-                             params: update_params,
-                             as: :json }
+    let(:send_request) do
+      put :update,
+          params: update_params,
+          as: :json
+    end
 
     before do
       user.invite!(current_user)
@@ -71,7 +73,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
     context 'with correct token' do
       let(:update_params) do
         {
-            user: params[:user].merge(invitation_token: user.raw_invitation_token)
+          user: params[:user].merge(invitation_token: user.raw_invitation_token)
         }
       end
 
@@ -85,7 +87,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
     context 'with invalid token' do
       let(:update_params) do
         {
-            user: params[:user].merge(invitation_token: 'some_token')
+          user: params[:user].merge(invitation_token: 'some_token')
         }
       end
 

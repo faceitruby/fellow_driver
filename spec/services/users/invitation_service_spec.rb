@@ -16,12 +16,9 @@ RSpec.describe Users::InvitationService do
     }
   end
 
-  before do
-    allow(Twilio::TwilioTextMessenger).to receive(:perform)
-  end
+  before { allow(Twilio::TwilioTextMessenger).to receive(:perform) }
 
-  subject { described_class.perform(
-      invite_params.merge(current_user: current_user)) }
+  subject { described_class.perform(invite_params.merge(current_user: current_user)) }
 
   describe 'when current user invites new user' do
     context 'with correct params' do
