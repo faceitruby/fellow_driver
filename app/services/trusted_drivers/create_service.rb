@@ -28,11 +28,11 @@ module TrustedDrivers
     end
 
     def receiver_id
-      trusted_driver_request&.receiver_id
+      trusted_driver_request.receiver_id
     end
 
     def requestor_id
-      trusted_driver_request&.requestor_id
+      trusted_driver_request.requestor_id
     end
 
     def current_user
@@ -40,7 +40,9 @@ module TrustedDrivers
     end
 
     def trusted_driver_request
-      params[:trusted_driver_request].presence
+      return params[:trusted_driver_request].presence if params[:trusted_driver_request].presence
+
+      raise ArgumentError.new('Trusted driver request must exist')
     end
   end
 end
