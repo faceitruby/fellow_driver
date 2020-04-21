@@ -13,7 +13,6 @@ module TrustedDrivers
       else
         OpenStruct.new(success?: false, data: nil, errors: 'something went wrong')
       end
-
     rescue ArgumentError => e
       OpenStruct.new(success?: false, data: nil, errors: e.message)
     end
@@ -21,7 +20,7 @@ module TrustedDrivers
     private
 
     def create_trusted_driver
-      raise ArgumentError.new('Requestor and receiver must exist') if receiver_id.blank?	 || requestor_id.blank?
+      raise ArgumentError, 'Requestor and receiver must exist' if receiver_id.blank? || requestor_id.blank?
 
       TrustedDriver.create(trusted_driver_id: receiver_id, trust_driver_id: requestor_id)
       trusted_driver_request.update(accepted: true)
@@ -42,7 +41,7 @@ module TrustedDrivers
     def trusted_driver_request
       return params[:trusted_driver_request].presence if params[:trusted_driver_request].presence
 
-      raise ArgumentError.new('Trusted driver request must exist')
+      raise ArgumentError, 'Trusted driver request must exist'
     end
   end
 end

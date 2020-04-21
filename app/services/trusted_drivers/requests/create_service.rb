@@ -41,7 +41,10 @@ module TrustedDrivers
       end
 
       def send_message(user_receiver)
-        TrustedDrivers::Messages::PrepareMessageService.perform(user_receiver: user_receiver, current_user: current_user)
+        TrustedDrivers::Messages::PrepareMessageService.perform(
+          user_receiver: user_receiver,
+          current_user: current_user
+        )
       end
 
       def trusted_driver(reseiver)

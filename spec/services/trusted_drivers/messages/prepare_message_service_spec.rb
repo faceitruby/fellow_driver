@@ -46,7 +46,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'uid' do
-        let(:user_receiver) { build(:user, :facebook, phone: nil, email:nil) }
+        let(:user_receiver) { build(:user, :facebook, phone: nil, email: nil) }
         let(:result_message) { 'Invite message' }
 
         before do

@@ -4,9 +4,20 @@ require 'rails_helper'
 
 RSpec.describe TrustedDriverRequestsController, type: :controller do
   describe 'routing' do
-    it { expect(post: '/api/trusted_driver_requests').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'create') }
-    it { expect(delete: '/api/trusted_driver_requests/1').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'destroy', id: '1') }
-    it { expect(get: '/api/trusted_driver_requests').to route_to(controller: 'trusted_driver_requests', format: :json, action: 'index') }
+    it do
+      expect(post: '/api/trusted_driver_requests')
+        .to route_to(controller: 'trusted_driver_requests', format: :json, action: 'create')
+    end
+
+    it do
+      expect(delete: '/api/trusted_driver_requests/1')
+        .to route_to(controller: 'trusted_driver_requests', format: :json, action: 'destroy', id: '1')
+    end
+
+    it do
+      expect(get: '/api/trusted_driver_requests')
+        .to route_to(controller: 'trusted_driver_requests', format: :json, action: 'index')
+    end
   end
 
   let(:sender) { create(:user) }
