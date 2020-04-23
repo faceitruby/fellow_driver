@@ -27,8 +27,7 @@ module Twilio
     end
 
     def phone
-      '+380676371813'
-      # params[:phone].presence
+      params[:phone].presence
     end
   end
 end
