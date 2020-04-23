@@ -11,11 +11,11 @@ RSpec.describe Cars::CarCreateService do
       year: Faker::Number.number(digits: 4),
       picture: Rack::Test::UploadedFile.new('spec/support/assets/test-image.jpeg', 'image/jpeg'),
       color: Faker::Color.hex_color,
-      license_plat_number: Faker::Number.number(digits: 4),
+      license_plat_number: Faker::Number.number(digits: 4)
     }
   end
   context 'when car params valid' do
-    subject { Cars::CarCreateService.perform(car_params.merge(user: user)) }
+    subject { described_class.perform(car_params.merge(user: user)) }
     it { expect(subject.class).to eq(OpenStruct) }
     it { expect(subject.data[:car].class).to eq(Hash) }
     it { expect(subject.errors).to eq(nil) }
@@ -31,7 +31,7 @@ RSpec.describe Cars::CarCreateService do
           car_params
         end
         let(:response) { ["can't be blank"] }
-        subject { Cars::CarCreateService.perform(invalid_params.merge(user: user)) }
+        subject { described_class.perform(invalid_params.merge(user: user)) }
 
         it { expect(subject.class).to eq(OpenStruct) }
         it { expect(subject.data).to eq(nil) }

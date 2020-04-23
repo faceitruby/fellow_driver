@@ -31,6 +31,11 @@ Rails.application.routes.draw do
     get 'models/:brand', to: 'vehicles#models'
     resources :cars, except: %i[update new]
     resources :payments, only: %i[create]
+    resources :trusted_drivers, only: %i[create destroy index] do
+      get :trusted_for, on: :collection
+    end
+    resources :trusted_driver_requests, only: %i[create destroy index]
+    resources :facebook_friends, only: %i[index]
     get 'families', to: 'families#index'
   end
 

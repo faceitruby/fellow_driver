@@ -12,6 +12,7 @@ class UserPresenter < ApplicationPresenter
 
   def page_context
     properties
+    properties.merge(avatar: url_helpers.rails_blob_path(record.avatar, only_path: true)) if record.avatar.attached?
   end
 
   private

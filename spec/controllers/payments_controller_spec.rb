@@ -31,8 +31,8 @@ RSpec.describe PaymentsController, type: :controller do
     context 'when payment method created' do
       let(:expected_response) { { success: true, data: {user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'} }.to_json }
       let(:service_response) do
-        OpenStruct.new(success?: true, data: { 
-          user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME' 
+        OpenStruct.new(success?: true, data: {
+            user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'
           }, errors: nil)
       end
 

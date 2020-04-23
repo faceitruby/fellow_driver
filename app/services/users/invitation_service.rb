@@ -32,7 +32,7 @@ module Users
 
     def message(invite)
       <<~MSG
-        #{current_user['first_name']} #{current_user['last_name']} added you as family 
+        #{current_user['first_name']} #{current_user['last_name']} added you as family
         member on FellowDriver. Click the link below to accept the invitation:
         http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}
       MSG

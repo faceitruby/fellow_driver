@@ -25,6 +25,8 @@ module Users
         user.uid = data['id']
         user.email = data['email']
         user.provider = 'facebook'
+        user.member_type = 'owner'
+        user.build_family
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
       end
       OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user })

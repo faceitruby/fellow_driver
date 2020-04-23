@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_10_140717) do
+ActiveRecord::Schema.define(version: 2020_04_14_143108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,19 @@ ActiveRecord::Schema.define(version: 2020_03_10_140717) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "trusted_driver_requests", force: :cascade do |t|
+    t.integer "receiver_id"
+    t.integer "requestor_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "accepted", default: false
+  end
+
+  create_table "trusted_drivers", force: :cascade do |t|
+    t.integer "trusted_driver_id"
+    t.integer "trust_driver_id"
   end
 
   create_table "users", force: :cascade do |t|
