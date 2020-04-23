@@ -7,6 +7,7 @@ class User < ApplicationRecord
   belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   has_many :trusted_drivers,
             foreign_key: :trust_driver_id,
