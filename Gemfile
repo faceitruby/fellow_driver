@@ -6,6 +6,7 @@ ruby '2.6.5'
 gem 'aws-sdk-s3', require: false
 
 gem 'devise'
+gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
 
 gem 'devise-jwt', '~> 0.5.9'
 
@@ -19,6 +20,7 @@ gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 gem 'redis'
 
 gem 'rspec-rails'
+gem 'twilio-ruby'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.2', '>= 1.2.2'
 # Use Puma as the app server

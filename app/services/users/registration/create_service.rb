@@ -12,6 +12,8 @@ module Users
 
       def call
         user = User.new(create_params)
+        user.build_family
+
         return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
 
         OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
@@ -22,7 +24,7 @@ module Users
       private
 
       def create_params
-        return params unless params['login'].present?
+        return params.merge(member_type: 'owner') unless params['login'].present?
 
         key = params['login'].include?('@') ? 'email' : 'phone'
         params.merge(key => params.delete('login'))
