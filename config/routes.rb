@@ -9,9 +9,10 @@ Rails.application.routes.draw do
                  registration: 'signup'
                },
                controllers: {
-                registrations: 'users/registrations',
-                sessions: 'users/sessions',
-                omniauth_social: 'users/memberships'
+                  registrations: 'users/registrations',
+                  sessions: 'users/sessions',
+                  omniauth_social: 'users/memberships',
+                  invitations: 'users/invitations'
               }
 
     devise_scope :user do
@@ -35,6 +36,7 @@ Rails.application.routes.draw do
     end
     resources :trusted_driver_requests, only: %i[create destroy index]
     resources :facebook_friends, only: %i[index]
+    get 'families', to: 'families#index'
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

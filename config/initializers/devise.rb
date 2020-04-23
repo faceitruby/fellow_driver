@@ -144,6 +144,7 @@ Devise.setup do |config|
   # config.invite_key = { email: /\A[^@]+@[^@]+\z/, username: nil }
   # config.invite_key = { }
 
+
   # Ensure that invited record is valid.
   # The invitation won't be sent if this check fails.
   # Default: false

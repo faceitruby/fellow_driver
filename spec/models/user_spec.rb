@@ -7,6 +7,8 @@ RSpec.describe User, type: :model do
     %i[
       id email phone encrypted_password reset_password_token reset_password_sent_at
       remember_created_at created_at updated_at jti provider uid first_name last_name address
+      invitation_token invitation_created_at invitation_sent_at invitation_accepted_at
+      invitation_limit invited_by_type invited_by_id invitations_count family_id member_type
     ].each do |field|
       it { is_expected.to have_db_column(field) }
     end
@@ -115,5 +117,11 @@ RSpec.describe User, type: :model do
     ].each do |association|
       it { is_expected.to have_many(association) }
     end
+
+    it { is_expected.to belong_to(:family) }
+  end
+
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:member_type) }
   end
 end

@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+
+  MEMBER_TYPES = %i[mother father son daughter owner].freeze
+
+  belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
 
@@ -25,6 +29,7 @@ class User < ApplicationRecord
                       message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
   validate :email_or_phone
   validates :password, presence: true, on: :create, if: -> { provider.blank? }
+  validates :member_type, presence: true, on: :create
   validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
   # Uniqueness can`t be checked on create, because user inputs only one of email|phone, and other is nil.
   # Validation always be failed with nil is not unique
@@ -35,6 +40,8 @@ class User < ApplicationRecord
   devise :invitable, :database_authenticatable, :registerable,
         :recoverable, :rememberable, :jwt_authenticatable, :invitable,
         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+
+  enum member_type: MEMBER_TYPES
 
   # rubocop:disable Lint/AssignmentInCondition
   def self.find_for_database_authentication(warden_conditions)
