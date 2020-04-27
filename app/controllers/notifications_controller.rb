@@ -2,16 +2,24 @@
 
 class NotificationsController < ApplicationController
   def index
-    current_user.notifications.map { |notification| notification.present.notification_page_context })
+    render_response(current_user.notifications.map { |notification| notification.present.notification_page_context })
   end
 
   def create
-    Notifications::CreateService.perform(notification_params)
+    render_success_response(Notifications::CreateService.perform(notification_params.merge(user: current_user)), :created)
+  end
+
+  def destroy
+    render_success_response(Notifications::DestroyService.perform(notification: notification), :no_content)
   end
 
   private
 
   def notification_params
-    params.require(:notification).permit(:title, :body, :type, :user)
+    params.require(:notification).permit(:title, :body, :type)
+  end
+
+  def notification
+    Notification.find(params[:id])
   end
 end

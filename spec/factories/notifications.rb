@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :notification do
-    title { Faker::ChuckNorris.fact }
+    title { Faker::Lorem.sentence(word_count: 3) }
     body { Faker::Lorem.sentence }
-    type { Faker::Lorem.sentence(word_count: 1) }
-    status { false }
-    user { nil }
+    notification_type { Faker::Lorem.sentence(word_count: 1) }
+    status { true }
+    user
   end
 end
