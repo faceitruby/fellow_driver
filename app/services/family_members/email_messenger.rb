@@ -7,7 +7,7 @@ module FamilyMembers
     # - current_user: [User] current_user
 
     def call
-      Resque.enqueue(InviteEmailJob, current_user, user_receiver, url)
+      Resque.enqueue(InviteEmailJob, current_user.name, user_receiver, url)
     end
 
     private

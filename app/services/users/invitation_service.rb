@@ -13,7 +13,7 @@ module Users
       invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
       if invite.errors.empty?
         update_fields(invite)
-        FamilyMembers::PhoneMessenger.perform(phone_params(invite))
+        Resque.enqueue(InvitePhoneJob, params[:phone], message(invite))
         FamilyMembers::EmailMessenger.perform(email_params(invite)) if invite.email
         OpenStruct.new(success?: true,
                        data: { invite_token: invite.raw_invitation_token,

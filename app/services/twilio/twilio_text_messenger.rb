@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module FamilyMembers
-  class PhoneMessenger < FamilyMembers::ApplicationService
+module Twilio
+  class TwilioTextMessenger < ApplicationService
     # @attr_reader params [Hash]
     # - body: [String] Message text
     # - phone: [String] Phone number
