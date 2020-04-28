@@ -13,10 +13,11 @@ module Users
       invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
       if invite.errors.empty?
         update_fields(invite)
-        Twilio::TwilioTextMessenger.perform(twilio_params(invite))
+        FamilyMembers::PhoneMessenger.perform(phone_params(invite))
+        FamilyMembers::EmailMessenger.perform(email_params(invite)) if invite.email
         OpenStruct.new(success?: true,
                        data: { invite_token: invite.raw_invitation_token,
-                               user: invite.present.page_context },
+                               user: invite },
                        errors: nil)
       else
         OpenStruct.new(success?: false, data: nil, errors: invite.errors)
@@ -32,7 +33,7 @@ module Users
 
     def message(invite)
       <<~MSG
-        #{current_user['first_name']} #{current_user['last_name']} added you as family 
+        #{current_user.name} added you as family
         member on FellowDriver. Click the link below to accept the invitation:
         http://localhost:3000/api/users/invitation/accept?invitation_token=#{invite.raw_invitation_token}
       MSG
@@ -42,10 +43,17 @@ module Users
       params.except(:current_user)
     end
 
-    def twilio_params(invite)
+    def phone_params(invite)
       {
         body: message(invite),
         phone: params[:phone].presence
+      }
+    end
+
+    def email_params(invite)
+      {
+        user_receiver: invite,
+        current_user: current_user
       }
     end
   end

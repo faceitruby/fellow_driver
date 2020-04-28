@@ -9,8 +9,9 @@ gem 'devise'
 gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
 
 gem 'devise-jwt', '~> 0.5.9'
-
+gem 'geocoder', '~> 1.3', '>= 1.3.7'
 gem 'google_places_autocomplete'
+gem 'haml-rails'
 
 gem 'koala', '~> 3.0'
 
@@ -18,6 +19,7 @@ gem 'koala', '~> 3.0'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 
 gem 'redis'
+gem 'resque'
 
 gem 'rspec-rails'
 gem 'twilio-ruby'
@@ -62,6 +64,7 @@ end
 group :test do
   gem 'database_cleaner', '~> 1.7'
   gem 'shoulda-matchers'
+  gem 'resque_spec'
 end
 
 gem 'stripe'

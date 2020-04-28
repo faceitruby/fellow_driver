@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Vehicles::ModelListService do
-  let(:service_response) { ['asd', 'ads'] }
+  let(:service_response) { %w[asd ads] }
   let(:brand) { Faker::Vehicle.manufacture }
 
   before do

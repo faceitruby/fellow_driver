@@ -3,3 +3,6 @@
 require_relative 'config/environment'
 
 run Rails.application
+
+require 'resque/server'
+run Rack::URLMap.new "/" => FellowDriver::Application,  "/resque" => Resque::Server.new

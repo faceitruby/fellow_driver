@@ -18,5 +18,9 @@ FactoryBot.define do
       first_name { nil }
       last_name { nil }
     end
+
+    trait :facebook do
+      uid { Faker::Number.number(digits: 15) }
+    end
   end
 end

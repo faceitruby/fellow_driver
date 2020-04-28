@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Twilio
-  class TwilioTextMessenger < ApplicationService
+module FamilyMembers
+  class PhoneMessenger < FamilyMembers::ApplicationService
     # @attr_reader params [Hash]
     # - body: [String] Message text
     # - phone: [String] Phone number
@@ -27,8 +27,7 @@ module Twilio
     end
 
     def phone
-      '+380676371813'
-      # params[:phone].presence
+      params[:phone].presence
     end
   end
 end

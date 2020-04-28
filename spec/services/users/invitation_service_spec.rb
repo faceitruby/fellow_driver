@@ -9,20 +9,24 @@ RSpec.describe Users::InvitationService do
       first_name: Faker::Name.first_name,
       last_name: Faker::Name.last_name,
       phone: phone,
-      email: Faker::Internet.email,
+      email: email,
       member_type: User.member_types.keys.sample,
       avatar: Rack::Test::UploadedFile.new(ENV['LOCAL_IMAGE_PATH']),
       address: Faker::Address.full_address
     }
   end
 
-  before { allow(Twilio::TwilioTextMessenger).to receive(:perform) }
+  before do
+    allow(FamilyMembers::PhoneMessenger).to receive(:perform)
+    allow(FamilyMembers::EmailMessenger).to receive(:perform)
+  end
 
   subject { described_class.perform(invite_params.merge(current_user: current_user)) }
 
   describe 'when current user invites new user' do
     context 'with correct params' do
       let(:phone) { Faker::Base.numerify('###-###-####') }
+      let(:email) { Faker::Internet.email }
 
       it 'returns OpenStruct object' do
         expect(subject.class).to eq(OpenStruct)
@@ -46,6 +50,7 @@ RSpec.describe Users::InvitationService do
 
     context 'with incorrect params' do
       let(:phone) { nil }
+      let(:email) { nil }
 
       it 'returns OpenStruct object' do
         expect(subject.class).to eq(OpenStruct)

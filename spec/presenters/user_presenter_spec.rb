@@ -11,10 +11,11 @@ RSpec.describe UserPresenter do
 
   describe '#page_content' do
     let(:user) { build(:user) }
+    let(:avatar) { Rails.application.routes.url_helpers.rails_blob_path(user.avatar, only_path: true) }
     subject { described_class.new(user).page_context }
 
     it { is_expected.to be_instance_of Hash }
-    it { is_expected.to eq user.attributes.symbolize_keys }
+    it { is_expected.to eq user.attributes.symbolize_keys.merge(avatar: avatar) }
   end
 
   describe 'delegates' do
