@@ -23,6 +23,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
   before do
     request.headers['token'] = token
     allow(Twilio::TwilioTextMessenger).to receive(:perform)
+    allow(FamilyMembers::EmailMessenger).to receive(:perform)
   end
 
   describe 'POST#create' do
@@ -46,9 +47,6 @@ RSpec.describe Users::InvitationsController, type: :controller do
       end
       it 'invited user has the same family as inviter' do
         expect(response.parsed_body['data']['user']['family_id']).to eq(current_user.family_id)
-      end
-      it 'new user was invited by current_user' do
-        expect(response.parsed_body['data']['user']['invited_by_id']).to eq(current_user.id)
       end
       it { expect(response).to have_http_status(:created) }
       it_behaves_like 'success action'

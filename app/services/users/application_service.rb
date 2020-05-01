@@ -15,7 +15,7 @@ module Users
     end
 
     def current_user
-      params[:current_user]
+      params[:current_user].presence
     end
   end
 end

@@ -9,7 +9,7 @@ module TrustedDrivers
       # - user_receiver [User] Invitated user
 
       def call
-        Resque.enqueue(InviteEmailJob, current_user, user_receiver, url)
+        Resque.enqueue(InviteEmailJob, current_user.name, user_receiver, url)
       end
 
       private
