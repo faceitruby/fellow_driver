@@ -2,7 +2,7 @@
 
 module Users
   class InvitationsController < ApplicationController
-    skip_before_action :check_authorize
+    skip_before_action :check_authorize, only: :update
 
     def create
       result = Users::InvitationService.perform(invite_params.merge(current_user: current_user))
@@ -14,11 +14,11 @@ module Users
     end
 
     def update
-      user = User.accept_invitation!(accept_invitation_params)
-      if user.errors.empty?
-        render_success_response({ user: user.present.page_context }, :accepted)
+      result = FamilyMembers::AcceptInvitation.perform(accept_invitation_params)
+      if result.errors.empty?
+        render_success_response({ user: result }, :accepted)
       else
-        render_error_response(user.errors, :unprocessable_entity)
+        render_error_response(result.errors, :unprocessable_entity)
       end
     end
 
