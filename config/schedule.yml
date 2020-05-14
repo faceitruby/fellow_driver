@@ -1,0 +1,5 @@
+do_create_notication_job:
+  every: 168h
+  class: CreateNotificationJob
+  args:
+  description: A test job that runs once a day

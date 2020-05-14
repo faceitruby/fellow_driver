@@ -21,6 +21,8 @@ gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 
 gem 'redis'
 gem 'resque'
+gem 'resque-scheduler'
+gem 'rpush'
 
 gem 'rspec-rails'
 gem 'twilio-ruby'

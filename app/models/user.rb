@@ -4,10 +4,14 @@ class User < ApplicationRecord
 
   MEMBER_TYPES = %i[mother father son daughter owner].freeze
 
+  scope :without_car, -> { left_outer_joins(:cars).where(cars: { id: nil }) }
+  scope :without_trusted_drivers, -> { left_outer_joins(:trusted_drivers).where(trusted_drivers: { id: nil }) }
+
   belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :devices, dependent: :destroy
 
   has_many :trusted_drivers,
             foreign_key: :trust_driver_id,

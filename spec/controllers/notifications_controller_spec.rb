@@ -4,18 +4,18 @@ require 'rails_helper'
 
 RSpec.describe NotificationsController, type: :controller do
   describe 'routes' do
-    it do
-    expect(post: '/api/notifications')
+    it 'have notifications create route' do
+      expect(post: '/api/notifications')
         .to route_to(controller: 'notifications', format: :json, action: 'create')
     end
 
-    it do
-    expect(delete: '/api/notifications/1')
+    it 'have notifications destroy route' do
+      expect(delete: '/api/notifications/1')
         .to route_to(controller: 'notifications', format: :json, action: 'destroy', id: '1')
     end
 
-    it do
-    expect(get: '/api/notifications')
+    it 'have notifications index route' do
+      expect(get: '/api/notifications')
         .to route_to(controller: 'notifications', format: :json, action: 'index')
     end
   end
@@ -24,7 +24,7 @@ RSpec.describe NotificationsController, type: :controller do
     let(:notification) { create(:notification) }
     let(:token) { JsonWebToken.encode(user_id: notification.user.id) }
     let(:send_request) { get :index }
-    let(:expected_response) { [notification].to_json }
+    let(:expected_response) { [notification.present.notification_page_context].to_json }
     before do
       request.headers['token'] = token
       send_request
@@ -32,7 +32,7 @@ RSpec.describe NotificationsController, type: :controller do
 
     it { expect(response.content_type).to include('application/json') }
     it { expect(response).to have_http_status(:success) }
-    xit {expect(response.body).to eq(expected_response)}
+    it { expect(response.body).to eq(expected_response) }
   end
 
   describe 'POST#create' do

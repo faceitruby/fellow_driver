@@ -113,7 +113,7 @@ RSpec.describe User, type: :model do
   describe 'associations' do
     %i[
       cars payments trusted_drivers trust_drivers trusted_driver_requests_as_requestor
-      trusted_driver_requests_as_receiver notifications
+      trusted_driver_requests_as_receiver notifications devices
     ].each do |association|
       it { is_expected.to have_many(association) }
     end

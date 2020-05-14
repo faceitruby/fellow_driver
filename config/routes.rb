@@ -38,6 +38,10 @@ Rails.application.routes.draw do
     resources :facebook_friends, only: %i[index]
     get 'families', to: 'families#index'
     resources :notifications, only: %i[index create destroy]
+    resources :devices, only: %i[index create destroy]
+
+    get '/pushnotification/notify' => 'pushnotification#notify'
+
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
