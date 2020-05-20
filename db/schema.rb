@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_17_121741) do
+ActiveRecord::Schema.define(version: 2020_05_13_111802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,9 +48,34 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.index ["user_id"], name: "index_cars_on_user_id"
   end
 
+  create_table "devices", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "registration_ids"
+    t.string "platform"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
+  end
+
+  create_table "families", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "friends", force: :cascade do |t|
     t.integer "friend_id"
     t.integer "user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "title"
+    t.text "body"
+    t.string "notification_type"
+    t.boolean "status"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -60,6 +85,88 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "rpush_apps", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "environment"
+    t.text "certificate"
+    t.string "password"
+    t.integer "connections", default: 1, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "type", null: false
+    t.string "auth_key"
+    t.string "client_id"
+    t.string "client_secret"
+    t.string "access_token"
+    t.datetime "access_token_expiration"
+    t.text "apn_key"
+    t.string "apn_key_id"
+    t.string "team_id"
+    t.string "bundle_id"
+    t.boolean "feedback_enabled", default: true
+  end
+
+  create_table "rpush_feedback", force: :cascade do |t|
+    t.string "device_token"
+    t.datetime "failed_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "app_id"
+    t.index ["device_token"], name: "index_rpush_feedback_on_device_token"
+  end
+
+  create_table "rpush_notifications", force: :cascade do |t|
+    t.integer "badge"
+    t.string "device_token"
+    t.string "sound"
+    t.text "alert"
+    t.text "data"
+    t.integer "expiry", default: 86400
+    t.boolean "delivered", default: false, null: false
+    t.datetime "delivered_at"
+    t.boolean "failed", default: false, null: false
+    t.datetime "failed_at"
+    t.integer "error_code"
+    t.text "error_description"
+    t.datetime "deliver_after"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "alert_is_json", default: false, null: false
+    t.string "type", null: false
+    t.string "collapse_key"
+    t.boolean "delay_while_idle", default: false, null: false
+    t.text "registration_ids"
+    t.integer "app_id", null: false
+    t.integer "retries", default: 0
+    t.string "uri"
+    t.datetime "fail_after"
+    t.boolean "processing", default: false, null: false
+    t.integer "priority"
+    t.text "url_args"
+    t.string "category"
+    t.boolean "content_available", default: false, null: false
+    t.text "notification"
+    t.boolean "mutable_content", default: false, null: false
+    t.string "external_device_id"
+    t.string "thread_id"
+    t.boolean "dry_run", default: false, null: false
+    t.boolean "sound_is_json", default: false
+    t.index ["delivered", "failed", "processing", "deliver_after", "created_at"], name: "index_rpush_notifications_multi", where: "((NOT delivered) AND (NOT failed))"
+  end
+
+  create_table "trusted_driver_requests", force: :cascade do |t|
+    t.integer "receiver_id"
+    t.integer "requestor_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "accepted", default: false
+  end
+
+  create_table "trusted_drivers", force: :cascade do |t|
+    t.integer "trusted_driver_id"
+    t.integer "trust_driver_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,6 +181,9 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.string "jti", null: false
     t.string "provider"
     t.string "uid"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "address"
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
@@ -82,7 +192,10 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
     t.string "invited_by_type"
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
+    t.bigint "family_id"
+    t.integer "member_type"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["family_id"], name: "index_users_on_family_id"
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invitations_count"], name: "index_users_on_invitations_count"
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
@@ -94,5 +207,8 @@ ActiveRecord::Schema.define(version: 2020_03_17_121741) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cars", "users"
+  add_foreign_key "devices", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "payments", "users"
+  add_foreign_key "users", "families"
 end

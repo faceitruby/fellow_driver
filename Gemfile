@@ -3,20 +3,35 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.5'
 
+gem 'aws-sdk-s3', require: false
+
 gem 'devise'
-gem 'devise_invitable'
+
+gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
+
 gem 'devise-jwt', '~> 0.5.9'
+
+gem 'geocoder', '~> 1.3', '>= 1.3.7'
+gem 'google_places_autocomplete'
+gem 'haml-rails'
 
 gem 'koala', '~> 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 
+gem 'redis'
+gem 'resque'
+gem 'resque-scheduler'
+gem 'rpush'
+
 gem 'rspec-rails'
+gem 'twilio-ruby'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.2', '>= 1.2.2'
 # Use Puma as the app server
 gem 'puma', '~> 4.1'
+gem 'twilio-ruby'
 # Use SCSS for stylesheets
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
@@ -37,6 +52,8 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails'
+  gem 'factory_bot_rails'
+  gem 'faker'
 end
 
 group :development do
@@ -51,9 +68,8 @@ end
 
 group :test do
   gem 'database_cleaner', '~> 1.7'
-  gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
-  gem 'faker'
   gem 'shoulda-matchers'
+  gem 'resque_spec'
 end
 
 gem 'stripe'

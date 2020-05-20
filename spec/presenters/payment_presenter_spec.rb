@@ -18,7 +18,7 @@ RSpec.describe PaymentPresenter do
     let(:response) do
       {
         payment_type: payment.payment_type,
-        user_payment: payment.user_payment,
+        user_payment: payment.user_payment
       }
     end
 
