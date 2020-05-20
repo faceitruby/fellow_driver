@@ -6,10 +6,11 @@ module Notifications
     # @attr_reader params [Hash]
     # notification [Notification]
     # registration_ids [Array] an array of one or more client registration tokens
+
     def call
       # response = fcm_client.send(reseivers, options)
 
-      raise ArgumentError, 'The list of devices must be filled' unless reseivers.present?
+      raise ArgumentError, 'The list of registration_ids must be filled' unless reseivers.present?
 
       n = Rpush::Gcm::Notification.new
       n.app = app_client

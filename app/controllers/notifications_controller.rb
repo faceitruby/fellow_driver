@@ -2,7 +2,7 @@
 
 class NotificationsController < ApplicationController
   def index
-    render_response(current_user.notifications.map { |notification| notification.present.notification_page_context })
+    render_response(Notification.all.map { |notification| notification.present.notification_page_context })
   end
 
   def create

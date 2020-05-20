@@ -71,11 +71,10 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
     t.string "title"
     t.text "body"
     t.string "notification_type"
+    t.string "subject"
     t.boolean "status"
-    t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -208,7 +207,6 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cars", "users"
   add_foreign_key "devices", "users"
-  add_foreign_key "notifications", "users"
   add_foreign_key "payments", "users"
   add_foreign_key "users", "families"
 end

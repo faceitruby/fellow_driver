@@ -7,7 +7,7 @@ module Notifications
     # title [String]
     # body [Text] Full explanatien
     # type [String] Notification type
-    # user [User] Notification target
+    # subject [String] Notification subject
 
     def call
       infomational_notification
@@ -25,12 +25,8 @@ module Notifications
         body: params[:body],
         status: true,
         notification_type: params[:type],
-        user_id: user.id
+        subject: params[:subject]
       }
-    end
-
-    def user
-      params[:user].presence
     end
   end
 end

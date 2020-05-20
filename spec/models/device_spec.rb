@@ -12,4 +12,12 @@ RSpec.describe Device, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
   end
+
+  describe 'validation' do
+    context 'presence fields' do
+      %i[registration_ids platform].each do |field|
+        it { is_expected.to validate_presence_of(field) }
+      end
+    end
+  end
 end

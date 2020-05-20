@@ -4,7 +4,6 @@ module Devices
   # Service for user creation
   class CreateService < ApplicationService
     # @attr_reader params [Hash]
-    # - model [String] 
     # - platform [String]
     # - user [User] Device owner
     # - registration_ids [String]

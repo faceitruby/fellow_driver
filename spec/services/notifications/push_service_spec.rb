@@ -4,7 +4,7 @@ require 'rails_helper'
 # OpenStruct returned from services
 RSpec.shared_examples 'PushService with wrong params' do
   it 'raise ArgumentError without creating Rpush::Gcm::Notification' do
-    expect { subject }.to raise_error(ArgumentError, 'The list of devices must be filled')
+    expect { subject }.to raise_error(ArgumentError, 'The list of registration_ids must be filled')
       .and change(Rpush::Gcm::Notification, :count).by(0)
   end
 end

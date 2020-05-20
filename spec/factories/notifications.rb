@@ -6,6 +6,6 @@ FactoryBot.define do
     body { Faker::Lorem.sentence }
     notification_type { Faker::Lorem.sentence(word_count: 1) }
     status { true }
-    user
+    subject { Faker::Lorem.sentence(word_count: 1) }
   end
 end

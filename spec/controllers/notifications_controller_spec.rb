@@ -21,8 +21,8 @@ RSpec.describe NotificationsController, type: :controller do
   end
 
   describe 'GET#index' do
-    let(:notification) { create(:notification) }
-    let(:token) { JsonWebToken.encode(user_id: notification.user.id) }
+    let!(:notification) { create(:notification) }
+    let(:token) { JsonWebToken.encode(user_id: create(:user).id) }
     let(:send_request) { get :index }
     let(:expected_response) { [notification.present.notification_page_context].to_json }
     before do
@@ -44,7 +44,7 @@ RSpec.describe NotificationsController, type: :controller do
           title: Faker::Lorem.sentence(word_count: 1),
           body: Faker::Lorem.sentence,
           type: Faker::Lorem.sentence(word_count: 1),
-          user: current_user
+          subject: Faker::Lorem.sentence(word_count: 1)
         }
       }
     end
@@ -62,7 +62,7 @@ RSpec.describe NotificationsController, type: :controller do
   describe 'DELETE#destroy' do
     let(:notification) { create(:notification) }
     let(:send_request) { delete :destroy, params: { id: notification.id } }
-    let(:token) { JsonWebToken.encode(user_id: notification.user.id) }
+    let(:token) { JsonWebToken.encode(user_id: create(:user)) }
     before do
       request.headers['token'] = token
       send_request

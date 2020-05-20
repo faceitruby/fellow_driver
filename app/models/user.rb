@@ -6,20 +6,23 @@ class User < ApplicationRecord
 
   scope :without_car, -> { left_outer_joins(:cars).where(cars: { id: nil }) }
   scope :without_trusted_drivers, -> { left_outer_joins(:trusted_drivers).where(trusted_drivers: { id: nil }) }
+  scope :without_payments, -> { left_outer_joins(:payments).where(payments: { id: nil }) }
 
   belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
 
-  has_many :notifications, dependent: :destroy
   has_many :devices, dependent: :destroy
 
   has_many :trusted_drivers,
             foreign_key: :trust_driver_id,
-            class_name: 'TrustedDriver'
+            class_name: 'TrustedDriver',
+            dependent: :destroy
+
   has_many :trust_drivers,
             foreign_key: :trusted_driver_id,
-            class_name: 'TrustedDriver'
+            class_name: 'TrustedDriver',
+            dependent: :destroy
 
   has_many :trusted_driver_requests_as_requestor,
             foreign_key: :requestor_id,
