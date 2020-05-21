@@ -8,12 +8,10 @@ module Twilio
 
     def call
       twilio_client.messages.create({
-        from: ENV['twilio_phone_number'],
-        to: phone,
-        body: message
-      })
-    rescue Twilio::REST::TwilioError => e
-      OpenStruct.new(success?: false, errors: e.message)
+                                      from: ENV['twilio_phone_number'],
+                                      to: phone,
+                                      body: message
+                                    })
     end
 
     private

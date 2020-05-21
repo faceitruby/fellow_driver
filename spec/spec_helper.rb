@@ -96,4 +96,11 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 end
-RSpec::Matchers.define_negated_matcher :not_change, :change
+RSpec::Matchers.define_negated_matcher :avoid_changing, :change
+RSpec::Matchers.define_negated_matcher(:avoid_raising_error, :raise_error) { |message| "not #{message}" }
+
+def subject_ignore_exceptions
+  subject
+rescue StandardError
+  nil
+end

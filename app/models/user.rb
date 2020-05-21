@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-
   MEMBER_TYPES = %i[mother father son daughter owner].freeze
 
   belongs_to :family
@@ -9,24 +8,27 @@ class User < ApplicationRecord
   has_many :payments, dependent: :destroy
 
   has_many :trusted_drivers,
-            foreign_key: :trust_driver_id,
-            class_name: 'TrustedDriver'
+           foreign_key: :trust_driver_id,
+           class_name: 'TrustedDriver'
   has_many :trust_drivers,
-            foreign_key: :trusted_driver_id,
-            class_name: 'TrustedDriver'
+           foreign_key: :trusted_driver_id,
+           class_name: 'TrustedDriver'
 
   has_many :trusted_driver_requests_as_requestor,
-            foreign_key: :requestor_id,
-            class_name: 'TrustedDriverRequest'
+           foreign_key: :requestor_id,
+           class_name: 'TrustedDriverRequest'
   has_many :trusted_driver_requests_as_receiver,
-            foreign_key: :receiver_id,
-            class_name: 'TrustedDriverRequest'
+           foreign_key: :receiver_id,
+           class_name: 'TrustedDriverRequest'
 
   attr_writer :login
   has_one_attached :avatar
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
-  validates_format_of :phone, with: /\A(\+[0-9]{1,2})?\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
-                      message: 'Phone numbers must be in xxx-xxx-xxxx format.', if: :phone_present?
+  validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
+  validates :phone, uniqueness: true,
+                    format: {
+                      with: /\A(\+[0-9]{1,2})?\(?[0-9]{3}\)?-[0-9]{3}-[0-9]{4}\z/,
+                      message: 'Phone numbers must be in xxx-xxx-xxxx format.'
+                    }, if: :phone_present?
   validate :email_or_phone
   validates :password, presence: true, on: :create, if: -> { provider.blank? }
   validates :member_type, presence: true, on: :create
@@ -56,6 +58,8 @@ class User < ApplicationRecord
 
   def name
     first_name + ' ' + last_name
+  rescue NoMethodError
+    raise ArgumentError, 'first_name or last_name is missing'
   end
 
   private

@@ -6,8 +6,9 @@ module TrustedDrivers
     # - trusted_driver: [TrustedDriver] Removed trusted driver
 
     def call
-      trusted_driver.destroy
-      OpenStruct.new(success?: true, data: { message: 'deleted' }, errors: nil)
+      trusted_driver.destroy!.destroyed?
+    rescue NoMethodError
+      raise ArgumentError, 'Trusted_driver is missing'
     end
 
     private

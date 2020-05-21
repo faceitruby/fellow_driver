@@ -15,21 +15,18 @@ module TrustedDrivers
       private
 
       def facebook_friends
-        friends_list = friends_uid
-
-        if near?
-          OpenStruct.new(success?: true, data: near_friends)
-        else
-          OpenStruct.new(success?: true, data: friends_list, errors: nil)
-        end
-      rescue Koala::Facebook::ClientError => e
-        OpenStruct.new(success?: false, errors: e.message)
+        near? ? near_friends : friends_uid
       end
 
       def friends_uid
-        graph = Koala::Facebook::API.new(access_token)
         friends = graph.get_object('me', fields: 'friends')['friends']['data']
-        friends.map { |friend| User.find_by(uid: friend['id']) }
+        result = friends.map { |friend| User.find_by(uid: friend['uid']) }
+        # result is [nil] when facebook friends doesn\'t exists in DB, we need to remove nils from result
+        result.reject(&:blank?)
+      end
+
+      def graph
+        @graph ||= Koala::Facebook::API.new(access_token)
       end
 
       def access_token

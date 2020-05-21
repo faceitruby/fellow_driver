@@ -10,15 +10,15 @@ RSpec.describe Users::SessionService do
         let(:params) { { user: user } }
         subject { described_class.new(params).call }
 
-        it { is_expected.to be_instance_of OpenStruct }
-        it_behaves_like 'provided fields'
+        it { expect { subject }.to avoid_raising_error }
+        it('returns string') { is_expected.to be_instance_of String }
       end
 
       context 'is missed' do
         subject { described_class.new.call }
 
-        it { is_expected.to be_instance_of OpenStruct }
-        it_behaves_like 'missing fields'
+        it { expect { subject }.to raise_error ActiveRecord::RecordNotFound }
+        it('returns nil') { expect(subject_ignore_exceptions).to be nil }
       end
     end
   end

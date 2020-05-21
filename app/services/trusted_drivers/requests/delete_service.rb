@@ -8,8 +8,9 @@ module TrustedDrivers
       # - trusted_driver_request: [TrustedDriverRequest] Delete trusted driver request
 
       def call
-        trusted_driver_request.destroy
-        OpenStruct.new(success?: true, data: { message: 'deleted' }, errors: nil)
+        trusted_driver_request.destroy.destroyed?
+      rescue NoMethodError
+        raise ActiveRecord::RecordNotFound
       end
 
       private

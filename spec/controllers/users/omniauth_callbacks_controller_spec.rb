@@ -6,26 +6,35 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
   describe 'POST#facebook' do
     let(:params) { { access_token: 'token_sample' } }
     let(:send_request) { post :facebook, params: params, format: :json }
+    let(:error) { ArgumentError }
+    let(:user) { create(:user) }
     subject { response }
 
-    before do
-      @request.env['devise.mapping'] = Devise.mappings[:user]
-      expect(Users::OmniauthFacebookService).to receive(:perform).and_return(result)
-      send_request
+    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
+
+    context 'when nothing raised' do
+      let(:params) { { access_token: 'token' } }
+
+      before do
+        allow(Users::OmniauthFacebookService).to receive(:perform).and_return(user)
+        send_request
+      end
+
+      it { is_expected.to have_http_status(:ok) }
+      it { expect(subject.parsed_body).to be_instance_of Hash }
+      it { expect(subject.parsed_body['success']).to eq true }
+      it { expect(subject.parsed_body['token']).to be_present }
     end
 
-    context 'when success? is true' do
-      let(:result) { OpenStruct.new(success?: true, data: { user: attributes_for(:user, :create), errors: nil }) }
+    context 'when raised' do
+      before do
+        allow(Users::OmniauthFacebookService).to receive(:perform).and_raise(error)
+        send_request
+      end
 
-      it { is_expected.to have_http_status(200) }
-      it_behaves_like 'success action'
-    end
-
-    context 'when success? is false' do
-      let(:result) { OpenStruct.new(success?: false, data: nil, errors: 'error') }
-
-      it { is_expected.to have_http_status(400) }
-      it_behaves_like 'failure action'
+      context 'ArgumentError' do
+        it { is_expected.to have_http_status(:unprocessable_entity) }
+      end
     end
   end
 end

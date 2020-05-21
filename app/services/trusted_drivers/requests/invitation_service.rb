@@ -6,30 +6,25 @@ module TrustedDrivers
       # @attr_reader params [Hash]
       # - phone: [String] Invited user's phone
       # - email: [String] Invited user's email
+      # - member_type: [String] Member type in family
 
       def call
-        invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
-        if invite.errors.empty?
-          success_response(invite)
-        else
-          OpenStruct.new(success?: false, data: nil, errors: invite.errors.messages)
-        end
+        User.invite!(invite_params, current_user) { |u| u.skip_invitation = true }
       end
 
       private
 
-      def success_response(invite)
-        OpenStruct.new(success?: true, data: {
-                         invite_token: invite.raw_invitation_token,
-                         user: invite
-                       }, errors: nil)
-      end
-
       def invite_params
         {
           email: params[:email].presence,
-          phone: params[:phone].presence
+          phone: params[:phone].presence,
+          member_type: params[:member_type].presence,
+          family_id: params[:current_user].family_id
         }
+      end
+
+      def current_user
+        params[:current_user].presence
       end
     end
   end

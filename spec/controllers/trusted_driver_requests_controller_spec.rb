@@ -34,12 +34,20 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
       [trusted_driver_request.present.request_page_context].to_json
     end
 
-    before { send_request }
+    context 'with token provided' do
+      before { send_request }
 
-    it { expect(response.content_type).to include('application/json') }
-    it { expect(response).to have_http_status(:success) }
-    it 'render JSON with list of request on trusted driver' do
-      expect(response.body).to eq(expected_response)
+      it { expect(response.content_type).to include('application/json') }
+      it { expect(response).to have_http_status(:success) }
+      it 'render JSON with list of request on trusted driver' do
+        expect(response.body).to eq(expected_response)
+      end
+    end
+
+    context 'with missing token' do
+      let(:token) { nil }
+
+      include_examples 'with missing token'
     end
   end
 
@@ -52,72 +60,91 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
       let(:trusted_driver_request_params) { ActionController::Parameters.new(trusted_driver_request) }
       let(:request_params) { trusted_driver_request_params.permit(:email).merge(current_user: sender) }
 
-      before do
-        allow(TrustedDrivers::Requests::CreateService).to receive(:perform)
-          .with(request_params)
-          .and_return(service_response)
+      context 'with valid' do
+        before do
+          allow(TrustedDrivers::Requests::CreateService).to receive(:perform)
+            .with(request_params)
+            .and_return(service_response)
 
-        send_request
+          send_request
+        end
+
+        context 'email' do
+          let(:service_response) { { email_message: 'email request sent' } }
+
+          it { expect(response).to have_http_status(:created) }
+          it { expect(response.parsed_body['success']).to be true }
+          it { expect(response.parsed_body['email_message']).to eq service_response[:email_message] }
+        end
+
+        context 'phone' do
+          let(:service_response) { { phone_message: 'phone request sent' } }
+
+          it { expect(response).to have_http_status(:created) }
+          it { expect(response.parsed_body['success']).to be true }
+          it { expect(response.parsed_body['phone_message']).to eq service_response[:phone_message] }
+        end
+
+        context 'uid' do
+          let(:params) { { current_user: build(:user), user_receiver: build(:user) } }
+          let(:service_response) do
+            {
+              facebook_message: {
+                'uid' => Faker::Number.number(digits: 15),
+                'message' => TrustedDrivers::Messages::CreateService.perform(params)
+              }
+            }
+          end
+
+          it { expect(response).to have_http_status(:created) }
+          it { expect(response.parsed_body['success']).to be true }
+          it { expect(response.parsed_body['facebook_message']).to eq service_response[:facebook_message] }
+        end
       end
 
-      context 'with valid params' do
-        let(:service_response) do
-          OpenStruct.new({
-                           success?: true,
-                           data: {
-                             message: 'success sent request'
-                           }
-                         })
+      context 'when error raised' do
+        let(:error) { ArgumentError }
+        before do
+          allow(TrustedDrivers::Requests::CreateService).to receive(:perform)
+            .with(request_params)
+            .and_raise(error)
+
+          send_request
         end
 
-        let(:trusted_driver_request_response) do
-          {
-            success: true,
-            data: service_response.data
-          }.to_json
-        end
-
-        it { expect(response).to have_http_status(:created) }
-        it { expect(response.body).to eq(trusted_driver_request_response) }
+        it { expect(response).to have_http_status(:unprocessable_entity) }
+        it { expect(response.parsed_body['success']).to be false }
+        it { expect(response.parsed_body['error']).to be_present }
       end
+    end
 
-      context 'with invalid params' do
-        let(:service_response) do
-          OpenStruct.new({
-                           success?: false,
-                           data: nil,
-                           errors: 'not valid request'
-                         })
-        end
+    context 'with missing token' do
+      let(:token) { nil }
+      let(:request_param) { nil }
 
-        let(:trusted_driver_request_response) do
-          {
-            success: false,
-            message: service_response.errors,
-            data: service_response.data
-          }.to_json
-        end
-
-        it { expect(response).to have_http_status(:bad_request) }
-        it { expect(response.body).to eq(trusted_driver_request_response) }
-      end
+      include_examples 'with missing token'
     end
   end
 
   describe 'delete#destroy' do
     let(:trusted_driver_request) { create(:trusted_driver_request) }
-    let(:token) { JsonWebToken.encode(user_id: trusted_driver_request.receiver_id) }
     let(:send_request) { delete :destroy, params: { id: trusted_driver_request.id } }
 
-    let(:expected_response) do
-      { success: true, data: { message: 'deleted' } }.to_json
+    let(:expected_response) { { 'success' => true } }
+
+    context 'with token provided' do
+      let(:token) { JsonWebToken.encode(user_id: trusted_driver_request.receiver_id) }
+
+      before { send_request }
+
+      it { expect(response).to have_http_status(:ok) }
+      it { expect(response.parsed_body).to eq(expected_response) }
     end
 
-    before { send_request }
+    context 'with token missing' do
+      let(:token) { nil }
 
-    it { expect(response).to have_http_status(:no_content) }
-    it 'is expected to returns hash with status && message' do
-      expect(response.body).to eq(expected_response)
+      include_examples 'with missing token'
     end
   end
 end

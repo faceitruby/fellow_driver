@@ -4,23 +4,12 @@ require 'rails_helper'
 
 RSpec.describe Cars::CarCreateService do
   let(:user) { create(:user) }
-  let(:car_params) do
-    {
-      manufacturer: Faker::Vehicle.manufacture,
-      model: Faker::Vehicle.model,
-      year: Faker::Number.number(digits: 4),
-      picture: Rack::Test::UploadedFile.new('spec/support/assets/test-image.jpeg', 'image/jpeg'),
-      color: Faker::Color.hex_color,
-      license_plat_number: Faker::Number.number(digits: 4)
-    }
-  end
+  let(:car_params) { attributes_for :car }
   context 'when car params valid' do
     subject { described_class.perform(car_params.merge(user: user)) }
-    it { expect(subject.class).to eq(OpenStruct) }
-    it { expect(subject.data[:car].class).to eq(Hash) }
-    it { expect(subject.errors).to eq(nil) }
-    it { expect(subject.success?).to be true }
+    it { expect(subject.class).to eq(Car) }
     it { expect { subject }.to change(Car, :count).by(1) }
+    it { expect { subject }.to avoid_raising_error }
   end
 
   context 'when car params invalid' do
@@ -30,15 +19,12 @@ RSpec.describe Cars::CarCreateService do
           car_params[field] = nil
           car_params
         end
-        let(:response) { ["can't be blank"] }
+
         subject { described_class.perform(invalid_params.merge(user: user)) }
 
-        it { expect(subject.class).to eq(OpenStruct) }
-        it { expect(subject.data).to eq(nil) }
-        it { expect(subject.success?).to be false }
-        it { expect(subject.errors.class).to eq(ActiveModel::Errors) }
-        it { expect(subject.errors.messages[field.to_sym]).to eq(response) }
-        it { expect { subject }.to change(Car, :count).by(0) }
+        it { expect(subject_ignore_exceptions.class).to eq(NilClass) }
+        it { expect { subject_ignore_exceptions }.to change(Car, :count).by(0) }
+        it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
       end
     end
   end

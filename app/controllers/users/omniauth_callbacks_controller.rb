@@ -8,8 +8,9 @@ module  Users
 
     # POST api/users/auth/facebook
     def facebook
-      result = OmniauthFacebookService.perform(facebook_params)
-      result.success? ? render_success_response(result.data) : render_error_response(result.errors)
+      token = OmniauthFacebookService.perform(facebook_params)
+
+      render_success_response({ token: token }, :ok)
     end
 
     private

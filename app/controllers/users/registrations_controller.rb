@@ -9,14 +9,16 @@ module Users
 
     # POST api/users/signup
     def create
-      result = Users::Registration::CreateService.perform(create_params)
-      result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors, 422)
+      Users::Registration::CreateService.perform(create_params)
+
+      render_success_response(nil, :created)
     end
 
     # PUT|PATCH api/users/signup
     def update
       result = Users::Registration::UpdateService.perform(update_params)
-      result.success? ? render_success_response(result.data, :no_content) : render_error_response(result.errors, 422)
+
+      render_success_response({ user: result }, :ok)
     end
 
     private

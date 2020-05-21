@@ -3,6 +3,8 @@
 module Users
   # Service for autocomplete addresses using Google Place Autocomplete
   class AddressAutocompleteService < ApplicationService
+    class OverQuotaLimitError < StandardError; end
+    class UnknownError < StandardError; end
     # @attr_reader params [Hash] Search query
     # - input [String] What are we looking for (required)
     # - types [String] The types of place results to return (optional)
@@ -14,26 +16,30 @@ module Users
     # @see https://developers.google.com/places/web-service/autocomplete#place_autocomplete_requests
 
     def call
+      raise ArgumentError, 'Input parameter is missing' if params['input'].blank?
+
       response = autocomplete_client.autocomplete(receive_params)
-      return_response(response)
+      result = JSON.parse response.body
+      check_response(result)
+      result['predictions']
     end
 
     private
 
-    def return_response(response)
-      json = JSON.parse response.body
-
-      case json['status']
-      when 'OK'
-        OpenStruct.new(success?: true, data: json['predictions'], errors: nil)
-      when 'ZERO_RESULTS'
-        OpenStruct.new(success?: true, data: json['status'], errors: nil)
-      when 'OVER_QUERY_LIMIT', 'REQUEST_DENIED', 'INVALID_REQUEST'
-        OpenStruct.new(success?: false, data: nil, errors: json['status'])
-      else
-        OpenStruct.new(success?: false, data: nil, errors: 'UNKNOWN_ERROR')
+    # rubocop:disable Metrics/CyclomaticComplexity
+    def check_response(response)
+      case response['status']
+      when 'INVALID_REQUEST'
+        raise ArgumentError, response['error_message'] || 'Input parameter is missing'
+      when 'REQUEST_DENIED'
+        raise ArgumentError, response['error_message'] || 'Key is missing or invalid'
+      when 'OVER_QUERY_LIMIT'
+        raise OverQuotaLimitError, response['error_message'] || 'You are over your quota'
+      when 'UNKNOWN_ERROR'
+        raise UnknownError, response['error_message'] || response['status']
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def receive_params
       my_params = params.except(:token)

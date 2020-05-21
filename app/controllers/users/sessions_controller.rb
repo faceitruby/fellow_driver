@@ -8,8 +8,9 @@ module Users
 
     # POST api/users/login
     def create
-      result = Users::SessionService.perform(user: warden.authenticate)
-      result.success? ? render_success_response(result.data) : render_error_response(result.errors, 422)
+      token = Users::SessionService.perform(user: warden.authenticate)
+
+      render_success_response({ token: token }, :ok)
     end
   end
 end

@@ -13,35 +13,16 @@ module Users
       def call
         user = User.new(create_params)
         user.build_family
-
-        return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
-
-        OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
-      rescue ActiveRecord::RecordNotUnique => e
-        OpenStruct.new(success?: false, user: nil, errors: error(e.message))
+        user.save!
       end
 
       private
 
       def create_params
-        return params.merge(member_type: 'owner') unless params['login'].present?
+        return params.merge(member_type: 'owner') if params['login'].blank?
 
         key = params['login'].include?('@') ? 'email' : 'phone'
-        params.merge(key => params.delete('login'))
-      end
-
-      # Simplifies error description
-      #
-      # @example:
-      #   error("PG::UniqueViolation: ERROR:  duplicate key value violates unique constraint \"index_users_on_email\"\n
-      #         DETAIL:  Key (phone)=(123-456-7890) already exists.\n") #=> "Key (phone)=(123-456-7890) already exists."
-      #
-      # @param message [String] ActiveRecord error message
-      #
-      # @return [String] Simplified error description
-      def error(message)
-        detail = message.lines.second
-        detail[detail.index('Key')..-2]
+        params.merge(key => params.delete('login'), member_type: 'owner')
       end
     end
   end
