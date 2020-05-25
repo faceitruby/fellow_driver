@@ -1,4 +1,4 @@
-class CreateNotificationJob
+class SendNotificationsJob
   @queue = :notification
 
   def self.perform
@@ -13,7 +13,10 @@ class CreateNotificationJob
 
   def self.write_notifications(subject, receivers)
     notification = Notification.find_by(subject: subject)
-    registration_ids = receivers.map { |user| user.devices.ids }
-    Notifications::PushService.perform(notification: notification, registration_ids: registration_ids)
+    receivers_notifications = receivers.includes(:devices).select do |user|
+      user.devices.ids if user.notifications_enabled
+    end
+    registration_ids = receivers_notifications.map { |receiver| receiver.devices.map { |ids| ids.registration_ids } }
+    Notifications::PushService.perform(notification: notification, registration_ids: registration_ids.flatten )
   end
 end
