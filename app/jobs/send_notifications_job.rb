@@ -1,4 +1,6 @@
-class SendNotificationsJob
+# frozen_string_literal: true
+
+class SendNotificationsJob < ActiveJob::Base
   @queue = :notification
 
   def self.perform
@@ -9,12 +11,10 @@ class SendNotificationsJob
     Rpush.push
   end
 
-  private
-
   def self.write_notifications(subject, receivers)
-    notification = Notification.find_by(subject: subject)
+    notification = Notification.find_by(title: subject)
     receivers_notifications = receivers.includes(:devices).select do |user|
-      user.devices.ids if user.notifications_enabled
+      user.devices.ids if user.devices.presence
     end
     registration_ids = receivers_notifications.map { |receiver| receiver.devices.map { |ids| ids.registration_ids } }
     Notifications::PushService.perform(notification: notification, registration_ids: registration_ids.flatten )
