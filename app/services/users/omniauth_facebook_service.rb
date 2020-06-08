@@ -6,14 +6,13 @@ module Users
     # - access_token: [String] Token
 
     def call
-      user = validate_facebook_token
-      jwt_encode(user)
+      jwt_encode validate_facebook_token
     end
 
     private
 
     def validate_facebook_token
-      raise ArgumentError, 'facebook access token is missing' if access_token.nil?
+      raise ArgumentError, 'facebook access token is missing' if access_token.blank?
 
       graph = Koala::Facebook::API.new(access_token)
       get_user(graph.get_object('me?fields=email'))

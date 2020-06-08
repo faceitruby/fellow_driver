@@ -1,13 +1,23 @@
 # frozen_string_literal: true
 
-class ParseExceptionService < ApplicationService
-  # @attr_reader params [Hash] Hash with exception
-  # - exception [StandardError] Any exception inherited from StandardError
+# class for retrieve hash with params
+class ExceptionPresenter
+  def initialize(exception)
+    @exception = exception
+  end
 
-  def call
+  attr_reader :exception
+
+  def page_context
+    exception_parser
+  end
+
+  private
+
+  def exception_parser
     case exception
     when ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, ArgumentError,
-         Users::AddressAutocompleteService::OverQuotaLimitError, Users::AddressAutocompleteService::UnknownError
+        Users::AddressAutocompleteService::OverQuotaLimitError, Users::AddressAutocompleteService::UnknownError
       { message: exception.message, status: :unprocessable_entity }
     when Koala::Facebook::AuthenticationError, Warden::NotAuthenticated, ActionController::InvalidAuthenticityToken
       { message: exception.message, status: :unauthorized }
@@ -16,11 +26,5 @@ class ParseExceptionService < ApplicationService
     else
       { message: exception.message, status: :bad_request }
     end
-  end
-
-  private
-
-  def exception
-    params.fetch(:exception)
   end
 end

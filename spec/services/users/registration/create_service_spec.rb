@@ -9,7 +9,7 @@ RSpec.shared_examples 'success creation' do
       .to change(User, :count).by(1)
       .and avoid_raising_error
   end
-  it('returns true') { is_expected.to be true }
+  it { is_expected.to be true }
 end
 # rubocop:enable Layout/MultilineMethodCallIndentation
 
@@ -19,7 +19,6 @@ RSpec.shared_examples 'failure creation' do
       .to raise_error(ActiveRecord::RecordInvalid, message)
       .and avoid_changing(User, :count)
   end
-  it('returns nil') { expect(subject_ignore_exceptions).to be nil }
 end
 
 RSpec.describe Users::Registration::CreateService do
@@ -121,12 +120,6 @@ RSpec.describe Users::Registration::CreateService do
               .and avoid_changing(User, :count)
           end
         end
-      end
-
-      context 'returns' do
-        before { allow(User).to receive(:new).and_raise ActiveRecord::RecordInvalid }
-
-        it('nil') { expect(subject_ignore_exceptions).to be nil }
       end
     end
   end

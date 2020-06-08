@@ -26,6 +26,7 @@ RSpec.describe Payments::PreparePaymentService do
     let(:response) { { 'type' => 'card', 'id' => 'pm_23eq' } }
 
     it { expect(subject).to be_instance_of Payment }
+    it { expect { subject }.to change(Payment, :count) }
   end
 
   context 'when payment not created' do
@@ -33,6 +34,6 @@ RSpec.describe Payments::PreparePaymentService do
 
     before { allow(Payments::SavePaymentService).to receive(:perform).and_raise(ActiveRecord::RecordInvalid) }
 
-    it { expect(subject_ignore_exceptions).to be nil }
+    it { expect { subject_ignore_exceptions }.to_not change(Payment, :count) }
   end
 end

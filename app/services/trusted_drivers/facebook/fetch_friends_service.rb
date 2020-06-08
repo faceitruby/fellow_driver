@@ -22,7 +22,7 @@ module TrustedDrivers
         friends = graph.get_object('me', fields: 'friends')['friends']['data']
         result = friends.map { |friend| User.find_by(uid: friend['uid']) }
         # result is [nil] when facebook friends doesn\'t exists in DB, we need to remove nils from result
-        result.reject(&:blank?)
+        result.compact
       end
 
       def graph

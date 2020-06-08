@@ -105,7 +105,9 @@ RSpec.describe CarsController, type: :controller do
 
       it { expect(response).to have_http_status(:ok) }
       it { expect(response.content_type).to include('application/json') }
-      it('responses success is true') { expect(response.parsed_body['success']).to be true }
+      it 'responses with success is true' do
+        expect(response.parsed_body['success']).to be true
+      end
     end
 
     context 'when car is already deleted' do
@@ -116,7 +118,9 @@ RSpec.describe CarsController, type: :controller do
 
       it { expect(response).to have_http_status(:unprocessable_entity) }
       it { expect(response.content_type).to include('application/json') }
-      it('responses success is false') { expect(response.parsed_body['success']).to be false }
+      it 'responses with success is false' do
+        expect(response.parsed_body['success']).to be false
+      end
       it { expect(response.parsed_body['error']).to be_present }
     end
 

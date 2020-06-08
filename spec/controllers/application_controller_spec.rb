@@ -9,12 +9,14 @@ RSpec.describe ApplicationController, type: :controller do
       ActiveRecord::RecordInvalid
       ActiveRecord::RecordNotFound
       ActiveRecord::RecordNotDestroyed
+      ArgumentError
+      Warden::NotAuthenticated
       Koala::Facebook::AuthenticationError
       Koala::Facebook::ClientError
       Stripe::InvalidRequestError
       Stripe::APIConnectionError
       ActionController::InvalidAuthenticityToken
-      KoalaError
+      Koala::KoalaError
       JWT::DecodeError
       Twilio::REST::TwilioError
       Users::AddressAutocompleteService::OverQuotaLimitError

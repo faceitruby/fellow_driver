@@ -25,9 +25,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
         send_request
       end
 
-      it 'returns json' do
-        expect(response.content_type).to include('application/json')
-      end
+      it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:created) }
       it { expect(subject.parsed_body['success']).to be true }
       it { expect(subject.parsed_body['invite_token']).to be_present && be_instance_of(String) }
@@ -43,7 +41,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
       context 'ActiveRecord::RecordInvalid' do
         let(:error) { ActiveRecord::RecordInvalid }
 
-        it('returns json') { expect(response.content_type).to include('application/json') }
+        it { expect(response.content_type).to include('application/json') }
         it { is_expected.to have_http_status(:unprocessable_entity) }
         it { expect(subject.parsed_body['success']).to be false }
         it { expect(subject.parsed_body['error']).to be_present && be_instance_of(String) }
@@ -84,9 +82,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
         }
       end
 
-      it 'returns json' do
-        expect(response.content_type).to include('application/json')
-      end
+      it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:accepted) }
     end
 
@@ -97,9 +93,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
         }
       end
 
-      it 'returns json' do
-        expect(response.content_type).to include('application/json')
-      end
+      it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:unprocessable_entity) }
     end
   end

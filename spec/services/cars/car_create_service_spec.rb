@@ -9,7 +9,7 @@ RSpec.describe Cars::CarCreateService do
     subject { described_class.perform(car_params.merge(user: user)) }
     it { expect(subject.class).to eq(Car) }
     it { expect { subject }.to change(Car, :count).by(1) }
-    it { expect { subject }.to avoid_raising_error }
+    it { expect { subject }.to_not raise_error }
   end
 
   context 'when car params invalid' do
@@ -22,7 +22,6 @@ RSpec.describe Cars::CarCreateService do
 
         subject { described_class.perform(invalid_params.merge(user: user)) }
 
-        it { expect(subject_ignore_exceptions.class).to eq(NilClass) }
         it { expect { subject_ignore_exceptions }.to change(Car, :count).by(0) }
         it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
       end

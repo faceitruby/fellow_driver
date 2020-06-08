@@ -57,9 +57,9 @@ class User < ApplicationRecord
   # rubocop:enable Lint/AssignmentInCondition
 
   def name
+    raise ArgumentError, 'first_name or last_name is missing' unless first_name && last_name
+
     first_name + ' ' + last_name
-  rescue NoMethodError
-    raise ArgumentError, 'first_name or last_name is missing'
   end
 
   private

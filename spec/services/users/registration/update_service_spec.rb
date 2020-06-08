@@ -30,14 +30,6 @@ RSpec.shared_examples 'avoid fields changes' do
   end
 end
 
-RSpec.shared_examples 'returns nil' do
-  let(:user_params) { attributes_for(:user, email: nil) }
-
-  before { allow(user).to receive(:save!).and_raise(ActiveRecord::RecordInvalid) }
-
-  it { expect(subject_ignore_exceptions).to be nil }
-end
-
 RSpec.describe Users::Registration::UpdateService do
   describe '#call' do
     let(:user) { create(:user, :create, phone: nil) }
@@ -49,7 +41,7 @@ RSpec.describe Users::Registration::UpdateService do
       let(:user_params) { attributes_for(:user) }
 
       it_behaves_like 'fields changes'
-      it('returns user') { is_expected.to be_instance_of User }
+      it { is_expected.to be_instance_of User }
     end
 
     context 'with missing params' do
@@ -68,8 +60,6 @@ RSpec.describe Users::Registration::UpdateService do
 
         it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
       end
-
-      it_behaves_like 'returns nil'
     end
 
     context 'with missing params' do
@@ -87,8 +77,6 @@ RSpec.describe Users::Registration::UpdateService do
 
         it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
       end
-
-      it_behaves_like 'returns nil'
     end
   end
 end

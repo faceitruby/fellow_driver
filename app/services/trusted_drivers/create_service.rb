@@ -7,11 +7,10 @@ module TrustedDrivers
     # - trusted_driver_request: [TrustedDriverRequest] Object request to add how trusted_driver
 
     def call
+      raise ArgumentError, 'Current_user is missing' if current_user.blank?
       raise ArgumentError, 'Receiver is not current user' unless receiver_id == current_user.id
 
       create_trusted_driver
-    rescue NoMethodError
-      raise ArgumentError, 'Current_user is missing'
     end
 
     private

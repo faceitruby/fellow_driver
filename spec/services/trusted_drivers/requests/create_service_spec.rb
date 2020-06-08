@@ -133,7 +133,6 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
           .and_raise(ActiveRecord::RecordNotUnique)
       end
 
-      it { expect(subject_ignore_exceptions).to be nil }
       it { expect { subject }.to raise_error ActiveRecord::RecordNotUnique }
       it { expect { subject_ignore_exceptions }.to_not change(TrustedDriverRequest, :count) }
     end
@@ -144,7 +143,6 @@ RSpec.describe TrustedDrivers::Requests::CreateService do
       let(:user_search_response) { nil }
       let(:params) { { email: receiver.email, current_user: requestor } }
 
-      it { expect(subject_ignore_exceptions).to be nil }
       it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
       it { expect { subject_ignore_exceptions }.to_not change(TrustedDriverRequest, :count) }
     end

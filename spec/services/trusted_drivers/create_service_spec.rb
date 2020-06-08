@@ -26,7 +26,6 @@ RSpec.describe TrustedDrivers::CreateService do
 
         it { expect { subject_ignore_exceptions }.to_not change(TrustedDriver, :count) }
         it { expect { subject_ignore_exceptions }.to_not change(trusted_driver_request, :accepted) }
-        it('returns nil') { expect(subject_ignore_exceptions).to be nil }
         it { expect { subject }.to raise_error ArgumentError }
       end
     end
@@ -41,7 +40,6 @@ RSpec.describe TrustedDrivers::CreateService do
           trusted_driver_request.reload
         end.to_not change(trusted_driver_request, :accepted)
       end
-      it('returns nil') { expect(subject_ignore_exceptions).to be nil }
       it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
     end
 
@@ -50,7 +48,6 @@ RSpec.describe TrustedDrivers::CreateService do
 
       it { expect { subject_ignore_exceptions }.to_not change(TrustedDriver, :count) }
       it { expect { subject_ignore_exceptions }.to_not change(trusted_driver_request, :accepted) }
-      it('returns nil') { expect(subject_ignore_exceptions).to be nil }
       it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
     end
   end

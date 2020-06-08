@@ -7,9 +7,9 @@ module Cars
     # - car: [Car] Deleted car
 
     def call
-      car.destroy.destroyed?
-    rescue NoMethodError
-      raise ActiveRecord::RecordNotFound
+      raise ActiveRecord::RecordNotFound, 'Car not found' unless car
+
+      car.destroy
     end
 
     private

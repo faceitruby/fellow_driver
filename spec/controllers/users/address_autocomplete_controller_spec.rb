@@ -43,9 +43,6 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
     before { @request.env['devise.mapping'] = Devise.mappings[:user] }
 
     context 'when token is missing' do
-      before { send_request }
-
-      # it { is_expected.to have_http_status(:unauthorized) }
       it_behaves_like 'with missing token'
     end
 

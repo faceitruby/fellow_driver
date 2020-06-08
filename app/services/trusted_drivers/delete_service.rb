@@ -6,9 +6,10 @@ module TrustedDrivers
     # - trusted_driver: [TrustedDriver] Removed trusted driver
 
     def call
-      trusted_driver.destroy!.destroyed?
-    rescue NoMethodError
-      raise ArgumentError, 'Trusted_driver is missing'
+      # TODO: CHECK WHY CONTROLLER TESTS PASS WITH ANOTHER MESSAGE
+      raise ActiveRecord::RecordNotFound, 'Trusted driver not found' unless trusted_driver
+
+      trusted_driver.destroy
     end
 
     private

@@ -31,7 +31,6 @@ RSpec.shared_examples 'correct result' do
 end
 
 RSpec.shared_examples 'wrong result' do
-  it { expect(subject_ignore_exceptions).to be nil }
   it 'doesnt create User' do
     expect { subject_ignore_exceptions }.to_not change(User, :count)
   end

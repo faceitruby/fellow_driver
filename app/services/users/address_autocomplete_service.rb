@@ -3,8 +3,6 @@
 module Users
   # Service for autocomplete addresses using Google Place Autocomplete
   class AddressAutocompleteService < ApplicationService
-    class OverQuotaLimitError < StandardError; end
-    class UnknownError < StandardError; end
     # @attr_reader params [Hash] Search query
     # - input [String] What are we looking for (required)
     # - types [String] The types of place results to return (optional)
@@ -70,5 +68,8 @@ module Users
     def autocomplete_client
       @autocomplete_client ||= GooglePlacesAutocomplete::Client.new(api_key: ENV['GOOGLE_PLACES_API_KEY'])
     end
+
+    class OverQuotaLimitError < StandardError; end
+    class UnknownError < StandardError; end
   end
 end

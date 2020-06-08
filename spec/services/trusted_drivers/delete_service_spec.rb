@@ -12,15 +12,14 @@ RSpec.describe TrustedDrivers::DeleteService do
 
       it { expect { subject }.to change(TrustedDriver, :count).by(-1) }
       it { expect { subject }.to_not raise_error }
-      it('returns true') { is_expected.to be true }
+      it { expect(subject.destroyed?).to be true }
     end
 
     context 'when trusted_driver doesn\' exist' do
       let!(:trusted_driver) { nil }
 
       it { expect { subject_ignore_exceptions }.to_not change(TrustedDriver, :count) }
-      it { expect { subject }.to raise_error ArgumentError, 'Trusted_driver is missing' }
-      it('returns nil') { expect(subject_ignore_exceptions).to be nil }
+      it { expect { subject }.to raise_error ActiveRecord::RecordNotFound, 'Trusted driver not found' }
     end
   end
 end

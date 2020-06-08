@@ -7,12 +7,14 @@ class ApplicationController < ActionController::API
                   ActiveRecord::RecordInvalid
                   ActiveRecord::RecordNotFound
                   ActiveRecord::RecordNotDestroyed
+                  ArgumentError
+                  Warden::NotAuthenticated
                   Koala::Facebook::AuthenticationError
                   Koala::Facebook::ClientError
                   Stripe::InvalidRequestError
                   Stripe::APIConnectionError
                   ActionController::InvalidAuthenticityToken
-                  KoalaError
+                  Koala::KoalaError
                   JWT::DecodeError
                   Twilio::REST::TwilioError
                   Users::AddressAutocompleteService::OverQuotaLimitError
@@ -56,11 +58,9 @@ class ApplicationController < ActionController::API
 
   def current_user
     User.find(JsonWebToken.decode(request.headers['token'])[:user_id])
-  rescue ActiveRecord::RecordNotFound
-    raise ActionController::InvalidAuthenticityToken, 'No one user matches this token'
   end
 
   def exception_handler(exception)
-    render_error_response(*ParseExceptionService.perform(exception: exception).values)
+    render_error_response(*ExceptionPresenter.new(exception).page_context.values)
   end
 end

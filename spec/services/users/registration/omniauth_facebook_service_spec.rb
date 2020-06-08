@@ -6,12 +6,12 @@ RSpec.describe Users::OmniauthFacebookService do
   describe '#call' do
     let(:result) do
       {
-        'email' => Faker::Internet.email,
-        'id' => Faker::Number.number(digits: 15)
-      }
+        email: Faker::Internet.email,
+        id: Faker::Number.number(digits: 15)
+      }.stringify_keys
     end
     let(:email) { Faker::Internet.email }
-    let(:params) { { 'access_token' => 'token_sample' } }
+    let(:params) { { access_token: 'token_sample' }.stringify_keys }
     subject { described_class.new(params).call }
 
     before do
@@ -25,13 +25,17 @@ RSpec.describe Users::OmniauthFacebookService do
         let!(:user) { create(:user, :create, uid: result['id'], email: email) }
         let(:email) { 'email@example.com' }
 
-        it('doesn\'t create user') { expect { subject }.to_not change(User, :count) }
-        it('returns token') { expect(subject).to be_instance_of String }
+        it { expect { subject }.to_not change(User, :count) }
+        it 'returns token' do
+          expect(subject).to be_instance_of String
+        end
       end
 
       context 'and email has not been taken' do
-        it('creates user') { expect { subject }.to change(User, :count).by(1) }
-        it('returns token') { expect(subject).to be_instance_of String }
+        it { expect { subject }.to change(User, :count).by(1) }
+        it 'returns token' do
+          expect(subject).to be_instance_of String
+        end
       end
     end
 
@@ -39,8 +43,7 @@ RSpec.describe Users::OmniauthFacebookService do
       let(:result) { { 'id' => Faker::Number.number(digits: 15) } }
 
       it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
-      it('doesn\'t create user') { expect { subject_ignore_exceptions }.to_not change(User, :count) }
-      it('returns nil') { expect(subject_ignore_exceptions).to be nil }
+      it { expect { subject_ignore_exceptions }.to_not change(User, :count) }
     end
 
     context 'without facebook token' do

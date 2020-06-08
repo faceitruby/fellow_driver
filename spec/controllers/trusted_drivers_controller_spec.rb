@@ -81,8 +81,12 @@ RSpec.describe TrustedDriversController, type: :controller do
 
       it { expect(response).to have_http_status(:created) }
       it { expect(response.content_type).to include('application/json') }
-      it('is expected success to be true') { expect(response.parsed_body['success']).to be true }
-      it('is expected id to be present') { expect(subject['id']).to be_present }
+      it 'is expected success to be true' do
+        expect(response.parsed_body['success']).to be true
+      end
+      it 'is expected id to be present' do
+        expect(subject['id']).to be_present
+      end
       it 'is expected trusted_driver.id to eq receiver.id' do
         expect(subject['trusted_driver_id']).to eq trusted_driver_request.receiver.id
       end
@@ -125,9 +129,9 @@ RSpec.describe TrustedDriversController, type: :controller do
         it { expect(response.parsed_body['error']).to include message }
       end
 
-      context 'NoMethodError' do
+      context 'ArgumentError with message Current_user is missing' do
         let(:message) { 'Current_user is missing' }
-        let(:error) { NoMethodError }
+        let(:error) { ArgumentError }
 
         before do
           allow_any_instance_of(TrustedDrivers::CreateService).to receive(:create_trusted_driver)
