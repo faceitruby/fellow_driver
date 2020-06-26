@@ -46,8 +46,8 @@ class User < ApplicationRecord
   validate :avatar_attached?, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :invitable, :database_authenticatable, :registerable,
-        :recoverable, :rememberable, :jwt_authenticatable, :invitable,
-        jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+         :recoverable, :rememberable, :jwt_authenticatable,
+         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   enum member_type: MEMBER_TYPES
 

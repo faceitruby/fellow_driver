@@ -16,7 +16,10 @@ RSpec.describe Users::InvitationService do
     }
   end
 
-  before { allow(Twilio::TwilioTextMessenger).to receive(:perform) }
+  before do
+    allow(Twilio::TwilioTextMessenger).to receive(:perform)
+    allow(FamilyMembers::EmailMessenger).to receive(:perform)
+  end
 
   subject { described_class.perform(invite_params.merge(current_user: current_user)) }
 
@@ -29,7 +32,7 @@ RSpec.describe Users::InvitationService do
         expect(subject.class).to eq(OpenStruct)
       end
       it 'returns a hash with new user' do
-        expect(subject.data[:user].class).to eq(Hash)
+        expect(subject.data[:user].class).to eq(User)
       end
       it 'has no errors' do
         expect(subject.errors).to eq(nil)
