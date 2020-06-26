@@ -5,7 +5,7 @@ class CarsController < ApplicationController
   before_action :find_car, only: %i[show destroy]
 
   def index
-    render_response(current_user.cars.map { |car| car.present.cars_page_context })
+    render_response(current_user.cars.with_attached_picture.map { |car| car.present.cars_page_context })
   end
 
   def show
@@ -14,12 +14,14 @@ class CarsController < ApplicationController
 
   def create
     result = Cars::CarCreateService.perform(car_params.merge(user: current_user))
-    result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors)
+
+    render_success_response({ car: result.present.cars_page_context }, :created)
   end
 
   def destroy
-    result = Cars::CarDeleteService.perform(car: @car)
-    result.success? ? render_success_response(result.data, :no_content) : render_error_response(result.errors)
+    Cars::CarDeleteService.perform(car: @car)
+
+    render_success_response
   end
 
   private

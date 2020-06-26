@@ -4,7 +4,8 @@
 class PaymentsController < ApplicationController
   def create
     result = Payments::PreparePaymentService.perform(payment_params.merge(user: current_user))
-    result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors)
+
+    render_success_response({ payment: result }, :created)
   end
 
   private

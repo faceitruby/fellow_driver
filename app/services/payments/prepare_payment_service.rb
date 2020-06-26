@@ -13,13 +13,8 @@ module Payments
 
     def call
       result = create_payment
-      if result.success?
-        pm_info = { user: user, pm_id: result.data[:id], type: result.data[:type] }
-        user_payment = Payments::SavePaymentService.perform(pm_info)
-        OpenStruct.new(success?: true, data: user_payment, errors: nil)
-      else
-        result
-      end
+      pm_info = { user: user, pm_id: result['id'], type: result['type'] }
+      Payments::SavePaymentService.perform(pm_info)
     end
 
     private

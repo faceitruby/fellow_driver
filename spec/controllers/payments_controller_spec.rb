@@ -18,44 +18,46 @@ RSpec.describe PaymentsController, type: :controller do
       payments_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
     end
 
-    before do
-      request.headers['token'] = token
-
-      allow(Payments::PreparePaymentService).to receive(:perform).
-        with(user_payment_servise).
-        and_return(service_response)
-
-      send_request
-    end
+    before { request.headers['token'] = token }
 
     context 'when payment method created' do
-      let(:expected_response) { { success: true, data: {user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'} }.to_json }
-      let(:service_response) do
-        OpenStruct.new(success?: true, data: {
-            user_payment: 'pm_1GIsWHDuGMiAOmnfCtEI39ME'
-          }, errors: nil)
+      before do
+        allow(Payments::PreparePaymentService).to receive(:perform)
+          .with(user_payment_servise)
+          .and_return(service_response)
+
+        send_request
       end
+
+      let(:service_response) { build(:payment) }
 
       it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:created) }
-      it 'is expected to return user_payment in data' do
-        expect(response.body).to eq(expected_response)
-      end
+      it { expect(response.parsed_body['success']).to be true }
+      it { expect(response.parsed_body['payment']).to be_present }
     end
 
     context 'when payment method is not created' do
-      let(:expected_response) { { success: false, message: 'error messages', data: nil }.to_json }
-      let(:service_response) do
-        OpenStruct.new('success': false,
-          response: nil, errors: 'error messages'
-        )
+      let(:exception) { ActiveRecord::RecordInvalid }
+
+      before do
+        allow(Payments::PreparePaymentService).to receive(:perform)
+          .with(user_payment_servise)
+          .and_raise exception
+
+        send_request
       end
 
       it { expect(response.content_type).to include('application/json') }
-      it { expect(response).to have_http_status(:bad_request) }
-      it 'is expected to return error message' do
-        expect(response.body).to eq(expected_response)
-      end
+      it { expect(response).to have_http_status(:unprocessable_entity) }
+      it { expect(response.parsed_body['success']).to be false }
+      it { expect(response.parsed_body['error']).to be_present }
+    end
+
+    context 'with missing token' do
+      let(:token) { nil }
+
+      include_examples 'with missing token'
     end
   end
 end

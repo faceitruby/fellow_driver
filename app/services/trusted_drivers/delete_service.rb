@@ -6,8 +6,10 @@ module TrustedDrivers
     # - trusted_driver: [TrustedDriver] Removed trusted driver
 
     def call
+      # TODO: CHECK WHY CONTROLLER TESTS PASS WITH ANOTHER MESSAGE
+      raise ActiveRecord::RecordNotFound, 'Trusted driver not found' unless trusted_driver
+
       trusted_driver.destroy
-      OpenStruct.new(success?: true, data: { message: 'deleted' }, errors: nil)
     end
 
     private

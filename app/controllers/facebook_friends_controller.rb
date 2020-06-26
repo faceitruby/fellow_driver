@@ -2,13 +2,20 @@
 
 class FacebookFriendsController < ApplicationController
   def index
-    result = TrustedDrivers::Facebook::FetchFriendsService.perform(
-      current_user: current_user, access_token: request.headers['facebooktoken'], near: request.headers['near']
-    )
-    if result.success?
-      render_response result.data
-    else
-      render_error_response result.errors
+    result = TrustedDrivers::Facebook::FetchFriendsService.perform(fetch_params)
+
+    render_success_response(facebook_friends: result.map { |user| user.present.page_context })
+  end
+
+  private
+
+  def fetch_params
+    if request.headers['access-token-fb'].blank?
+      raise Koala::Facebook::AuthenticationError.new(401, 'Facebook access token is missing')
     end
+
+    { current_user: current_user,
+      access_token: request.headers['access-token-fb'],
+      near: request.headers['near'] }
   end
 end

@@ -23,7 +23,6 @@ RSpec.describe Users::SessionsController, type: :controller do
         let(:params) { { user: { login: user.email, password: 'password' } } }
 
         it { is_expected.to have_http_status(200) }
-        it_behaves_like 'success action'
       end
 
       context 'is an phone' do
@@ -31,7 +30,6 @@ RSpec.describe Users::SessionsController, type: :controller do
         let(:params) { { user: { login: user.phone, password: 'password' } } }
 
         it { is_expected.to have_http_status(200) }
-        it_behaves_like 'success action'
       end
 
       context 'is missing' do
@@ -39,7 +37,6 @@ RSpec.describe Users::SessionsController, type: :controller do
         let(:params) { { user: { password: 'password' } } }
 
         it { is_expected.to have_http_status(422) }
-        it_behaves_like 'failure action'
       end
     end
 
@@ -50,7 +47,6 @@ RSpec.describe Users::SessionsController, type: :controller do
       before { send_request }
 
       it { is_expected.to have_http_status(422) }
-      it_behaves_like 'failure action'
     end
   end
 end

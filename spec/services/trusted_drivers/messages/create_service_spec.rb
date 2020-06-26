@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 
-# OpenStruct returned from services
 RSpec.shared_examples 'trusted_driver_messages create' do
   it { expect(subject.class).to eq(String) }
   it { expect(subject).to eq(result) }

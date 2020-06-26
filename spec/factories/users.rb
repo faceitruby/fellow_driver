@@ -21,6 +21,11 @@ FactoryBot.define do
 
     trait :facebook do
       uid { Faker::Number.number(digits: 15) }
+      provider { 'facebook' }
+    end
+
+    trait :random_member do
+      member_type { User.member_types.keys.sample }
     end
   end
 end

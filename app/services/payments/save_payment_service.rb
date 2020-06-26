@@ -8,7 +8,7 @@ module Payments
     # - type: [String] Payment type
 
     def call
-      user.payments.create(payment_type: params[:type], user_payment: params[:pm_id])
+      user.payments.create!(payment_type: params[:type], user_payment: params[:pm_id])
     end
   end
 end

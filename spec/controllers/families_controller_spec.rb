@@ -13,15 +13,23 @@ RSpec.describe FamiliesController, type: :controller do
     let(:send_request) { get :index }
     let(:expected_response) { current_user.family.present.family_page_context.to_json }
 
-    before do
-      request.headers['token'] = token
-      send_request
+    context 'with token provided' do
+      before do
+        request.headers['token'] = token
+        send_request
+      end
+
+      it { expect(response.content_type).to include('application/json') }
+      it { expect(response).to have_http_status(:success) }
+      it 'render JSON with list of members' do
+        expect(response.body).to eq(expected_response)
+      end
     end
 
-    it { expect(response.content_type).to include('application/json') }
-    it { expect(response).to have_http_status(:success) }
-    it 'render JSON with list of members' do
-      expect(response.body).to eq(expected_response)
+    context 'with missing token' do
+      let(:token) { nil }
+
+      include_examples 'with missing token'
     end
   end
 end
