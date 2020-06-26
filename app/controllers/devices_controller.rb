@@ -6,11 +6,15 @@ class DevicesController < ApplicationController
   end
 
   def create
-    render_success_response(Devices::CreateService.perform(device_params.merge(user: current_user)), :created)
+    result = Devices::CreateService.perform(device_params.merge(user: current_user))
+
+    render_success_response({ device: result.present.device_page_context }, :created)
   end
 
   def destroy
-    render_success_response(Devices::DestroyService.perform(device: device), :no_content)
+    Devices::DestroyService.perform(device: device)
+
+    render_success_response({ message: 'Device removed' }, :no_content)
   end
 
   private

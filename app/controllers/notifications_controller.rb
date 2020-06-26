@@ -6,11 +6,15 @@ class NotificationsController < ApplicationController
   end
 
   def create
-    render_success_response(Notifications::CreateService.perform(notification_params.merge(user: current_user)), :created)
+    result = Notifications::CreateService.perform(notification_params.merge(user: current_user))
+
+    render_success_response({ notification: result.present.notification_page_context }, :created)
   end
 
   def destroy
-    render_success_response(Notifications::DestroyService.perform(notification: notification), :no_content)
+    Notifications::DestroyService.perform(notification: notification)
+
+    render_success_response({ message: 'Device removed' }, :no_content)
   end
 
   private
