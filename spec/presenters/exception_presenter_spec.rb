@@ -3,6 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe ExceptionPresenter do
+  describe 'constants' do
+    describe 'EXCEPTIONS_WITH_STATUS_422' do
+      let(:exception_422_status) do
+        [ActiveRecord::RecordNotUnique,
+         ActiveRecord::RecordInvalid,
+         ActiveRecord::RecordNotFound,
+         ArgumentError,
+         Users::AddressAutocompleteService::OverQuotaLimitError,
+         Users::AddressAutocompleteService::UnknownError]
+      end
+
+      it { expect(ExceptionPresenter::EXCEPTIONS_WITH_STATUS_422).to eq exception_422_status }
+    end
+  end
+
   describe '#page_context' do
     subject { described_class.new(exception).page_context }
     context 'with' do
