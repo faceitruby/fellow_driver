@@ -6,16 +6,16 @@ module Users
     # - access_token: [String] Token
 
     def call
-      validate_facebook_token
+      jwt_encode validate_facebook_token
     end
 
     private
 
     def validate_facebook_token
+      raise ArgumentError, 'facebook access token is missing' if access_token.blank?
+
       graph = Koala::Facebook::API.new(access_token)
       get_user(graph.get_object('me?fields=email'))
-    rescue StandardError => e
-      OpenStruct.new(success?: false, errors: e.message)
     end
 
     def get_user(data = {})
@@ -27,13 +27,13 @@ module Users
         user.provider = 'facebook'
         user.member_type = 'owner'
         user.build_family
-        return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
+        user.save!
       end
-      OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user })
+      user
     end
 
     def access_token
-      params['access_token']
+      params['access_token'].presence
     end
   end
 end

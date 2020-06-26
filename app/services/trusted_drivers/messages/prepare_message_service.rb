@@ -9,10 +9,10 @@ module TrustedDrivers
       # - user_receiver [User] Invitated user
 
       def call
-        response = OpenStruct.new(success?: true, data: {})
-        response.data = response.data.merge(send_email_message) if user_receiver.email
-        response.data = response.data.merge(send_phone_message) if user_receiver.phone
-        response.data = response.data.merge(facebook_message) if user_receiver.uid
+        response = {}
+        response = response.merge(send_email_message) if user_receiver.email
+        response = response.merge(send_phone_message) if user_receiver.phone
+        response = response.merge(facebook_message) if user_receiver.uid
         response
       end
 
@@ -20,12 +20,12 @@ module TrustedDrivers
 
       def send_email_message
         TrustedDrivers::Messages::SendEmailService.perform(params)
-        { email_message: 'email request sended' }
+        { email_message: 'email request sent' }
       end
 
       def send_phone_message
         Resque.enqueue(InvitePhoneJob, user_receiver.phone, message)
-        { phone_message: 'phone request sended' }
+        { phone_message: 'phone request sent' }
       end
 
       def message

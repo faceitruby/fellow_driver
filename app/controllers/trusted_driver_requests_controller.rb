@@ -9,19 +9,20 @@ class TrustedDriverRequestsController < ApplicationController
     result = TrustedDrivers::Requests::CreateService.perform(
       trusted_driver_requests_params.merge(current_user: current_user)
     )
-    result.success? ? render_success_response(result.data, :created) : render_error_response(result.errors)
+    render_success_response(result, :created)
   end
 
   def destroy
-    render_success_response(TrustedDrivers::Requests::DeleteService.perform(
+    TrustedDrivers::Requests::DeleteService.perform(
       trusted_driver_request: trusted_driver_request
-    ).data, :no_content)
+    )
+    render_success_response
   end
 
   private
 
   def trusted_driver_requests_params
-    params.require(:trusted_driver_request).permit(:email, :phone, :facebook_uid)
+    params.require(:trusted_driver_request).permit(:email, :phone, :facebook_uid, :family_member)
   end
 
   def trusted_driver_request

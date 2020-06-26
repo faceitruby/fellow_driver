@@ -7,14 +7,10 @@ module TrustedDrivers
     # - trusted_driver_request: [TrustedDriverRequest] Object request to add how trusted_driver
 
     def call
-      if trusted_driver_request && receiver_id == current_user.id
-        create_trusted_driver
-        OpenStruct.new(success?: true, data: { message: 'created' }, errors: nil)
-      else
-        OpenStruct.new(success?: false, data: nil, errors: 'something went wrong')
-      end
-    rescue ArgumentError => e
-      OpenStruct.new(success?: false, data: nil, errors: e.message)
+      raise ArgumentError, 'Current_user is missing' if current_user.blank?
+      raise ArgumentError, 'Receiver is not current user' unless receiver_id == current_user.id
+
+      create_trusted_driver
     end
 
     private
@@ -22,8 +18,10 @@ module TrustedDrivers
     def create_trusted_driver
       raise ArgumentError, 'Requestor and receiver must exist' if receiver_id.blank? || requestor_id.blank?
 
-      TrustedDriver.create(trusted_driver_id: receiver_id, trust_driver_id: requestor_id)
-      trusted_driver_request.update(accepted: true)
+      ActiveRecord::Base.transaction do
+        trusted_driver_request.update!(accepted: true)
+        TrustedDriver.create!(trusted_driver_id: receiver_id, trust_driver_id: requestor_id)
+      end
     end
 
     def receiver_id

@@ -5,15 +5,15 @@ module Users
     # @attr_reader params [User] Authenticated user
 
     def call
-      return OpenStruct.new(success?: false, user: nil, errors: 'Invalid Login or password') unless user.present?
+      raise ActiveRecord::RecordNotFound, 'Invalid login or password' if user.nil?
 
-      OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
+      jwt_encode(user)
     end
 
     private
 
     def user
-      params[:user]
+      params[:user].presence
     end
   end
 end

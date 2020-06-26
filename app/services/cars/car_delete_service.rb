@@ -7,9 +7,9 @@ module Cars
     # - car: [Car] Deleted car
 
     def call
-      return OpenStruct.new(success?: true, data: { message: 'deleted' }, errors: nil) if car&.destroy
+      raise ActiveRecord::RecordNotFound, 'Car not found' unless car
 
-      OpenStruct.new(success?: false, data: nil, errors: 'Something went wrong')
+      car.destroy
     end
 
     private
