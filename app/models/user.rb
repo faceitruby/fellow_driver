@@ -3,6 +3,10 @@
 class User < ApplicationRecord
   MEMBER_TYPES = %i[mother father son daughter owner].freeze
 
+  attr_writer :login
+
+  enum member_type: MEMBER_TYPES
+
   belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
@@ -21,7 +25,7 @@ class User < ApplicationRecord
            foreign_key: :receiver_id,
            class_name: 'TrustedDriverRequest'
 
-  attr_writer :login
+  accepts_nested_attributes_for :family
   has_one_attached :avatar
   validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
   validates :phone, uniqueness: true,
@@ -33,16 +37,11 @@ class User < ApplicationRecord
   validates :password, presence: true, on: :create, if: -> { provider.blank? }
   validates :member_type, presence: true, on: :create
   validates_presence_of :first_name, :last_name, :email, :phone, :avatar, :address, on: :update
-  # Uniqueness can`t be checked on create, because user inputs only one of email|phone, and other is nil.
-  # Validation always be failed with nil is not unique
-  validates_uniqueness_of :email, :phone, on: :update
   validate :avatar_attached?, on: :update
   include Devise::JWT::RevocationStrategies::JTIMatcher
   devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :jwt_authenticatable,
-         jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
-
-  enum member_type: MEMBER_TYPES
+         jwt_revocation_strategy: self
 
   # rubocop:disable Lint/AssignmentInCondition
   def self.find_for_database_authentication(warden_conditions)

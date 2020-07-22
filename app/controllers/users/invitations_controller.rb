@@ -2,7 +2,7 @@
 
 module Users
   class InvitationsController < ApplicationController
-    skip_before_action :check_authorize, only: :update
+    skip_before_action :authenticate_user!, only: :update
 
     def create
       user = Users::InvitationService.perform(invite_params.merge(current_user: current_user))

@@ -11,18 +11,17 @@ module Users
       # - login: [String] User email or phone
 
       def call
-        user = User.new(create_params)
-        user.build_family
-        user.save!
+        User.create!(create_params)
       end
 
       private
 
       def create_params
-        return params.merge(member_type: 'owner') if params['login'].blank?
+        attributes = params.merge(member_type: 'owner', family_attributes: {})
+        return attributes if attributes['login'].blank?
 
-        key = params['login'].include?('@') ? 'email' : 'phone'
-        params.merge(key => params.delete('login'), member_type: 'owner')
+        key = attributes['login'].include?('@') ? 'email' : 'phone'
+        attributes.merge(key => attributes.delete('login'))
       end
     end
   end

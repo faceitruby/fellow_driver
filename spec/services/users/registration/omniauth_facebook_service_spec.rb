@@ -19,7 +19,7 @@ RSpec.describe Users::OmniauthFacebookService do
     end
 
     context 'when facebook returns email ' do
-      let(:result) { { 'email' => Faker::Internet.email, 'id' => Faker::Number.number(digits: 15) } }
+      let(:result) { { email: Faker::Internet.email, id: Faker::Number.number(digits: 15) }.stringify_keys }
 
       context 'and email has been taken' do
         let!(:user) { create(:user, :create, uid: result['id'], email: email) }
@@ -40,7 +40,7 @@ RSpec.describe Users::OmniauthFacebookService do
     end
 
     context 'when facebook doesn\'t returns email' do
-      let(:result) { { 'id' => Faker::Number.number(digits: 15) } }
+      let(:result) { { id: Faker::Number.number(digits: 15) }.stringify_keys }
 
       it { expect { subject }.to raise_error ActiveRecord::RecordInvalid }
       it { expect { subject_ignore_exceptions }.to_not change(User, :count) }

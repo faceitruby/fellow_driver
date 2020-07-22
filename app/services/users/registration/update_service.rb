@@ -11,10 +11,10 @@ module Users
       # - last_name: [String] User last name
       # - address: [String] User address
       # - avatar: [ActionDispatch::Http::UploadedFile] User avatar
-      # - token: [String] Token from request
+      # - current_user: [User] Current user
 
       def call
-        user.assign_attributes(params.except('token'))
+        user.assign_attributes(params.except('current_user'))
         user.save!
         user
       end
@@ -22,7 +22,7 @@ module Users
       private
 
       def user
-        @user ||= User.find(JsonWebToken.decode(params['token'])['user_id'])
+        params['current_user'].presence
       end
     end
   end

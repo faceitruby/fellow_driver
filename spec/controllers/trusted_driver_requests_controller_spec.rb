@@ -20,21 +20,20 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
     end
   end
 
-  let(:sender) { create(:user) }
-  let(:token) { JsonWebToken.encode(user_id: sender.id) }
+  let!(:user) { create(:user) }
+  let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }
 
-  before { request.headers['token'] = token }
+  before { request.headers.merge! headers }
 
   describe 'GET#index' do
-    let(:trusted_driver_request) { create(:trusted_driver_request) }
-    let(:token) { JsonWebToken.encode(user_id: trusted_driver_request.receiver_id) }
-    let(:send_request) { get :index }
-
-    let(:expected_response) do
-      [trusted_driver_request.present.request_page_context].to_json
-    end
+    let(:send_request) { get :index, format: :json }
 
     context 'with token provided' do
+      let!(:trusted_driver_request) { create(:trusted_driver_request, receiver_id: user.id) }
+      let(:expected_response) do
+        [trusted_driver_request.present.request_page_context].to_json
+      end
+
       before { send_request }
 
       it { expect(response.content_type).to include('application/json') }
@@ -45,20 +44,20 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
     end
 
     context 'with missing token' do
-      let(:token) { nil }
+      let(:headers) { {} }
 
       include_examples 'with missing token'
     end
   end
 
   describe 'POST#create' do
-    let(:send_request) { post :create, params: request_param }
+    let(:send_request) { post :create, params: request_param, format: :json }
 
     context 'when requested' do
       let(:trusted_driver_request) { { email: Faker::Internet.email } }
       let(:request_param) { { trusted_driver_request: trusted_driver_request } }
       let(:trusted_driver_request_params) { ActionController::Parameters.new(trusted_driver_request) }
-      let(:request_params) { trusted_driver_request_params.permit(:email).merge(current_user: sender) }
+      let(:request_params) { trusted_driver_request_params.permit(:email).merge(current_user: user) }
 
       context 'with valid' do
         before do
@@ -119,7 +118,7 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
     end
 
     context 'with missing token' do
-      let(:token) { nil }
+      let(:headers) { {} }
       let(:request_param) { nil }
 
       include_examples 'with missing token'
@@ -128,13 +127,10 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
 
   describe 'delete#destroy' do
     let(:trusted_driver_request) { create(:trusted_driver_request) }
-    let(:send_request) { delete :destroy, params: { id: trusted_driver_request.id } }
-
+    let(:send_request) { delete :destroy, params: { id: trusted_driver_request.id }, format: :json }
     let(:expected_response) { { 'success' => true } }
 
     context 'with token provided' do
-      let(:token) { JsonWebToken.encode(user_id: trusted_driver_request.receiver_id) }
-
       before { send_request }
 
       it { expect(response).to have_http_status(:ok) }
@@ -142,7 +138,7 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
     end
 
     context 'with token missing' do
-      let(:token) { nil }
+      let(:headers) { {} }
 
       include_examples 'with missing token'
     end

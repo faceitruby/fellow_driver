@@ -2,26 +2,24 @@
 
 require 'rails_helper'
 
-# rubocop:disable Layout/MultilineMethodCallIndentation
-RSpec.shared_examples 'success creation' do
-  it do
-    expect { subject }
-      .to change(User, :count).by(1)
-      .and avoid_raising_error
-  end
-  it { is_expected.to be true }
-end
-# rubocop:enable Layout/MultilineMethodCallIndentation
-
-RSpec.shared_examples 'failure creation' do
-  it do
-    expect { subject }
-      .to raise_error(ActiveRecord::RecordInvalid, message)
-      .and avoid_changing(User, :count)
-  end
-end
-
 RSpec.describe Users::Registration::CreateService do
+  # rubocop:disable Layout/MultilineMethodCallIndentation
+  shared_examples 'success creation' do
+    it do
+      expect { subject }.to change(User, :count).by(1)
+                        .and avoid_raising_error
+    end
+    it('returns true') { is_expected.to be_instance_of User }
+  end
+
+  shared_examples 'failure creation' do
+    it do
+      expect { subject }.to raise_error(ActiveRecord::RecordInvalid, message)
+                        .and avoid_changing(User, :count)
+    end
+  end
+  # rubocop:enable Layout/MultilineMethodCallIndentation
+
   describe '#call' do
     subject { described_class.new(user_params).call }
 

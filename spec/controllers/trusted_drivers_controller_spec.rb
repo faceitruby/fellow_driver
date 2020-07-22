@@ -24,17 +24,17 @@ RSpec.describe TrustedDriversController, type: :controller do
     end
   end
 
+  let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, subject.trust_driver) }
+
   describe 'GET#index' do
     subject { create(:trusted_driver) }
     let(:send_request) { get :index, params: { format: JSON } }
-    let(:token) { JsonWebToken.encode(user_id: subject.trust_driver_id) }
-
     let(:expected_response) do
       [subject.trusted_driver.present.page_context].to_json
     end
 
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 
@@ -48,13 +48,12 @@ RSpec.describe TrustedDriversController, type: :controller do
   describe 'GET#trusted_for' do
     subject { create(:trusted_driver) }
     let(:send_request) { get :trusted_for }
-    let(:token) { JsonWebToken.encode(user_id: subject.trust_driver_id) }
     let(:expected_response) do
       [subject.trust_driver.present.page_context].to_json
     end
 
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 
@@ -67,10 +66,10 @@ RSpec.describe TrustedDriversController, type: :controller do
 
   describe 'POST#create' do
     let(:send_request) { post :create, params: { trusted_driver_request: { id: trusted_driver_request.id } } }
-    let(:token) { JsonWebToken.encode(user_id: current_user.id) }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, current_user) }
     let(:trusted_driver_request) { create(:trusted_driver_request) }
 
-    before { request.headers['token'] = token }
+    before { request.headers.merge! headers }
 
     context 'trusted driver created' do
       let(:current_user) { trusted_driver_request.receiver }
@@ -150,10 +149,9 @@ RSpec.describe TrustedDriversController, type: :controller do
   describe 'delete#destroy' do
     let(:trusted_driver) { create(:trusted_driver) }
     let(:send_request) { delete :destroy, params: { id: trusted_driver.id } }
-    let(:token) { JsonWebToken.encode(user_id: trusted_driver.trust_driver_id) }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, trusted_driver.trust_driver) }
 
-    before { request.headers['token'] = token }
-
+    before { request.headers.merge! headers }
     context 'when trusted_driver exists' do
       let(:expected_response) { { success: true }.to_json }
 

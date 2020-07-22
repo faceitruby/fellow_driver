@@ -3,6 +3,7 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 require 'faker'
+require 'devise/jwt/test_helpers'
 require 'support/shared/shared_examples'
 ENV['RAILS_ENV'] ||= 'test'
 
