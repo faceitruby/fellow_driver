@@ -2,20 +2,20 @@
 
 require 'rails_helper'
 
-RSpec.shared_examples 'success response' do
-  it { is_expected.to have_http_status(:ok) }
-  it { expect(subject.content_type).to include('application/json') }
-  it { expect(subject.parsed_body['success']).to be true }
-end
-
-RSpec.shared_examples 'failure response' do
-  it { is_expected.to have_http_status(:unprocessable_entity) }
-  it { expect(subject.content_type).to include('application/json') }
-  it { expect(subject.parsed_body['success']).to be false }
-  it { expect(subject.parsed_body['error']).to be_instance_of(String) && be_present }
-end
-
 RSpec.describe Users::AddressAutocompleteController, type: :controller do
+  shared_examples 'success response' do
+    it { is_expected.to have_http_status(:ok) }
+    it { expect(subject.content_type).to include('application/json') }
+    it { expect(subject.parsed_body['success']).to be true }
+  end
+
+  shared_examples 'failure response' do
+    it { is_expected.to have_http_status(:unprocessable_entity) }
+    it { expect(subject.content_type).to include('application/json') }
+    it { expect(subject.parsed_body['success']).to be false }
+    it { expect(subject.parsed_body['error']).to be_instance_of(String) && be_present }
+  end
+
   describe 'routes' do
     it { is_expected.to route(:post, '/api/users/address_autocomplete/complete').to(action: :complete, format: :json) }
   end
@@ -48,7 +48,7 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
 
     context 'when input' do
       before do
-        allow(controller).to receive(:check_authorize).and_return(nil)
+        allow(controller).to receive(:authenticate_user!).and_return(nil)
         allow_any_instance_of(GooglePlacesAutocomplete::Client).to receive(:autocomplete).with(an_instance_of(Hash))
                                                                                          .and_return(result)
         send_request

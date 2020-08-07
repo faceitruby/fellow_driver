@@ -6,34 +6,33 @@ module Users
     # - access_token: [String] Token
 
     def call
-      jwt_encode validate_facebook_token
+      jwt_encode receive_user
     end
 
     private
 
     def validate_facebook_token
-      raise ArgumentError, 'facebook access token is missing' if access_token.blank?
-
-      graph = Koala::Facebook::API.new(access_token)
-      get_user(graph.get_object('me?fields=email'))
+      raise ArgumentError, 'facebook access token is missing' if access_token.nil?
     end
 
-    def get_user(data = {})
-      user = User.select(:id, :email, :phone).where(uid: data['id']).take
-      unless user
-        user = User.new
-        user.uid = data['id']
-        user.email = data['email']
-        user.provider = 'facebook'
-        user.member_type = 'owner'
-        user.build_family
-        user.save!
-      end
-      user
+    def receive_user
+      validate_facebook_token
+      graph = Koala::Facebook::API.new(access_token)
+      data = graph.get_object('me?fields=email')
+
+      User.find_by(uid: data['id']) || User.create!(create_params(data))
     end
 
     def access_token
       params['access_token'].presence
+    end
+
+    def create_params(data)
+      { uid: data['id'],
+        email: data['email'],
+        provider: 'facebook',
+        member_type: 'owner',
+        family_attributes: {} }
     end
   end
 end

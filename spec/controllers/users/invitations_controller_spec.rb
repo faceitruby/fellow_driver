@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Users::InvitationsController, type: :controller do
   let(:current_user) { create(:user) }
-  let(:token) { JsonWebToken.encode(user_id: current_user.id) }
+  let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, current_user) }
   let(:params) { { user: attributes_for(:user, :random_member) } }
 
-  before { request.headers['token'] = token }
+  before { request.headers.merge! headers }
 
   describe 'POST#create' do
     let(:send_request) { post :create, params: params.merge(current_user: current_user), as: :json }
@@ -25,7 +25,6 @@ RSpec.describe Users::InvitationsController, type: :controller do
         send_request
       end
 
-      it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:created) }
       it { expect(subject.parsed_body['success']).to be true }
       it { expect(subject.parsed_body['invite_token']).to be_present && be_instance_of(String) }
@@ -49,12 +48,7 @@ RSpec.describe Users::InvitationsController, type: :controller do
     end
 
     context 'with missing token' do
-      let(:token) { nil }
-
-      before do
-        allow(controller).to receive(:current_user).and_return(current_user)
-        send_request
-      end
+      let(:headers) { {} }
 
       it_behaves_like 'with missing token'
     end

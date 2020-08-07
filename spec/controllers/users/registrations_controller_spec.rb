@@ -135,7 +135,7 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     before do |test|
       @request.env['devise.mapping'] = Devise.mappings[:user]
       unless test.metadata[:real_token]
-        allow(controller).to receive(:check_authorize).and_return(nil)
+        allow(controller).to receive(:authenticate_user!).and_return(nil)
         allow_any_instance_of(Users::Registration::UpdateService).to receive(:user).and_return(user)
       end
     end
@@ -164,26 +164,21 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     end
 
     context 'with missing token', :real_token do
-      subject { response }
-
-      before { send_request }
-
       it_behaves_like 'with missing token'
     end
 
     context 'with wrong token', :real_token do
-      it 'gets 422 code' do
-        @request.headers['token'] = 'wrong_token'
-        send_request
-        expect(response).to have_http_status(422)
-      end
+      before { @request.headers['Authorization'] = 'wrong_token' }
+
+      it_behaves_like 'with missing token'
     end
 
     context 'with correct token', :real_token do
-      let(:token) { JsonWebToken.encode(user_id: user.id) }
+      let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }
+
+      before { request.headers.merge! headers }
 
       it 'gets 200 code' do
-        @request.headers['token'] = token
         send_request
         expect(response).to have_http_status(200)
       end

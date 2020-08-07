@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe CarsController, type: :controller do
   describe 'routing' do
     it { expect(get: '/api/cars').to route_to(controller: 'cars', action: 'index', format: :json) }
-    it { expect(delete: '/api/cars//1').to route_to(controller: 'cars', action: 'destroy', format: :json, id: '1') }
+    it { expect(delete: '/api/cars/1').to route_to(controller: 'cars', action: 'destroy', format: :json, id: '1') }
     it { expect(post: '/api/cars').to route_to(controller: 'cars', format: :json, action: 'create') }
     it { expect(get: '/api/cars/1').to route_to(controller: 'cars', format: :json, action: 'show', id: '1') }
     it { expect(get: '/api/cars/new').to_not route_to(controller: 'cars', action: 'new', format: :json) }
@@ -15,17 +15,17 @@ RSpec.describe CarsController, type: :controller do
   end
 
   let(:car) { create(:car) }
-  let(:token) { JsonWebToken.encode(user_id: car.user.id) }
+  # headers with token
+  let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, car.user) }
+
+  before { request.headers.merge! headers }
 
   describe 'GET#index' do
-    let(:send_request) { get :index }
+    let(:send_request) { get :index, format: :json }
     let(:expected_response) { [car.present.cars_page_context].to_json }
 
     context 'with token provided' do
-      before do
-        request.headers['token'] = token
-        send_request
-      end
+      before { send_request }
 
       it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:success) }
@@ -35,19 +35,19 @@ RSpec.describe CarsController, type: :controller do
     end
 
     context 'with missing token' do
+      let(:headers) { {} }
+
       include_examples 'with missing token'
     end
   end
 
   describe 'GET#show' do
-    let(:send_request) { get :show, params: { id: car.id } }
+    let(:send_request) { get :show, params: { id: car.id }, format: :json }
     let(:expected_response) { car.present.cars_page_context.to_json }
 
     context 'with token provided' do
-      before do
-        request.headers['token'] = token
-        send_request
-      end
+      before { send_request }
+
       it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:success) }
       it 'return JSON with car info' do
@@ -56,17 +56,17 @@ RSpec.describe CarsController, type: :controller do
     end
 
     context 'with missing token' do
+      let(:headers) { {} }
+
       include_examples 'with missing token'
     end
   end
 
   describe 'POST#create' do
-    let(:send_request) { post :create, params: { car: car_params } }
+    let(:send_request) { post :create, params: { car: car_params }, format: :json }
     let(:car_params) { attributes_for :car }
 
     context 'when car' do
-      before { request.headers['token'] = token }
-
       context 'is saved' do
         before { send_request }
 
@@ -90,15 +90,15 @@ RSpec.describe CarsController, type: :controller do
     end
 
     context 'with missing token' do
+      let(:headers) { {} }
+
       include_examples 'with missing token'
     end
   end
 
   describe 'DELETE#destroy' do
-    let(:send_request) { delete :destroy, params: { id: car.id } }
+    let(:send_request) { delete :destroy, params: { id: car.id }, format: :json }
     let(:expected_response) { { 'success' => true } }
-
-    before { request.headers['token'] = token }
 
     context 'when deletes' do
       before { send_request }
@@ -125,7 +125,7 @@ RSpec.describe CarsController, type: :controller do
     end
 
     context 'with missing token' do
-      let(:token) { nil }
+      let(:headers) { {} }
 
       include_examples 'with missing token'
     end

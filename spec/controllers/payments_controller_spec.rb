@@ -9,8 +9,8 @@ RSpec.describe PaymentsController, type: :controller do
 
   describe 'POST#create' do
     let(:user) { create(:user) }
-    let(:token) { JsonWebToken.encode(user_id: user.id) }
-    let(:send_request) { post :create, params: payment_params.merge(user: user) }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }
+    let(:send_request) { post :create, params: payment_params.merge(user: user), format: :json }
     let(:payments_params) { ActionController::Parameters.new(payment_params) }
     let(:card_info) { { number: '4000 00100 0000 2230', exp_month: '2', exp_year: '2021', cvc: '314' } }
     let(:payment_params) { { type: 'card', card: card_info } }
@@ -18,7 +18,7 @@ RSpec.describe PaymentsController, type: :controller do
       payments_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
     end
 
-    before { request.headers['token'] = token }
+    before { request.headers.merge! headers }
 
     context 'when payment method created' do
       before do
@@ -55,7 +55,7 @@ RSpec.describe PaymentsController, type: :controller do
     end
 
     context 'with missing token' do
-      let(:token) { nil }
+      let(:headers) { {} }
 
       include_examples 'with missing token'
     end
