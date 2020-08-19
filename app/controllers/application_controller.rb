@@ -21,8 +21,8 @@ class ApplicationController < ActionController::API
                   Users::AddressAutocompleteService::UnknownError
                   StandardError].freeze
 
-  before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :check_authorize
+  before_action :authenticate_user!
+  respond_to :json
 
   rescue_from(*EXCEPTIONS, with: :exception_handler)
 
@@ -40,24 +40,6 @@ class ApplicationController < ActionController::API
 
   def render_error_response(message = 'Bad Request', status = :bad_request)
     render json: { success: false, error: message }, status: status
-  end
-
-  def configure_permitted_parameters
-    added_attrs = %i[phone email password password_confirmation]
-    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
-    devise_parameter_sanitizer.permit :account_update, keys: added_attrs
-  end
-
-  def check_authorize
-    token = request.headers['token']
-    raise Warden::NotAuthenticated, 'Token is missing' if token.blank?
-
-    user = JsonWebToken.decode(token)
-    raise ActionController::InvalidAuthenticityToken, 'Token is not valid' if Time.current.to_i > user[:expire]
-  end
-
-  def current_user
-    User.find(JsonWebToken.decode(request.headers['token'])[:user_id])
   end
 
   def exception_handler(exception)

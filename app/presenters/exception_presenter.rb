@@ -2,6 +2,13 @@
 
 # class for retrieve hash with params
 class ExceptionPresenter
+  EXCEPTIONS_WITH_STATUS_422 = [ActiveRecord::RecordNotUnique,
+                                ActiveRecord::RecordInvalid,
+                                ActiveRecord::RecordNotFound,
+                                ArgumentError,
+                                Users::AddressAutocompleteService::OverQuotaLimitError,
+                                Users::AddressAutocompleteService::UnknownError].freeze
+
   def initialize(exception)
     @exception = exception
   end
@@ -16,8 +23,7 @@ class ExceptionPresenter
 
   def exception_parser
     case exception
-    when ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, ArgumentError,
-        Users::AddressAutocompleteService::OverQuotaLimitError, Users::AddressAutocompleteService::UnknownError
+    when *EXCEPTIONS_WITH_STATUS_422
       { message: exception.message, status: :unprocessable_entity }
     when Koala::Facebook::AuthenticationError, Warden::NotAuthenticated, ActionController::InvalidAuthenticityToken
       { message: exception.message, status: :unauthorized }

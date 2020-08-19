@@ -13,7 +13,7 @@ module Users
 
     def autocomplete_params
       params.require(:search).permit(:input, :language, :radius, :types, :lat, :lng)
-            .merge(token: request.headers['token'])
+            .merge(token: request.headers['Authorization'])
     end
   end
 end

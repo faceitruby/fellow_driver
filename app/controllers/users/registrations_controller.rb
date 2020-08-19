@@ -2,15 +2,9 @@
 
 module Users
   class RegistrationsController < Devise::RegistrationsController
-    skip_before_action :check_authorize, only: :create
-    skip_before_action :authenticate_scope!, only: :update
-
-    respond_to :json
-
     # POST api/users/signup
     def create
-      Users::Registration::CreateService.perform(create_params)
-
+      add_token_to_header Users::Registration::CreateService.perform(create_params)
       render_success_response(nil, :created)
     end
 
@@ -24,14 +18,19 @@ module Users
     private
 
     def create_params
-      params.require(:user).permit(:email, :phone, :password, :login)
+      params.require(:user).permit(:email, :phone, :password, :login).merge(member_type: 'owner', family_attributes: {})
     end
 
     def update_params
       permitted = params.require(:user).permit(:email, :phone, :password, :first_name,
                                                :last_name, :address, :avatar)
-      permitted.merge!(token: request.headers['token']) if request.headers['token']
+      permitted.merge!(current_user: current_user)
       permitted
+    end
+
+    def add_token_to_header(user)
+      token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first
+      response.set_header 'Authorization', "Bearer #{token}"
     end
   end
 end

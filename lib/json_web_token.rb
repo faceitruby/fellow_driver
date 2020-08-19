@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JsonWebToken
-  SECRET_KEY = Rails.application.secrets.secret_key_base.to_s.freeze
+  SECRET_KEY = ENV.fetch 'DEVISE_JWT_SECRET_KEY'
 
   def self.encode(payload, expire = 24.hours.from_now)
     payload[:expire] = expire.to_i

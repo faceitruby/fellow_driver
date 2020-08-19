@@ -22,11 +22,11 @@ RSpec.describe NotificationsController, type: :controller do
 
   describe 'GET#index' do
     let!(:notification) { create(:notification) }
-    let(:token) { JsonWebToken.encode(user_id: create(:user).id) }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, create(:user)) }
     let(:send_request) { get :index }
     let(:expected_response) { [notification.present.notification_page_context].to_json }
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 
@@ -37,7 +37,7 @@ RSpec.describe NotificationsController, type: :controller do
 
   describe 'POST#create' do
     let(:current_user) { create(:user) }
-    let(:token) { JsonWebToken.encode(user_id: current_user.id) }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, current_user) }
     let(:params) do
       {
         notification: {
@@ -51,7 +51,7 @@ RSpec.describe NotificationsController, type: :controller do
     let(:send_request) { post :create, params: params }
 
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 
@@ -62,9 +62,11 @@ RSpec.describe NotificationsController, type: :controller do
   describe 'DELETE#destroy' do
     let(:notification) { create(:notification) }
     let(:send_request) { delete :destroy, params: { id: notification.id } }
-    let(:token) { JsonWebToken.encode(user_id: create(:user)) }
+    let(:user) { create(:user) }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }
+
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 

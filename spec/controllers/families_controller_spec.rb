@@ -9,15 +9,14 @@ RSpec.describe FamiliesController, type: :controller do
 
   describe 'GET#index' do
     let(:current_user) { create(:user) }
-    let(:token) { JsonWebToken.encode(user_id: current_user.id) }
-    let(:send_request) { get :index }
+    let(:send_request) { get :index, format: :json }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, current_user) }
     let(:expected_response) { current_user.family.present.family_page_context.to_json }
 
+    before { request.headers.merge! headers }
+
     context 'with token provided' do
-      before do
-        request.headers['token'] = token
-        send_request
-      end
+      before { send_request }
 
       it { expect(response.content_type).to include('application/json') }
       it { expect(response).to have_http_status(:success) }
@@ -27,7 +26,7 @@ RSpec.describe FamiliesController, type: :controller do
     end
 
     context 'with missing token' do
-      let(:token) { nil }
+      let(:headers) { {} }
 
       include_examples 'with missing token'
     end

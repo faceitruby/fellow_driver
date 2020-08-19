@@ -2,11 +2,6 @@
 
 require 'rails_helper'
 
-# frozen_string_literal: true
-
-require 'spec_helper'
-require 'rails_helper'
-
 RSpec.shared_examples 'correct result' do
   it 'returns Hash object' do
     expect(subject).to be_instance_of User
