@@ -13,15 +13,5 @@ module Users
 
       render_success_response({ token: token }, :ok)
     end
-
-    # GET /resource/sign_out
-    # def destroy
-    #   # jwt_encode(current_user)
-    #   # render json: {'overiden': 'yes'}
-    #   # resource.deactivated_at = DateTime.now
-    #   # resource.save!
-    #   # Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
-    #   # # render_response(warden.logout)
-    # end
   end
 end
