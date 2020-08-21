@@ -37,6 +37,12 @@ Rails.application.routes.draw do
     resources :trusted_driver_requests, only: %i[create destroy index]
     resources :facebook_friends, only: %i[index]
     get 'families', to: 'families#index'
+    resources :notifications, only: %i[index create destroy]
+    resources :devices, only: %i[index create destroy]
+    resources :notifications_receivers, only: %i[create]
+    delete 'notifications_receivers', to: 'notifications_receivers#destroy'
+    get '/pushnotification/notify' => 'pushnotification#notify'
+
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
