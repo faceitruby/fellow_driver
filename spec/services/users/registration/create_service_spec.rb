@@ -3,63 +3,122 @@
 require 'rails_helper'
 
 RSpec.describe Users::Registration::CreateService do
+  # rubocop:disable Layout/MultilineMethodCallIndentation
+  shared_examples 'success creation' do
+    it do
+      expect { subject }.to change(User, :count).by(1)
+                        .and avoid_raising_error
+    end
+    it('returns true') { is_expected.to be_instance_of User }
+  end
+
+  shared_examples 'failure creation' do
+    it do
+      expect { subject }.to raise_error(ActiveRecord::RecordInvalid, message)
+                        .and avoid_changing(User, :count)
+    end
+  end
+  # rubocop:enable Layout/MultilineMethodCallIndentation
+
   describe '#call' do
     subject { described_class.new(user_params).call }
 
-    context 'with email provided' do
-      context 'and has not been taken' do
-        let(:user_params) { attributes_for(:user, :create, phone: nil) }
+    context 'with params in correct format' do
+      context 'and email provided' do
+        context 'and has not been taken' do
+          let(:user_params) { attributes_for(:user, :create).slice(:password, :email).with_indifferent_access }
 
-        it { is_expected.to be_instance_of OpenStruct }
-        it 'creates user and family' do
-          expect { subject }.to change(User, :count).by(1) && change(Family, :count).by(1)
+          include_examples 'success creation'
         end
-        it_behaves_like 'provided fields'
+
+        context 'and has been taken' do
+          let!(:user) { create(:user, :create, phone: nil) }
+          let(:user_params) do
+            attributes_for(:user, :create, email: user.email).slice(:password, :email).with_indifferent_access
+          end
+          let(:message) { 'Validation failed: Email has already been taken' }
+
+          include_examples 'failure creation'
+        end
       end
 
-      context 'and has been taken' do
-        let!(:user) { create(:user, :create, phone: nil) }
-        let(:user_params) { attributes_for(:user, :create, email: user.email, phone: nil) }
+      context 'and phone provided' do
+        context 'and has not been taken' do
+          let(:user_params) { attributes_for(:user, :create).slice(:password, :phone).with_indifferent_access }
 
-        it { is_expected.to be_instance_of OpenStruct }
-        it 'doesn\'t create user and family' do
-          expect { subject }.to_not change(User, :count) && change(Family, :count)
+          include_examples 'success creation'
         end
-        it_behaves_like 'missing fields'
+
+        context 'and has been taken' do
+          let!(:user) { create(:user, :create, email: nil) }
+          let(:user_params) do
+            attributes_for(:user, :create, phone: user.phone).slice(:password, :phone).with_indifferent_access
+          end
+          let(:message) { 'Validation failed: Phone has already been taken' }
+
+          include_examples 'failure creation'
+        end
+      end
+
+      context 'and login provided' do
+        context 'with email' do
+          context 'and has not been taken' do
+            let(:user_params) do
+              attributes_for(:user, :create, login: Faker::Internet.email).slice(:password, :login)
+                                                                          .with_indifferent_access
+            end
+
+            include_examples 'success creation'
+          end
+
+          context 'and has been taken' do
+            let!(:user) { create(:user, :create) }
+            let(:user_params) do
+              attributes_for(:user, :create, login: user.email).slice(:password, :login)
+                                                               .with_indifferent_access
+            end
+            let(:message) { 'Validation failed: Email has already been taken' }
+
+            include_examples 'failure creation'
+          end
+        end
+
+        context 'with phone' do
+          context 'and has not been taken' do
+            let(:user_params) do
+              attributes_for(:user, :create, login: Faker::Base.numerify('###-###-####')).slice(:password, :login)
+                                                                                         .with_indifferent_access
+            end
+
+            include_examples 'success creation'
+          end
+
+          context 'and has been taken' do
+            let!(:user) { create(:user, :create) }
+            let(:user_params) do
+              attributes_for(:user, :create, login: user.phone).slice(:password, :login)
+                                                               .with_indifferent_access
+            end
+            let(:message) { 'Validation failed: Phone has already been taken' }
+
+            include_examples 'failure creation'
+          end
+        end
       end
     end
 
-    context 'with phone provided' do
-      context 'and has not been taken' do
-        let(:user_params) { attributes_for(:user, :create, email: nil) }
+    context 'with missing params' do
+      %i[email phone password].each do |param|
+        context "when #{param} is missing" do
+          let(:user_params) { attributes_for(:user, :create).slice(param).with_indifferent_access }
 
-        it { is_expected.to be_instance_of OpenStruct }
-        it 'creates user family' do
-          expect { subject }.to change(User, :count).by(1) && change(Family, :count).by(1)
+          it do
+            expect { subject }
+              .to raise_error(ActiveRecord::RecordInvalid)
+              .and avoid_changing(User, :count)
+          end
         end
-        it_behaves_like 'provided fields'
       end
-
-      context 'and has been taken' do
-        let!(:user) { create(:user, :create, email: nil) }
-        let(:user_params) { attributes_for(:user, :create, phone: user.phone, email: nil) }
-
-        it { is_expected.to be_instance_of OpenStruct }
-        it 'doesn\'t create user family' do
-          expect { subject }.to_not change(User, :count) && change(Family, :count)
-        end
-        it_behaves_like 'missing fields'
-      end
-    end
-
-    context 'with email and phone are missing' do
-      let(:user_params) { attributes_for(:user, :create, email: nil, phone: nil) }
-
-      it { is_expected.to be_instance_of OpenStruct }
-      it 'doesn\'t create user family' do
-        expect { subject }.to_not change(User, :count) && change(Family, :count)
-      end
-      it_behaves_like 'missing fields'
     end
   end
 end

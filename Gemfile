@@ -6,6 +6,7 @@ ruby '2.6.5'
 gem 'aws-sdk-s3', require: false
 
 gem 'devise'
+
 gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
 
 gem 'devise-jwt', '~> 0.5.9'
@@ -20,6 +21,8 @@ gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 
 gem 'redis'
 gem 'resque'
+gem 'resque-scheduler'
+gem 'rpush'
 
 gem 'rspec-rails'
 gem 'twilio-ruby'

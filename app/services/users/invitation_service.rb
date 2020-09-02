@@ -6,30 +6,20 @@ module Users
     # - first_name: [String] new user first name
     # - last_name: [String] new user last name
     # - phone: [string] new user phone number
+    # - email: [string] new user email
     # - member_type: [integer] user relationship
     # - current_user: [User] Current user
 
     def call
-      invite = User.invite!(invite_params) { |u| u.skip_invitation = true }
-      if invite.errors.empty?
-        update_fields(invite)
-        Resque.enqueue(InvitePhoneJob, params[:phone], message(invite))
-        FamilyMembers::EmailMessenger.perform(email_params(invite)) if invite.email
-        OpenStruct.new(success?: true,
-                       data: { invite_token: invite.raw_invitation_token,
-                               user: invite },
-                       errors: nil)
-      else
-        OpenStruct.new(success?: false, data: nil, errors: invite.errors)
-      end
+      invite = User.invite!(invite_params, current_user) { |u| u.skip_invitation = true }
+      raise ActiveRecord::RecordInvalid, invite if invite.errors.any?
+
+      Resque.enqueue(InvitePhoneJob, params[:phone], message(invite))
+      FamilyMembers::EmailMessenger.perform(email_params(invite)) if invite.email
+      invite
     end
 
     private
-
-    def update_fields(invite)
-      invite.update_columns(family_id: current_user.family.id,
-                            invited_by_id: current_user.id)
-    end
 
     def message(invite)
       <<~MSG
@@ -40,7 +30,11 @@ module Users
     end
 
     def invite_params
-      params.except(:current_user)
+      params.permit(:first_name,
+                    :last_name,
+                    :phone,
+                    :email,
+                    :member_type).merge(family_id: current_user.family.id)
     end
 
     def phone_params(invite)

@@ -2,3 +2,4 @@ Rails.env.production? ? uri = URI.parse(ENV['REDIS_URL']) : uri = URI.parse('red
 
 Resque.redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 Dir["#{Rails.root}/app/jobs/*.rb"].each { |file| require file }
+Resque.schedule = YAML.load_file Rails.root.join('config', 'schedule.yml')

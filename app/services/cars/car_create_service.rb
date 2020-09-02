@@ -14,9 +14,8 @@ module Cars
 
     def call
       car = user.cars.new(params)
-      return OpenStruct.new(success?: false, data: nil, errors: car.errors) unless car.save
-
-      OpenStruct.new(success?: true, data: { car: car.present.cars_page_context }, errors: nil)
+      car.save!
+      car
     end
 
     private

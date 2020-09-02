@@ -3,20 +3,32 @@
 require 'rails_helper'
 
 RSpec.describe Cars::CarDeleteService do
-  context 'when car exist' do
-    let(:car) { create(:car) }
-    subject { described_class.perform(car: car) }
-    let(:message) { { message: 'deleted' } }
-    it { expect(subject.data).to eq(message) }
-    it { expect(subject.errors).to eq(nil) }
-    it { expect(subject.success?).to be true }
-  end
+  describe '#call' do
+    context 'when car exist' do
+      let!(:car) { create(:car) }
+      subject { described_class.perform(car: car) }
 
-  context 'when no exist' do
-    let(:response_message) { 'Something went wrong' }
-    subject { described_class.perform }
-    it { expect(subject.data).to eq(nil) }
-    it { expect(subject.errors).to eq(response_message) }
-    it { expect(subject.success?).to be false }
+      it { expect { subject }.to_not raise_error }
+      it { expect { subject }.to change(Car, :count).by(-1) }
+      it { expect(subject.destroyed?).to be true }
+    end
+
+    context 'when no exist' do
+      subject { described_class.perform }
+
+      it { expect { subject }.to raise_error ActiveRecord::RecordNotFound }
+      it { expect { subject_ignore_exceptions }.to_not change(Car, :count) }
+    end
+
+    context 'when car is already deleted' do
+      let(:car) { create(:car) }
+      subject { described_class.perform(car: car) }
+
+      before { car.destroy }
+
+      it { expect { subject }.to_not raise_error }
+      it { expect { subject }.to_not change(Car, :count) }
+      it { expect(subject.destroyed?).to eq true }
+    end
   end
 end

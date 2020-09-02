@@ -5,14 +5,15 @@ module Users
     # POST /api/users/address_autocomplete/complete
     def complete
       result = Users::AddressAutocompleteService.perform(autocomplete_params)
-      result.success? ? render_success_response(result.data) : render_error_response(result.errors, 422)
+
+      render_success_response(predictions: result)
     end
 
     private
 
     def autocomplete_params
       params.require(:search).permit(:input, :language, :radius, :types, :lat, :lng)
-            .merge(token: request.headers['token'])
+            .merge(token: request.headers['Authorization'])
     end
   end
 end

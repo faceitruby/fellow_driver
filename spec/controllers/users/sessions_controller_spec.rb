@@ -22,24 +22,21 @@ RSpec.describe Users::SessionsController, type: :controller do
         let(:user) { create(:user, :create, phone: nil, password: 'password') }
         let(:params) { { user: { login: user.email, password: 'password' } } }
 
-        it { is_expected.to have_http_status(200) }
-        it_behaves_like 'success action'
+        it { is_expected.to have_http_status(:ok) }
       end
 
       context 'is an phone' do
         let(:user) { create(:user, :create, email: nil, password: 'password') }
         let(:params) { { user: { login: user.phone, password: 'password' } } }
 
-        it { is_expected.to have_http_status(200) }
-        it_behaves_like 'success action'
+        it { is_expected.to have_http_status(:ok) }
       end
 
       context 'is missing' do
         let(:user) { create(:user, :create, email: nil, password: 'password') }
         let(:params) { { user: { password: 'password' } } }
 
-        it { is_expected.to have_http_status(422) }
-        it_behaves_like 'failure action'
+        it { is_expected.to have_http_status(:unprocessable_entity) }
       end
     end
 
@@ -49,8 +46,7 @@ RSpec.describe Users::SessionsController, type: :controller do
 
       before { send_request }
 
-      it { is_expected.to have_http_status(422) }
-      it_behaves_like 'failure action'
+      it { is_expected.to have_http_status(:unprocessable_entity) }
     end
   end
 end

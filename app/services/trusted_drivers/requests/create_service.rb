@@ -9,35 +9,19 @@ module TrustedDrivers
       # - phone [String] Requested user's phone
       # - email [String] Requested user's email
       # - uid [String] Requested user's uid
+      # - member_type [String] Member type in family
 
       def call
-        result = TrustedDrivers::UserSearchService.perform(params.except(:current_user))
-        if result.success?
-          create_request(result)
-        else
-          result = TrustedDrivers::Requests::InvitationService.perform(params)
-          if result.success?
-            create_request(result)
-          else
-            response(false, nil, result.errors)
-          end
-        end
+        user = TrustedDrivers::UserSearchService.perform(params.except(:current_user)) ||
+               TrustedDrivers::Requests::InvitationService.perform(params)
+        create_request(user)
+        send_message(user)
       end
 
       private
 
-      def create_request(result)
-        trusted_driver_request = TrustedDriverRequest.new(trusted_driver(result.data[:user]))
-        if trusted_driver_request.save
-          sended_message = send_message(result.data[:user])
-          response(true, { messages: sended_message.data, user: result.data[:user] }, nil)
-        else
-          response(false, nil, trusted_driver_request.errors)
-        end
-      end
-
-      def response(success, data, errors)
-        OpenStruct.new(success?: success, data: data, errors: errors)
+      def create_request(user)
+        TrustedDriverRequest.new(trusted_driver(user)).save!
       end
 
       def send_message(user_receiver)

@@ -24,17 +24,17 @@ RSpec.describe TrustedDriversController, type: :controller do
     end
   end
 
+  let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, subject.trust_driver) }
+
   describe 'GET#index' do
     subject { create(:trusted_driver) }
     let(:send_request) { get :index, params: { format: JSON } }
-    let(:token) { JsonWebToken.encode(user_id: subject.trust_driver_id) }
-
     let(:expected_response) do
       [subject.trusted_driver.present.page_context].to_json
     end
 
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 
@@ -48,13 +48,12 @@ RSpec.describe TrustedDriversController, type: :controller do
   describe 'GET#trusted_for' do
     subject { create(:trusted_driver) }
     let(:send_request) { get :trusted_for }
-    let(:token) { JsonWebToken.encode(user_id: subject.trust_driver_id) }
     let(:expected_response) do
       [subject.trust_driver.present.page_context].to_json
     end
 
     before do
-      request.headers['token'] = token
+      request.headers.merge! headers
       send_request
     end
 
@@ -66,68 +65,114 @@ RSpec.describe TrustedDriversController, type: :controller do
   end
 
   describe 'POST#create' do
-    let(:send_request) { post :create, params: { trusted_triver_request: { id: trusted_driver_request.id } } }
-    let(:token) { JsonWebToken.encode(user_id: current_user.id) }
+    let(:send_request) { post :create, params: { trusted_driver_request: { id: trusted_driver_request.id } } }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, current_user) }
     let(:trusted_driver_request) { create(:trusted_driver_request) }
-    let(:service_params) do
-      {
-        trusted_driver_request: trusted_driver_request,
-        current_user: current_user
-      }
-    end
 
-    let(:result) do
-      OpenStruct.new({
-                       success?: status,
-                       data: data,
-                       errors: errors
-                     })
-    end
-
-    before do
-      request.headers['token'] = token
-
-      allow(TrustedDrivers::CreateService).to receive(:perform).with(service_params).and_return(result)
-
-      send_request
-    end
+    before { request.headers.merge! headers }
 
     context 'trusted driver created' do
       let(:current_user) { trusted_driver_request.receiver }
       let(:status) { true }
-      let(:data) { { message: 'created' } }
-      let(:errors) { nil }
+      subject { response.parsed_body['trusted_driver'] }
+
+      before { send_request }
 
       it { expect(response).to have_http_status(:created) }
+      it { expect(response.content_type).to include('application/json') }
+      it 'is expected success to be true' do
+        expect(response.parsed_body['success']).to be true
+      end
+      it 'is expected id to be present' do
+        expect(subject['id']).to be_present
+      end
+      it 'is expected trusted_driver.id to eq receiver.id' do
+        expect(subject['trusted_driver_id']).to eq trusted_driver_request.receiver.id
+      end
+      it 'is expected trust_driver.id to eq requestor.id' do
+        expect(subject['trust_driver_id']).to eq trusted_driver_request.requestor.id
+      end
+      it { expect { send_request }.to_not raise_error }
     end
 
-    context 'trusted_driver not created' do
-      let(:current_user) { create(:user) }
+    context 'when was raised' do
+      let(:error) { ArgumentError }
+      let(:current_user) { trusted_driver_request.receiver }
       let(:status) { false }
-      let(:data) { nil }
-      let(:errors) { 'someting went wrong' }
 
-      it { expect(response).to have_http_status(:bad_request) }
+      context 'ArgumentError with message Receiver is not current user' do
+        let(:message) { 'Receiver is not current user' }
+
+        before do
+          allow(TrustedDrivers::CreateService).to receive(:perform).and_raise(error, message)
+          send_request
+        end
+
+        it { expect(response.content_type).to include('application/json') }
+        it { expect(response).to have_http_status(:unprocessable_entity) }
+        it { expect(response.parsed_body['success']).to be false }
+        it { expect(response.parsed_body['error']).to include message }
+      end
+
+      context 'ArgumentError with message Requestor and receiver must exist' do
+        let(:message) { 'Requestor and receiver must exist' }
+
+        before do
+          allow(TrustedDrivers::CreateService).to receive(:perform).and_raise(error, message)
+          send_request
+        end
+
+        it { expect(response.content_type).to include('application/json') }
+        it { expect(response).to have_http_status(:unprocessable_entity) }
+        it { expect(response.parsed_body['success']).to be false }
+        it { expect(response.parsed_body['error']).to include message }
+      end
+
+      context 'ArgumentError with message Current_user is missing' do
+        let(:message) { 'Current_user is missing' }
+        let(:error) { ArgumentError }
+
+        before do
+          allow_any_instance_of(TrustedDrivers::CreateService).to receive(:create_trusted_driver)
+            .and_raise(error, message)
+          send_request
+        end
+
+        it { expect(response.content_type).to include('application/json') }
+        it { expect(response).to have_http_status(:unprocessable_entity) }
+        it { expect(response.parsed_body['success']).to be false }
+        it { expect(response.parsed_body['error']).to include message }
+      end
     end
   end
 
   describe 'delete#destroy' do
-    subject { create(:trusted_driver) }
-    let(:send_request) { delete :destroy, params: { id: subject.id } }
-    let(:token) { JsonWebToken.encode(user_id: subject.trust_driver_id) }
+    let(:trusted_driver) { create(:trusted_driver) }
+    let(:send_request) { delete :destroy, params: { id: trusted_driver.id } }
+    let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, trusted_driver.trust_driver) }
 
-    let(:expected_response) do
-      { success: true, data: { message: 'deleted' } }.to_json
+    before { request.headers.merge! headers }
+    context 'when trusted_driver exists' do
+      let(:expected_response) { { success: true }.to_json }
+
+      before { send_request }
+
+      it { expect(response).to have_http_status(:ok) }
+      it { expect(response.parsed_body['success']).to be true }
     end
+    context 'when trusted_driver is already deleted' do
+      let(:message) { 'Couldn\'t find TrustedDriver' }
 
-    before do
-      request.headers['token'] = token
-      send_request
-    end
+      before do
+        trusted_driver.destroy
+        send_request
+      end
 
-    it { expect(response).to have_http_status(:no_content) }
-    it 'is expected to returns hash with status && message' do
-      expect(response.body).to eq(expected_response)
+      it { expect(response).to have_http_status(:unprocessable_entity) }
+      it { expect(response.parsed_body['success']).to be false }
+      it 'error includes "Couldn\'t find TrustedDriver"' do
+        expect(response.parsed_body['error']).to include message
+      end
     end
   end
 end

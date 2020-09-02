@@ -20,7 +20,7 @@ module Vehicles
         result += thread.value
       end
 
-      threads.each &:join
+      threads.each(&:join)
       result
     end
   end

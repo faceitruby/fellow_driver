@@ -19,10 +19,10 @@ Rails.application.routes.draw do
       post 'users/auth/facebook', to: 'users/omniauth_callbacks#facebook'
 
       post 'users/signup', to: 'users/registrations#create', as: :user_registration
-      patch 'users/signup', to: 'users/registrations#update'
-      put 'users/signup', to: 'users/registrations#update'
+      match 'users/signup', to: 'users/registrations#update', via: %i[patch put]
 
       post 'users/login', to: 'users/sessions#create', as: :user_session
+      delete 'users/logout', to: 'users/sessions#destroy'
 
       post 'users/address_autocomplete/complete', to: 'users/address_autocomplete#complete', as: :address_autocomplete_complete
     end
@@ -37,6 +37,12 @@ Rails.application.routes.draw do
     resources :trusted_driver_requests, only: %i[create destroy index]
     resources :facebook_friends, only: %i[index]
     get 'families', to: 'families#index'
+    resources :notifications, only: %i[index create destroy]
+    resources :devices, only: %i[index create destroy]
+    resources :notifications_receivers, only: %i[create]
+    delete 'notifications_receivers', to: 'notifications_receivers#destroy'
+    get '/pushnotification/notify' => 'pushnotification#notify'
+
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

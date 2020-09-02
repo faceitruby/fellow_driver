@@ -8,11 +8,7 @@ module TrustedDrivers
     # - email: [String] Invited user's email
 
     def call
-      if find_by_email || find_by_uid || find_by_phone
-        OpenStruct.new(success?: true, data: { user: @user }, errors: nil)
-      else
-        OpenStruct.new(success?: false, data: nil, errors: nil)
-      end
+      find_through_email || find_through_uid || find_through_phone
     end
 
     private
@@ -29,22 +25,22 @@ module TrustedDrivers
       params[:email].presence
     end
 
-    def find_by_email
+    def find_through_email
       return unless email
 
-      @user = User.find_by(email: email)
+      User.find_by(email: email)
     end
 
-    def find_by_uid
+    def find_through_uid
       return unless uid
 
-      @user = User.find_by(uid: uid)
+      User.find_by(uid: uid)
     end
 
-    def find_by_phone
+    def find_through_phone
       return unless phone
 
-      @user = User.find_by(phone: phone)
+      User.find_by(phone: phone)
     end
   end
 end

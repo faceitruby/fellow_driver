@@ -11,19 +11,18 @@ module Users
       # - last_name: [String] User last name
       # - address: [String] User address
       # - avatar: [ActionDispatch::Http::UploadedFile] User avatar
-      # - token: [String] Token from request
+      # - current_user: [User] Current user
 
       def call
-        user.assign_attributes(params.except('token'))
-        return OpenStruct.new(success?: false, user: nil, errors: user.errors) unless user.save
-
-        OpenStruct.new(success?: true, data: { token: jwt_encode(user), user: user }, errors: nil)
+        user.assign_attributes(params.except('current_user'))
+        user.save!
+        user
       end
 
       private
 
       def user
-        @user ||= User.find(JsonWebToken.decode(params['token'])['user_id'])
+        params['current_user'].presence
       end
     end
   end

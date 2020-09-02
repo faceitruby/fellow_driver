@@ -3,8 +3,28 @@
 require 'json_web_token'
 
 class ApplicationController < ActionController::API
-  before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :check_authorize
+  EXCEPTIONS = %w[ActiveRecord::RecordNotUnique
+                  ActiveRecord::RecordInvalid
+                  ActiveRecord::RecordNotFound
+                  ActiveRecord::RecordNotDestroyed
+                  ArgumentError
+                  Warden::NotAuthenticated
+                  Koala::Facebook::AuthenticationError
+                  Koala::Facebook::ClientError
+                  Stripe::InvalidRequestError
+                  Stripe::APIConnectionError
+                  ActionController::InvalidAuthenticityToken
+                  Koala::KoalaError
+                  JWT::DecodeError
+                  Twilio::REST::TwilioError
+                  Users::AddressAutocompleteService::OverQuotaLimitError
+                  Users::AddressAutocompleteService::UnknownError
+                  StandardError].freeze
+
+  before_action :authenticate_user!
+  respond_to :json
+
+  rescue_from(*EXCEPTIONS, with: :exception_handler)
 
   protected
 
@@ -12,38 +32,17 @@ class ApplicationController < ActionController::API
     render json: json, code: 200
   end
 
-  def render_success_response(data = nil, status = :ok)
-    render json: {
-      success: true,
-      data: data
-    }, status: status
+  def render_success_response(data = {}, status = :ok)
+    response = { success: true }
+    response.merge! data if data.present?
+    render json: response, status: status
   end
 
   def render_error_response(message = 'Bad Request', status = :bad_request)
-    render json: {
-      success: false,
-      message: message,
-      data: nil
-    }, status: status
+    render json: { success: false, error: message }, status: status
   end
 
-  def configure_permitted_parameters
-    added_attrs = %i[phone email password password_confirmation]
-    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
-    devise_parameter_sanitizer.permit :account_update, keys: added_attrs
-  end
-
-  def check_authorize
-    token = request.headers['token']
-    return render_error_response('Token is missing', 401) unless token
-
-    user = JsonWebToken.decode(token)
-    render_error_response('Token is not valid', 422) if Time.now.to_i > user[:expire]
-  rescue JWT::DecodeError
-    render_error_response('Token is not valid', 422)
-  end
-
-  def current_user
-    User.find(JsonWebToken.decode(request.headers['token'])[:user_id])
+  def exception_handler(exception)
+    render_error_response(*ExceptionPresenter.new(exception).page_context.values)
   end
 end

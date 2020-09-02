@@ -2,17 +2,14 @@
 
 require 'rails_helper'
 
-# OpenStruct returned from services
 RSpec.shared_examples 'prepare_message' do
-  it { expect(subject.class).to eq(OpenStruct) }
-  it { expect(subject.errors).to eq(nil) }
-  it { expect(subject.success?).to be true }
-  it { expect(subject.data).to eq(result) }
+  it { expect(subject).to be_instance_of(Hash) && eq(result) }
+  it { expect { subject }.to_not raise_error }
 end
 
 RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
-  let(:requestor) { create(:user) }
-  let(:receiver) { create(:user, :facebook) }
+  let(:requestor) { create(:user, :create) }
+  let(:receiver) { create(:user, :create, :facebook) }
   let(:params) do
     {
       current_user: requestor,
@@ -26,27 +23,27 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
     allow(TrustedDrivers::Messages::SendEmailService).to receive(:perform).and_return(nil)
 
     allow_any_instance_of(described_class).to receive(:send_phone_message)
-      .and_return({ phone_message: 'phone request sended' })
+      .and_return({ phone_message: 'phone request sent' })
   end
 
   describe '#call' do
     context 'when receiver have' do
       context 'phone' do
-        let(:user_receiver) { build(:user, email: nil) }
-        let(:result) { { phone_message: 'phone request sended' } }
+        let(:user_receiver) { build(:user, :create, email: nil) }
+        let(:result) { { phone_message: 'phone request sent' } }
 
         it_behaves_like 'prepare_message'
       end
 
       context 'email' do
-        let(:user_receiver) { build(:user, phone: nil) }
-        let(:result) { { email_message: 'email request sended' } }
+        let(:user_receiver) { build(:user, :create, phone: nil) }
+        let(:result) { { email_message: 'email request sent' } }
 
         it_behaves_like 'prepare_message'
       end
 
       context 'uid' do
-        let(:user_receiver) { build(:user, :facebook, phone: nil, email: nil) }
+        let(:user_receiver) { build(:user, :create, :facebook, phone: nil, email: nil) }
         let(:result_message) { 'Invite message' }
 
         before do
@@ -61,12 +58,12 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'phone and email' do
-        let(:user_receiver) { build(:user) }
+        let(:user_receiver) { build(:user, :create) }
 
         let(:result) do
           {
-            phone_message: 'phone request sended',
-            email_message: 'email request sended'
+            phone_message: 'phone request sent',
+            email_message: 'email request sent'
           }
         end
 
@@ -74,7 +71,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'phone and uid' do
-        let(:user_receiver) { build(:user, :facebook, email: nil) }
+        let(:user_receiver) { build(:user, :create, :facebook, email: nil) }
         let(:result_message) { 'Invite message' }
 
         before do
@@ -85,7 +82,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
         let(:result) do
           {
-            phone_message: 'phone request sended',
+            phone_message: 'phone request sent',
             facebook_message: { message: result_message, uid: user_receiver.uid }
           }
         end
@@ -94,7 +91,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
       end
 
       context 'email and uid' do
-        let(:user_receiver) { build(:user, :facebook, phone: nil) }
+        let(:user_receiver) { build(:user, :create, :facebook, phone: nil) }
         let(:result_message) { 'Invite message' }
 
         before do
@@ -105,7 +102,7 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
         let(:result) do
           {
-            email_message: 'email request sended',
+            email_message: 'email request sent',
             facebook_message: { message: result_message, uid: user_receiver.uid }
           }
         end
@@ -125,8 +122,8 @@ RSpec.describe TrustedDrivers::Messages::PrepareMessageService do
 
         let(:result) do
           {
-            phone_message: 'phone request sended',
-            email_message: 'email request sended',
+            phone_message: 'phone request sent',
+            email_message: 'email request sent',
             facebook_message: { message: result_message, uid: receiver.uid }
           }
         end

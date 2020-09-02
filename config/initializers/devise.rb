@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'custom_failure'
+
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -147,7 +149,7 @@ Devise.setup do |config|
   # Ensure that invited record is valid.
   # The invitation won't be sent if this check fails.
   # Default: false
-  # config.validate_on_invite = true
+  config.validate_on_invite = true
 
   # Resend invitation if user with invited status is invited again
   # Default: true
@@ -355,11 +357,16 @@ Devise.setup do |config|
     # variable generated with rake secret
     jwt.secret = ENV['DEVISE_JWT_SECRET_KEY']
     jwt.dispatch_requests = [
-        ['POST', %r{^/login$}]
+        ['POST', %r{^/api/users/login$}],
+        ['POST', %r{^/api/users/signup$}]
     ]
     jwt.revocation_requests = [
         ['DELETE', %r{^/logout$}]
     ]
     jwt.expiration_time = 30.minutes.to_i
+    jwt.request_formats = { user: [:json] }
+  end
+  config.warden do |manager|
+    manager.failure_app = CustomFailureApp
   end
 end

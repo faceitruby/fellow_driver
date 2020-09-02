@@ -3,25 +3,24 @@
 require 'rails_helper'
 require 'json_web_token'
 
-# Update user examples
-RSpec.shared_examples 'update with missing fields' do
-  it 'gets 422 code' do
-    send_request
-    expect(response).to have_http_status(422)
-  end
-  it 'doesn\'t change user\'s fields' do
-    user = User.last
-    expect do
-      send_request
-      user.reload
-    end.to not_change(user, :phone)
-      .and not_change(user, :first_name)
-      .and not_change(user, :last_name)
-      .and not_change(user, :address)
-  end
-end
-
 RSpec.describe Users::RegistrationsController, type: :controller do
+  shared_examples 'update with missing fields' do
+    it 'gets 422 code' do
+      send_request
+      expect(response).to have_http_status(422)
+    end
+    it 'doesn\'t change user\'s fields' do
+      user = User.last
+      expect do
+        send_request
+        user.reload
+      end.to avoid_changing(user, :phone)
+        .and avoid_changing(user, :first_name)
+        .and avoid_changing(user, :last_name)
+        .and avoid_changing(user, :address)
+    end
+  end
+
   describe 'route' do
     it { is_expected.to_not route(:get, '/api/users/signup').to(action: :index, format: :json) }
     it { is_expected.to_not route(:patch, '/api/users/signup').to(action: :show, format: :json) }
@@ -136,15 +135,15 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     before do |test|
       @request.env['devise.mapping'] = Devise.mappings[:user]
       unless test.metadata[:real_token]
-        allow(controller).to receive(:check_authorize).and_return(nil)
+        allow(controller).to receive(:authenticate_user!).and_return(nil)
         allow_any_instance_of(Users::Registration::UpdateService).to receive(:user).and_return(user)
       end
     end
 
     context 'with all fields provided' do
-      it 'gets 204 code' do
+      it 'gets 200 code' do
         send_request
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(200)
       end
       it 'changes user\'s fields' do
         expect do
@@ -165,27 +164,23 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     end
 
     context 'with missing token', :real_token do
-      it 'gets 401 code' do
-        send_request
-        expect(response).to have_http_status(401)
-      end
+      it_behaves_like 'with missing token'
     end
 
     context 'with wrong token', :real_token do
-      it 'gets 422 code' do
-        @request.headers['token'] = 'wrong_token'
-        send_request
-        expect(response).to have_http_status(422)
-      end
+      before { @request.headers['Authorization'] = 'wrong_token' }
+
+      it_behaves_like 'with missing token'
     end
 
     context 'with correct token', :real_token do
-      let(:token) { JsonWebToken.encode(user_id: user.id) }
+      let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }
 
-      it 'gets 204 code' do
-        @request.headers['token'] = token
+      before { request.headers.merge! headers }
+
+      it 'gets 200 code' do
         send_request
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(200)
       end
     end
   end
