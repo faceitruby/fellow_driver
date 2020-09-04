@@ -7,6 +7,10 @@ module Users
 
 
     def create
+      if User.find_by_email(params[:email]).present?
+
+      end
+
       user = Users::InvitationService.perform(invite_params.merge(current_user: current_user))
 
       render_success_response({ invite_token: user.raw_invitation_token, user: user.present.page_context }, :created)
@@ -37,6 +41,7 @@ module Users
                                    :email,
                                    :phone,
                                    :member_type,
+                                   :birthday,
                                    :skip_invitation)
     end
 

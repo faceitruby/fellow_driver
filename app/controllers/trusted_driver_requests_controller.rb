@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class TrustedDriverRequestsController < ApplicationController
+  before_action :check_age
+
   def index
     render_response(trusted_driver_requests_list)
   end

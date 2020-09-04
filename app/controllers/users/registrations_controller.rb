@@ -23,7 +23,7 @@ module Users
 
     def update_params
       permitted = params.require(:user).permit(:email, :phone, :password, :first_name,
-                                               :last_name, :address, :avatar)
+                                               :last_name, :address, :avatar, :birthday)
       permitted.merge!(current_user: current_user)
       permitted
     end
