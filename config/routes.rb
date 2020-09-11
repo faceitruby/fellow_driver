@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     resources :notifications_receivers, only: %i[create]
     delete 'notifications_receivers', to: 'notifications_receivers#destroy'
     get '/pushnotification/notify' => 'pushnotification#notify'
+    resources :family_connections, only: %i[index update]
 
   end
 

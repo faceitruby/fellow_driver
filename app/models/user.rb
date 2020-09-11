@@ -30,6 +30,12 @@ class User < ApplicationRecord
   has_many :trusted_driver_requests_as_receiver,
            foreign_key: :receiver_id,
            class_name: 'TrustedDriverRequest'
+  has_many :requestor_user_family_connections,
+           class_name: 'FamilyConnection',
+           foreign_key: :requestor_user_id
+  has_many :receiver_user_family_connections,
+           class_name: 'FamilyConnection',
+           foreign_key: :receiver_user_id
 
   accepts_nested_attributes_for :family
   has_one_attached :avatar
