@@ -9,7 +9,7 @@ module Vehicles
     # - brand: [String] Car brand name
 
     def call
-      brand = params.strip.gsub(' ', '_')
+      brand = params.strip.tr(' ', '_')
       url = URI("https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/#{brand}?format=json")
       examples(url, 'Model_Name')
     end

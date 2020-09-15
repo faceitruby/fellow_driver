@@ -27,7 +27,6 @@ RSpec.describe ApplicationController, type: :controller do
 
       it { expect(described_class::EXCEPTIONS).to eq exceptions }
     end
-
   end
 
   describe 'rescue_from' do

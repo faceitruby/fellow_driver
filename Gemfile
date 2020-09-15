@@ -10,8 +10,10 @@ gem 'devise'
 gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
 
 gem 'devise-jwt', '~> 0.5.9'
+
 gem 'geocoder', '~> 1.3', '>= 1.3.7'
 gem 'google_places_autocomplete'
+gem 'google_maps_service'
 gem 'haml-rails'
 
 gem 'koala', '~> 3.0'
@@ -50,7 +52,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails'
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', '~> 6.0'
   gem 'faker'
 end
 

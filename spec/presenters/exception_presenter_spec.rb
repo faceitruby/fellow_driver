@@ -9,7 +9,6 @@ RSpec.describe ExceptionPresenter do
         [ActiveRecord::RecordNotUnique,
          ActiveRecord::RecordInvalid,
          ActiveRecord::RecordNotFound,
-         ArgumentError,
          Users::AddressAutocompleteService::OverQuotaLimitError,
          Users::AddressAutocompleteService::UnknownError]
       end
@@ -33,13 +32,27 @@ RSpec.describe ExceptionPresenter do
         it { is_expected.to include(message: message, status: :unprocessable_entity) }
       end
 
-      [ActiveRecord::RecordNotUnique, ActiveRecord::RecordNotFound, ArgumentError,
+      [ActiveRecord::RecordNotUnique, ActiveRecord::RecordNotFound,
        Users::AddressAutocompleteService::OverQuotaLimitError,
        Users::AddressAutocompleteService::UnknownError].each do |exception_class|
         context exception_class.to_s do
           let(:exception) { exception_class.new(message) }
 
           it { is_expected.to include(message: message, status: :unprocessable_entity) }
+        end
+      end
+
+      context 'ArgumentError' do
+        let(:exception) { ArgumentError.new(message) }
+
+        context 'with custom message' do
+          it { is_expected.to include(message: message, status: :unprocessable_entity) }
+        end
+
+        context 'with message \'argument out of range\'' do
+          let(:message) { 'argument out of range' }
+
+          it { is_expected.to include(message: 'Wrong time', status: :unprocessable_entity) }
         end
       end
 

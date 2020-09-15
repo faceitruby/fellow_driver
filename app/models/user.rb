@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
   scope :without_car, -> { left_outer_joins(:cars).where(cars: { id: nil }) }
   scope :without_trusted_drivers, -> { left_outer_joins(:trusted_drivers).where(trusted_drivers: { id: nil }) }
-  scope :without_payments, -> { left_outer_joins(:payments).where(payments: { id: nil }) }
+  # scope :without_payments, -> { left_outer_joins(:payments).where(payments: { id: nil }) }
 
   attr_writer :login
 
@@ -14,6 +14,7 @@ class User < ApplicationRecord
   belongs_to :family
   has_many :cars, dependent: :destroy
   has_many :payments, dependent: :destroy
+  # has_many :rides, foreign_key: :driver_id
 
   has_many :devices, dependent: :destroy
 
@@ -24,13 +25,14 @@ class User < ApplicationRecord
            foreign_key: :trusted_driver_id,
            class_name: 'TrustedDriver'
 
+  # has_many :second_trusted_drivers, through: :trusted_drivers, source: :trusted_driver
+
   has_many :trusted_driver_requests_as_requestor,
            foreign_key: :requestor_id,
            class_name: 'TrustedDriverRequest'
   has_many :trusted_driver_requests_as_receiver,
            foreign_key: :receiver_id,
            class_name: 'TrustedDriverRequest'
-
   accepts_nested_attributes_for :family
   has_one_attached :avatar
   validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
@@ -63,6 +65,11 @@ class User < ApplicationRecord
 
   def name
     "#{first_name} #{last_name}".strip
+  end
+
+  def second_connections
+    # TODO: OPTIMIZE
+    trusted_drivers.map { |tr| tr.trusted_driver.trusted_drivers }
   end
 
   private

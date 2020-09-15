@@ -7,6 +7,10 @@ RSpec.describe PaymentsController, type: :controller do
     it { expect(post: '/api/payments').to route_to(controller: 'payments', format: :json, action: 'create') }
   end
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'POST#create' do
     let(:user) { create(:user) }
     let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }

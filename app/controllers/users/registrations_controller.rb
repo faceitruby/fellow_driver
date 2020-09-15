@@ -24,7 +24,7 @@ module Users
     def update_params
       permitted = params.require(:user).permit(:email, :phone, :password, :first_name,
                                                :last_name, :address, :avatar)
-      permitted.merge!(current_user: current_user)
+      permitted[:current_user] = current_user
       permitted
     end
 

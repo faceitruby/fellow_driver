@@ -25,6 +25,10 @@ RSpec.describe TrustedDriverRequestsController, type: :controller do
 
   before { request.headers.merge! headers }
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'GET#index' do
     let(:send_request) { get :index, format: :json }
 

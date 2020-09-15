@@ -16,7 +16,7 @@ module Notifications
       raise ArgumentError, 'No registered ids for user' unless user.present?
 
       user_ids = []
-      user&.devices.each do |device|
+      user&.devices&.each do |device|
         user_ids.push(device.registration_ids)
       end
       user_ids

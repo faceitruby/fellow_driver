@@ -8,13 +8,11 @@ module Notifications
     # registration_ids [Array] an array of one or more client registration tokens
 
     def call
-      # response = fcm_client.send(reseivers, options)
-
-      raise ArgumentError, 'The list of registration_ids must be filled' unless reseivers.present?
+      raise ArgumentError, 'The list of registration_ids must be filled' unless receivers.present?
 
       n = Rpush::Gcm::Notification.new
       n.app = app_client
-      n.registration_ids = reseivers
+      n.registration_ids = receivers
       n.data = { message: options['title'] }
       n.content_available = true
       n.notification = options
@@ -32,7 +30,7 @@ module Notifications
       }
     end
 
-    def reseivers
+    def receivers
       params[:registration_ids].presence
     end
 
@@ -48,7 +46,7 @@ module Notifications
     def create_client
       app = Rpush::Gcm::App.new
       app.name = 'qwer'
-      app.auth_key = ENV['FCM_SEVER_KEY']
+      app.auth_key = ENV['FCM_SERVER_KEY']
       app.connections = 1
       app.save!
       app

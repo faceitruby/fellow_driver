@@ -8,8 +8,8 @@ namespace :resque do
   task :setup do
     require 'resque'
   end
-task :setup_schedule => :setup do
+  task setup_schedule: :setup do
     require 'resque-scheduler'
   end
-task :scheduler => :setup_schedule
+  task scheduler: :setup_schedule
 end

@@ -26,6 +26,10 @@ RSpec.describe TrustedDriversController, type: :controller do
 
   let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, subject.trust_driver) }
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'GET#index' do
     subject { create(:trusted_driver) }
     let(:send_request) { get :index, params: { format: JSON } }
@@ -157,8 +161,8 @@ RSpec.describe TrustedDriversController, type: :controller do
 
       before { send_request }
 
-      it { expect(response).to have_http_status(:ok) }
-      it { expect(response.parsed_body['success']).to be true }
+      it { expect(response).to have_http_status(:no_content) }
+      it { expect(response.parsed_body['success']).to eq('success') }
     end
     context 'when trusted_driver is already deleted' do
       let(:message) { 'Couldn\'t find TrustedDriver' }

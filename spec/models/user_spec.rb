@@ -14,6 +14,14 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe 'constants' do
+    describe 'MEMBER_TYPES' do
+      let(:types) { %i[mother father son daughter owner] }
+
+      it { expect(described_class::MEMBER_TYPES).to eq types }
+    end
+  end
+
   describe 'indexes' do
     %i[email reset_password_token jti].each do |field|
       it { is_expected.to have_db_index(field).unique(true) }
@@ -117,8 +125,33 @@ RSpec.describe User, type: :model do
     ].each do |association|
       it { is_expected.to have_many(association) }
     end
+    # it { is_expected.to have_many(:consonant_drivers).with_foreign_key(:driver_id) }
 
     it { is_expected.to belong_to(:family) }
+  end
+
+  describe 'scopes' do
+    describe '.without_car' do
+      let(:without_car) { described_class.left_outer_joins(:cars).where(cars: { id: nil }) }
+
+      subject { described_class.without_car }
+
+      it { is_expected.to eq without_car }
+    end
+
+    describe '.without_trusted_drivers' do
+      let(:without_trusted_drivers) do
+        described_class.left_outer_joins(:trusted_drivers).where(trusted_drivers: { id: nil })
+      end
+
+      subject { described_class.without_trusted_drivers }
+
+      it { is_expected.to eq without_trusted_drivers }
+    end
+  end
+
+  describe 'nested attributes' do
+    it { is_expected.to accept_nested_attributes_for :family }
   end
 
   describe 'enums' do

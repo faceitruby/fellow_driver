@@ -17,6 +17,10 @@ RSpec.describe VehiclesController, type: :controller do
     end
   end
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'GET#brands' do
     let(:user) { create(:user) }
     let(:brands_response) do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_13_111802) do
+ActiveRecord::Schema.define(version: 2020_08_13_061617) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,18 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
     t.index ["user_id"], name: "index_devices_on_user_id"
   end
 
+  create_table "driver_candidates", force: :cascade do |t|
+    t.bigint "driver_id"
+    t.bigint "ride_id", null: false
+    t.boolean "second_connection", default: false
+    t.integer "status", limit: 2, default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["driver_id", "ride_id"], name: "index_driver_candidates_on_driver_id_and_ride_id", unique: true
+    t.index ["driver_id"], name: "index_driver_candidates_on_driver_id"
+    t.index ["ride_id"], name: "index_driver_candidates_on_ride_id"
+  end
+
   create_table "families", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -84,6 +96,37 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "ride_messages", force: :cascade do |t|
+    t.string "message"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "ride_template_id"
+    t.bigint "ride_id", null: false
+    t.index ["ride_id"], name: "index_ride_messages_on_ride_id"
+    t.index ["ride_template_id"], name: "index_ride_messages_on_ride_template_id"
+  end
+
+  create_table "ride_templates", force: :cascade do |t|
+    t.text "text", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["text"], name: "index_ride_templates_on_text", unique: true
+  end
+
+  create_table "rides", force: :cascade do |t|
+    t.bigint "requestor_id"
+    t.integer "passengers", default: [], array: true
+    t.integer "status", limit: 2, default: 0, null: false
+    t.string "start_address"
+    t.string "end_address"
+    t.datetime "date"
+    t.integer "payment"
+    t.integer "min_payment", default: 10
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["requestor_id"], name: "index_rides_on_requestor_id"
   end
 
   create_table "rpush_apps", force: :cascade do |t|
@@ -207,6 +250,11 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cars", "users"
   add_foreign_key "devices", "users"
+  add_foreign_key "driver_candidates", "rides"
+  add_foreign_key "driver_candidates", "users", column: "driver_id"
   add_foreign_key "payments", "users"
+  add_foreign_key "ride_messages", "ride_templates"
+  add_foreign_key "ride_messages", "rides"
+  add_foreign_key "rides", "users", column: "requestor_id"
   add_foreign_key "users", "families"
 end

@@ -22,7 +22,8 @@ class TrustedDriversController < ApplicationController
 
   def destroy
     TrustedDrivers::DeleteService.perform(trusted_driver: trusted_driver)
-    render_success_response
+
+    render_success_response({ message: 'Device removed' }, :no_content)
   end
 
   private

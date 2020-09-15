@@ -20,6 +20,11 @@ RSpec.describe CarsController, type: :controller do
 
   before { request.headers.merge! headers }
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+    it { is_expected.to use_before_action(:find_car) }
+  end
+
   describe 'GET#index' do
     let(:send_request) { get :index, format: :json }
     let(:expected_response) { [car.present.cars_page_context].to_json }

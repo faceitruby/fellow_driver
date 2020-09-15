@@ -4,6 +4,6 @@ FactoryBot.define do
   factory :payment do
     user
     payment_type { 'card' }
-    user_payment { Faker::String.random }
+    user_payment { Faker::Lorem.sentence }
   end
 end

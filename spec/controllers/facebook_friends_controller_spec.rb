@@ -16,6 +16,10 @@ RSpec.describe FacebookFriendsController, type: :controller do
     end
   end
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'GET#index' do
     let(:send_request) { get :index, format: :json }
     let(:near) { true }

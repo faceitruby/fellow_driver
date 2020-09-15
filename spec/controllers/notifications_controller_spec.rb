@@ -24,7 +24,8 @@ RSpec.describe NotificationsController, type: :controller do
     let!(:notification) { create(:notification) }
     let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, create(:user)) }
     let(:send_request) { get :index }
-    let(:expected_response) { [notification.present.notification_page_context].to_json }
+    let(:expected_response) { Notification.all.map { |n| n.present.notification_page_context }.to_json }
+
     before do
       request.headers.merge! headers
       send_request

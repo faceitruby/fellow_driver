@@ -41,9 +41,9 @@ module Users
 
     def receive_params
       my_params = params.except(:token)
-      my_params.merge!(session_token: find_session_token)
-      my_params.merge!(language: language) unless my_params.key?(:language)
-      my_params.merge!(types: 'address') unless my_params.key?(:types)
+      my_params[:session_token] = find_session_token
+      my_params[:language] = language unless my_params.key?(:language)
+      my_params[:types] = 'address' unless my_params.key?(:types)
       my_params.to_h.symbolize_keys
     end
 

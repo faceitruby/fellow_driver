@@ -3,28 +3,19 @@
 require 'rails_helper'
 
 RSpec.describe Users::AddressAutocompleteController, type: :controller do
-  shared_examples 'success response' do
-    it { is_expected.to have_http_status(:ok) }
-    it { expect(subject.content_type).to include('application/json') }
-    it { expect(subject.parsed_body['success']).to be true }
-  end
-
-  shared_examples 'failure response' do
-    it { is_expected.to have_http_status(:unprocessable_entity) }
-    it { expect(subject.content_type).to include('application/json') }
-    it { expect(subject.parsed_body['success']).to be false }
-    it { expect(subject.parsed_body['error']).to be_instance_of(String) && be_present }
-  end
-
   describe 'routes' do
     it { is_expected.to route(:post, '/api/users/address_autocomplete/complete').to(action: :complete, format: :json) }
+  end
+
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
   end
 
   describe 'POST#complete' do
     let(:body) do
       {
         predictions: predictions,
-        status: status
+        status: response_status
       }
     end
     let(:result) { double(body: body.to_json) }
@@ -38,6 +29,8 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
     end
     let(:input) { 'some search' }
     let(:send_request) { post :complete, params: params, as: :json }
+    let(:field_name) { 'predictions' }
+
     subject { response }
 
     before { @request.env['devise.mapping'] = Devise.mappings[:user] }
@@ -57,49 +50,51 @@ RSpec.describe Users::AddressAutocompleteController, type: :controller do
       context 'is present' do
         context 'and returned status is \'OK\'' do
           let(:predictions) { [{ description: 'Some Place' }] }
-          let(:status) { 'OK' }
+          let(:response_status) { 'OK' }
 
           it_behaves_like 'success response'
           it { expect(subject.parsed_body['predictions']).to be_instance_of(Array) && be_present }
         end
 
         context 'and returned status is \'ZERO_RESULTS\'' do
-          let(:status) { 'ZERO_RESULTS' }
+          let(:response_status) { 'ZERO_RESULTS' }
 
-          it_behaves_like 'success response'
+          it_behaves_like 'success response' do
+            let(:enable_field_name_test) { false }
+          end
           it { expect(subject.parsed_body['predictions']).to eq [] }
         end
 
         context 'and status is \'INVALID_REQUEST\'' do
-          let(:status) { 'INVALID_REQUEST' }
+          let(:response_status) { 'INVALID_REQUEST' }
 
-          it_behaves_like 'failure response'
+          it_behaves_like 'failed response'
         end
 
         context 'and status is \'REQUEST_DENIED\'' do
-          let(:status) { 'REQUEST_DENIED' }
+          let(:response_status) { 'REQUEST_DENIED' }
 
-          it_behaves_like 'failure response'
+          it_behaves_like 'failed response'
         end
 
         context 'and status is \'OVER_QUERY_LIMIT\'' do
-          let(:status) { 'OVER_QUERY_LIMIT' }
+          let(:response_status) { 'OVER_QUERY_LIMIT' }
 
-          it_behaves_like 'failure response'
+          it_behaves_like 'failed response'
         end
 
         context 'and status is \'UNKNOWN_ERROR\'' do
-          let(:status) { 'UNKNOWN_ERROR' }
+          let(:response_status) { 'UNKNOWN_ERROR' }
 
-          it_behaves_like 'failure response'
+          it_behaves_like 'failed response'
         end
       end
 
       context 'is missing' do
         let(:input) { nil }
-        let(:status) { 'INVALID_REQUEST' }
+        let(:response_status) { 'INVALID_REQUEST' }
 
-        it_behaves_like 'failure response'
+        it_behaves_like 'failed response'
       end
     end
   end

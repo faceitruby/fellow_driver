@@ -32,6 +32,10 @@ RSpec.describe Users::RegistrationsController, type: :controller do
     it { is_expected.to route(:patch, '/api/users/signup').to(action: :update, format: :json) }
   end
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'POST#create' do
     let(:send_request) { post :create, params: params, as: :json }
     let(:params) do

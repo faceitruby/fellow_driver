@@ -9,6 +9,10 @@ RSpec.describe Users::InvitationsController, type: :controller do
 
   before { request.headers.merge! headers }
 
+  describe 'callbacks' do
+    it { is_expected.to use_before_action(:authenticate_user!) }
+  end
+
   describe 'POST#create' do
     let(:send_request) { post :create, params: params.merge(current_user: current_user), as: :json }
     let(:user) do
