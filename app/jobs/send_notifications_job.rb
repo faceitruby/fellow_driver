@@ -17,6 +17,6 @@ class SendNotificationsJob < ActiveJob::Base
       user.devices.ids if user.devices.presence
     end
     registration_ids = receivers_notifications.map { |receiver| receiver.devices.map { |ids| ids.registration_ids } }
-    Notifications::PushService.perform(notification: notification, registration_ids: registration_ids.flatten )
+    Notifications::PushService.perform(notification: notification, registration_ids: registration_ids.flatten)
   end
 end

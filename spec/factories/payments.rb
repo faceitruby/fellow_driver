@@ -6,4 +6,8 @@ FactoryBot.define do
     payment_type { 'card' }
     user_payment { Faker::String.random }
   end
+
+  trait :not_allowed do
+    factory :user, traits: [:young]
+  end
 end

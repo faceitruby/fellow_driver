@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class FamilyConnectionPresenter < ApplicationPresenter
-  MODEL_ATTRIBUTES = %i[id requestor_user_id receiver_user_id accepted created_at updated_at].freeze
+  MODEL_ATTRIBUTES = %i[id requestor_user_id receiver_user_id member_type accepted created_at updated_at].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
 

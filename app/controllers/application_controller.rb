@@ -47,6 +47,6 @@ class ApplicationController < ActionController::API
   end
 
   def check_age
-    render_error_response('Access for adult', 401) unless 15.year.ago >= current_user.birthday
+    render_error_response('Access for adult', :bad_request) unless 15.year.ago >= current_user.birthday
   end
 end

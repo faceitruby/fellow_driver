@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FamilyConnection < ApplicationRecord
   MEMBER_TYPES = %i[mother father son daughter owner].freeze
 

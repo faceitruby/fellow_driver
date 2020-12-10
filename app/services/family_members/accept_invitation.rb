@@ -12,7 +12,8 @@ module FamilyMembers
 
     def call
       raise ArgumentError, 'Invitation token is missing' if invitation_token.nil?
-      user = User.accept_invitation!(accept_invitation_params)
+
+      User.accept_invitation!(accept_invitation_params)
     end
 
     private
