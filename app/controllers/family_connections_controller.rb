@@ -8,15 +8,15 @@ class FamilyConnectionsController < ApplicationController
   end
 
   def update
-    result = Connections::FamilyConnections::UpdateService.perform(update_params)
+    Connections::FamilyConnections::UpdateService.perform(update_params.merge(current_user: current_user))
 
-    render_success_response({ connection: result.present.family_connection_page_context }, :accepted)
+    render_success_response({ message: 'Connection accepted' }, :no_content)
   end
 
   private
 
   def update_params
-    { connection: current_connection }
+    params.permit(:id)
   end
 
   def current_connection

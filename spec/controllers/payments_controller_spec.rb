@@ -15,8 +15,8 @@ RSpec.describe PaymentsController, type: :controller do
     let(:send_invalid_request) { post :create, params: payment_params.merge(user: young_user), format: :json }
     let(:payments_params) { ActionController::Parameters.new(payment_params) }
     let(:card_info) { { number: '4000 00100 0000 2230', exp_month: '2', exp_year: '2021', cvc: '314' } }
-    let(:payment_params) { {   type: 'card', card: card_info } }
-    let(:user_payment_service) do
+    let(:payment_params) { { type: 'card', card: card_info } }
+    let(:user_payment_params) do
       payments_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
     end
 
@@ -25,7 +25,7 @@ RSpec.describe PaymentsController, type: :controller do
     context 'when payment method created' do
       before do
         allow(Payments::PreparePaymentService).to receive(:perform)
-          .with(user_payment_service)
+          .with(user_payment_params)
           .and_return(service_response)
 
         send_request
@@ -44,7 +44,7 @@ RSpec.describe PaymentsController, type: :controller do
 
       before do
         allow(Payments::PreparePaymentService).to receive(:perform)
-          .with(user_payment_service)
+          .with(user_payment_params)
           .and_raise exception
 
         send_request

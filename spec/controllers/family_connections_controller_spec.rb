@@ -45,7 +45,8 @@ RSpec.describe FamilyConnectionsController, type: :controller do
   describe 'PUT#update' do
     let(:send_request) do
       put :update,
-          params: { id: family_connection.id },
+          params: { id: family_connection.id,
+                    current_user: user },
           as: :json
     end
 
@@ -53,10 +54,7 @@ RSpec.describe FamilyConnectionsController, type: :controller do
       before { send_request }
       subject { response }
 
-      it { expect(response.content_type).to include('application/json') }
-      it { expect(response).to have_http_status(:accepted) }
-      it { expect(response.parsed_body['connection']).to be_present }
-      it { expect(response.parsed_body['connection']['accepted']).to be true }
+      it { expect(response).to have_http_status(:no_content) }
     end
 
     context 'with missing token' do

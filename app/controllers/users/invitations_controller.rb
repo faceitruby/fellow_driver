@@ -5,12 +5,12 @@ module Users
     skip_before_action :authenticate_user!, only: :update
 
     def create
-      if receiver_user.present?
-        result = Connections::FamilyConnections::CreateService.perform(family_connection_params)
-        render_success_response({ connection: result }, :created)
-      else
+      if receiver_user.empty?
         user = Users::InvitationService.perform(invite_params.merge(current_user: current_user))
         render_success_response({ invite_token: user.raw_invitation_token, user: user.present.page_context }, :created)
+      else
+        family_connection = Connections::FamilyConnections::CreateService.perform(family_connection_params)
+        render_success_response({ connection: family_connection }, :created)
       end
     end
 
@@ -47,12 +47,19 @@ module Users
     def family_connection_params
       params.require(:user).permit(:member_type)
             .merge(requestor_user: current_user,
-                   receiver_user: receiver_user)
+                   receiver_user: receiver_user.first)
     end
 
     def receiver_user
-      @receiver_user ||= User.where('phone = :phone or email = :email', { phone: params[:user][:phone],
-                                                                          email: params[:user][:email] }).first
+      @receiver_user ||= User.existing_user(by_phone, by_email)
+    end
+
+    def by_phone
+      params[:user][:phone].presence
+    end
+
+    def by_email
+      params[:user][:email].presence
     end
   end
 end
