@@ -6,6 +6,7 @@ class User < ApplicationRecord
   scope :without_car, -> { left_outer_joins(:cars).where(cars: { id: nil }) }
   scope :without_trusted_drivers, -> { left_outer_joins(:trusted_drivers).where(trusted_drivers: { id: nil }) }
   scope :without_payments, -> { left_outer_joins(:payments).where(payments: { id: nil }) }
+  scope :existing_user, ->(phone, email) { where('phone = ?', phone).or(where('email = ?', email)) }
 
   attr_writer :login
 
@@ -30,6 +31,12 @@ class User < ApplicationRecord
   has_many :trusted_driver_requests_as_receiver,
            foreign_key: :receiver_id,
            class_name: 'TrustedDriverRequest'
+  has_many :requestor_user_family_connections,
+           class_name: 'FamilyConnection',
+           foreign_key: :requestor_user_id
+  has_many :receiver_user_family_connections,
+           class_name: 'FamilyConnection',
+           foreign_key: :receiver_user_id
 
   accepts_nested_attributes_for :family
   has_one_attached :avatar

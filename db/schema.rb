@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_13_111802) do
+ActiveRecord::Schema.define(version: 2020_09_07_082733) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,17 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
   create_table "families", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "family_connections", force: :cascade do |t|
+    t.bigint "requestor_user_id", null: false
+    t.bigint "receiver_user_id", null: false
+    t.integer "member_type"
+    t.boolean "accepted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["receiver_user_id"], name: "index_family_connections_on_receiver_user_id"
+    t.index ["requestor_user_id"], name: "index_family_connections_on_requestor_user_id"
   end
 
   create_table "friends", force: :cascade do |t|
@@ -193,6 +204,7 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
     t.integer "invitations_count", default: 0
     t.bigint "family_id"
     t.integer "member_type"
+    t.date "birthday"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["family_id"], name: "index_users_on_family_id"
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -207,6 +219,8 @@ ActiveRecord::Schema.define(version: 2020_05_13_111802) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cars", "users"
   add_foreign_key "devices", "users"
+  add_foreign_key "family_connections", "users", column: "receiver_user_id"
+  add_foreign_key "family_connections", "users", column: "requestor_user_id"
   add_foreign_key "payments", "users"
   add_foreign_key "users", "families"
 end

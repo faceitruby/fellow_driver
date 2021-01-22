@@ -10,7 +10,8 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     member_type { :owner }
-    notifications_enabled { true }
+    birthday { Faker::Date.birthday(min_age: 15, max_age: 65) }
+    # notifications_enabled { true }
     family
 
     trait :create do
@@ -26,7 +27,11 @@ FactoryBot.define do
     end
 
     trait :random_member do
-      member_type { User.member_types.keys.sample }
+      member_type { User.member_types.keys.first(4).sample }
+    end
+
+    trait :less_than_15_yo do
+      birthday { Faker::Date.birthday(min_age: 1, max_age: 14) }
     end
   end
 end

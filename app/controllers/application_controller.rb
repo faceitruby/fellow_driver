@@ -45,4 +45,8 @@ class ApplicationController < ActionController::API
   def exception_handler(exception)
     render_error_response(*ExceptionPresenter.new(exception).page_context.values)
   end
+
+  def check_age
+    render_error_response('Access for adult', :bad_request) unless 15.year.ago >= current_user.birthday
+  end
 end

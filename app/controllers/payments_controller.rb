@@ -2,6 +2,8 @@
 
 # Write payment method to DB
 class PaymentsController < ApplicationController
+  before_action :check_age
+
   def create
     result = Payments::PreparePaymentService.perform(payment_params.merge(user: current_user))
 
