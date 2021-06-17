@@ -5,7 +5,6 @@ class User < ApplicationRecord
 
   scope :without_car, -> { left_outer_joins(:cars).where(cars: { id: nil }) }
   scope :without_trusted_drivers, -> { left_outer_joins(:trusted_drivers).where(trusted_drivers: { id: nil }) }
-  scope :without_payments, -> { left_outer_joins(:payments).where(payments: { id: nil }) }
   scope :existing_user, ->(phone, email) { where('phone = ?', phone).or(where('email = ?', email)) }
 
   attr_writer :login
@@ -14,7 +13,6 @@ class User < ApplicationRecord
 
   belongs_to :family
   has_many :cars, dependent: :destroy
-  has_many :payments, dependent: :destroy
 
   has_many :devices, dependent: :destroy
 

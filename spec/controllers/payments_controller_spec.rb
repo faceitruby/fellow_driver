@@ -4,70 +4,85 @@ require 'rails_helper'
 
 RSpec.describe PaymentsController, type: :controller do
   describe 'routing' do
-    it { expect(post: '/api/payments').to route_to(controller: 'payments', format: :json, action: 'create') }
+    it do
+      expect(post: '/api/payments/create_customer')
+        .to route_to(controller: 'payments', format: :json, action: 'create_customer')
+    end
+
+    it do
+      expect(post: '/api/payments/create_charge')
+        .to route_to(controller: 'payments', format: :json, action: 'create_charge')
+    end
   end
 
-  describe 'POST#create' do
+  describe 'Payments' do
     let(:user) { create(:user) }
-    let(:young_user) { create(:user, :less_than_15_yo) }
     let(:headers) { Devise::JWT::TestHelpers.auth_headers({}, user) }
-    let(:send_request) { post :create, params: payment_params.merge(user: user), format: :json }
-    let(:send_invalid_request) { post :create, params: payment_params.merge(user: young_user), format: :json }
-    let(:payments_params) { ActionController::Parameters.new(payment_params) }
-    let(:card_info) { { number: '4000 00100 0000 2230', exp_month: '2', exp_year: '2021', cvc: '314' } }
-    let(:payment_params) { { type: 'card', card: card_info } }
-    let(:user_payment_params) do
-      payments_params.permit(:type, card: %i[number exp_month exp_year cvc]).merge(user: user)
-    end
 
     before { request.headers.merge! headers }
 
-    context 'when payment method created' do
-      before do
-        allow(Payments::PreparePaymentService).to receive(:perform)
-          .with(user_payment_params)
-          .and_return(service_response)
+    context '#create_customer' do
+      context 'with valid params' do
+        let(:send_request) { post :create_customer, params: { stripeToken: 'tok_visa' }, format: :json }
 
-        send_request
+        before do
+          allow(Payments::Customers::CreateService).to receive(:perform)
+
+          send_request
+        end
+
+        it { expect(response.content_type).to include('application/json') }
+
+        it { expect(response).to have_http_status(:created) }
+
+        it { expect(response.parsed_body['success']).to be true }
       end
 
-      let(:service_response) { build(:payment) }
+      context 'when exception was raised' do
+        let(:send_request) { post :create_customer, params: {}, format: :json }
 
-      it { expect(response.content_type).to include('application/json') }
-      it { expect(response).to have_http_status(:created) }
-      it { expect(response.parsed_body['success']).to be true }
-      it { expect(response.parsed_body['payment']).to be_present }
-    end
+        before do
+          allow(Payments::Customers::CreateService).to receive(:perform).and_raise(ArgumentError)
 
-    context 'when payment method is not created' do
-      let(:exception) { ActiveRecord::RecordInvalid }
+          send_request
+        end
 
-      before do
-        allow(Payments::PreparePaymentService).to receive(:perform)
-          .with(user_payment_params)
-          .and_raise exception
+        it { expect(response.content_type).to include('application/json') }
 
-        send_request
+        it { expect(response).to have_http_status(:unprocessable_entity) }
+
+        it { expect(response.parsed_body['success']).to be false }
       end
-      it { expect(response.content_type).to include('application/json') }
-      it { expect(response).to have_http_status(:unprocessable_entity) }
-      it { expect(response.parsed_body['success']).to be false }
-      it { expect(response.parsed_body['error']).to be_present }
     end
 
-    context 'when user is less than 15 year old' do
-      before { send_invalid_request }
+    context '#create_charge' do
+      let(:send_request) { post :create_charge, params: { amount: 100 }, format: :json }
 
-      it { expect(response.content_type).to include('application/json') }
-      it { expect(response).to have_http_status(:bad_request) }
-      it { expect(response.parsed_body['success']).to be false }
-      it { expect(response.parsed_body['error']).to be_present }
-    end
+      context 'with valid params' do
+        before do
+          allow(Payments::Charges::CreateService).to receive(:perform)
+          send_request
+        end
 
-    context 'with missing token' do
-      let(:headers) { {} }
+        it { expect(response.content_type).to include('application/json') }
 
-      include_examples 'with missing token'
+        it { expect(response).to have_http_status(:created) }
+
+        it { expect(response.parsed_body['success']).to be true }
+      end
+
+      context 'when exception was raised' do
+        before do
+          allow(Payments::Charges::CreateService).to receive(:perform).and_raise(ArgumentError)
+          send_request
+        end
+
+        it { expect(response.content_type).to include('application/json') }
+
+        it { expect(response).to have_http_status(:unprocessable_entity) }
+
+        it { expect(response.parsed_body['success']).to be false }
+      end
     end
   end
 end

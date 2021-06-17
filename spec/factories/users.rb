@@ -33,5 +33,12 @@ FactoryBot.define do
     trait :less_than_15_yo do
       birthday { Faker::Date.birthday(min_age: 1, max_age: 14) }
     end
+
+    trait :stripe_customer do
+      stripe_customer_id { "cus_#{Faker::Alphanumeric.alphanumeric(number: 16)}" }
+      exp_month { Faker::Stripe.month }
+      exp_year { Faker::Stripe.year }
+      last4 { Faker::Number.number(digits: 4) }
+    end
   end
 end

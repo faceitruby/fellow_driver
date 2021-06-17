@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_07_082733) do
+ActiveRecord::Schema.define(version: 2021_06_17_125825) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,15 +86,6 @@ ActiveRecord::Schema.define(version: 2020_09_07_082733) do
     t.boolean "status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-  end
-
-  create_table "payments", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "payment_type"
-    t.string "user_payment"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_payments_on_user_id"
   end
 
   create_table "rpush_apps", force: :cascade do |t|
@@ -205,6 +196,10 @@ ActiveRecord::Schema.define(version: 2020_09_07_082733) do
     t.bigint "family_id"
     t.integer "member_type"
     t.date "birthday"
+    t.string "stripe_customer_id"
+    t.integer "exp_month"
+    t.integer "exp_year"
+    t.string "last4"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["family_id"], name: "index_users_on_family_id"
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -221,6 +216,5 @@ ActiveRecord::Schema.define(version: 2020_09_07_082733) do
   add_foreign_key "devices", "users"
   add_foreign_key "family_connections", "users", column: "receiver_user_id"
   add_foreign_key "family_connections", "users", column: "requestor_user_id"
-  add_foreign_key "payments", "users"
   add_foreign_key "users", "families"
 end
