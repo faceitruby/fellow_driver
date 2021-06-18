@@ -1,18 +1,27 @@
 # frozen_string_literal: true
 
-# Write payment method to DB
 class PaymentsController < ApplicationController
   before_action :check_age
 
-  def create
-    result = Payments::PreparePaymentService.perform(payment_params.merge(user: current_user))
+  def create_customer
+    Payments::Customers::CreateService.perform(customer_params.merge(user: current_user))
 
-    render_success_response({ payment: result }, :created)
+    render_success_response(nil, :created)
+  end
+
+  def create_charge
+    Payments::Charges::CreateService.perform(charge_params.merge(user: current_user))
+
+    render_success_response(nil, :created)
   end
 
   private
 
-  def payment_params
-    params.permit(:type, card: %i[number exp_month exp_year cvc])
+  def customer_params
+    params.permit(:stripeToken)
+  end
+
+  def charge_params
+    params.permit(:amount)
   end
 end

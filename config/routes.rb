@@ -30,7 +30,6 @@ Rails.application.routes.draw do
     get 'brands', to: 'vehicles#brands'
     get 'models/:brand', to: 'vehicles#models'
     resources :cars, except: %i[update new]
-    resources :payments, only: %i[create]
     resources :trusted_drivers, only: %i[create destroy index] do
       get :trusted_for, on: :collection
     end
@@ -43,6 +42,9 @@ Rails.application.routes.draw do
     delete 'notifications_receivers', to: 'notifications_receivers#destroy'
     get '/pushnotification/notify' => 'pushnotification#notify'
     resources :family_connections, only: %i[index update]
+
+    post 'payments/create_customer', to: 'payments#create_customer', as: :create_customer
+    post 'payments/create_charge', to: 'payments#create_charge', as: :create_charge
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
