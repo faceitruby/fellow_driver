@@ -9,6 +9,8 @@ module FavouriteLocations
     # - address [String] the address we add
 
     def call
+      raise ArgumentError, 'Current user is missing' unless current_user
+
       current_user.favourite_locations.create!(location_attributes)
     end
   end

@@ -8,8 +8,8 @@ module FavouriteLocations
     # - current_user: [User] current_user
 
     def call
-      raise ArgumentError, "Favourite Location not found" unless favourite_location
-      raise ArgumentError, "You are not allowed to destroy this data" unless
+      raise ArgumentError, 'Favourite Location not found' unless favourite_location
+      raise ArgumentError, 'You are not allowed to destroy this data' unless
         current_user.favourite_locations.include?(favourite_location)
 
       favourite_location.destroy

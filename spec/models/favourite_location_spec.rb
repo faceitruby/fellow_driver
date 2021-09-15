@@ -12,5 +12,13 @@ RSpec.describe FavouriteLocation, type: :model do
   describe 'assotiation' do
     it { is_expected.to belong_to(:user) }
   end
+
+  describe 'validation' do
+    subject { build(:favourite_location) }
+    it { should validate_uniqueness_of(:name).scoped_to(:user_id)
+                                             .with_message('is already in your Favourite Locations') }
+    it { should validate_uniqueness_of(:address).scoped_to(:user_id)
+                                                .with_message('is already in your Favourite Locations') }
+  end
 end
 
