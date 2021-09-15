@@ -36,6 +36,8 @@ class User < ApplicationRecord
            class_name: 'FamilyConnection',
            foreign_key: :receiver_user_id
 
+  has_many :favourite_locations
+
   accepts_nested_attributes_for :family
   has_one_attached :avatar
   validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :email_present?
