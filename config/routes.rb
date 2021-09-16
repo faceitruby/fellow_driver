@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       delete 'users/logout', to: 'users/sessions#destroy'
 
       post 'users/address_autocomplete/complete', to: 'users/address_autocomplete#complete', as: :address_autocomplete_complete
+      post 'users/distance_time/calculate', to: 'users/distance_matrix#calculate', as: :distance_matrix_calculate
     end
 
     get 'brands', to: 'vehicles#brands'
