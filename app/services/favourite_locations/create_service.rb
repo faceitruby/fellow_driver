@@ -7,6 +7,7 @@ module FavouriteLocations
     # - current_user: [User] current_user
     # - name [String] the name we add
     # - address [String] the address we add
+    # - description [Text] the description we add
 
     def call
       raise ArgumentError, 'Current user is missing' unless current_user
