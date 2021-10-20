@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class FavouriteLocationPresenter < ApplicationPresenter
-  MODEL_ATTRIBUTES = %i[id user_id name address created_at updated_at].freeze
+  MODEL_ATTRIBUTES = %i[id user_id name address description created_at updated_at].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
 
