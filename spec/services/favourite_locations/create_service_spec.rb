@@ -23,8 +23,7 @@ RSpec.describe FavouriteLocations::CreateService do
     context 'with invalid params' do
       let(:params) { favourite_locations_attributes }
 
-      it { expect{ subject }.to raise_error ArgumentError, 'Current user is missing' }
+      it { expect { subject }.to raise_error ArgumentError, 'Current user is missing' }
     end
   end
 end
-

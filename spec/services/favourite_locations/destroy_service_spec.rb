@@ -18,13 +18,13 @@ RSpec.describe FavouriteLocations::DestroyService do
     context 'without favourite_location' do
       let(:params) { { favourite_location: nil, current_user: current_user } }
 
-      it { expect{ subject }.to raise_error ArgumentError, 'Favourite Location not found' }
+      it { expect { subject }.to raise_error ArgumentError, 'Favourite Location not found' }
     end
 
     context 'if favourite_location doesnt belong to user' do
       let(:params) { { favourite_location: 777, current_user: current_user } }
 
-      it { expect{ subject }.to raise_error ArgumentError, 'You are not allowed to destroy this data' }
+      it { expect { subject }.to raise_error ArgumentError, 'You are not allowed to destroy this data' }
     end
   end
 end

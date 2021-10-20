@@ -15,4 +15,3 @@ class FavouriteLocationPresenter < ApplicationPresenter
     record.attributes.symbolize_keys.slice(*MODEL_ATTRIBUTES)
   end
 end
-

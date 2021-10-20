@@ -4,8 +4,8 @@ module Users
   # Service for autocomplete addresses using Google Place Autocomplete
   class DistanceMatrixService < ApplicationService
     def call
-      raise ArgumentError, "Origin must be provided" unless params[:origin]
-      raise ArgumentError, "Destination must be provided" unless params[:destination]
+      raise ArgumentError, 'Origin must be provided' unless params[:origin]
+      raise ArgumentError, 'Destination must be provided' unless params[:destination]
 
       prepare_matrix
       prepare_response
@@ -15,15 +15,20 @@ module Users
 
     def prepare_response
       response = distance_matrix_client.data.first.first
-      if response.status == 'ok'
+      case response[:status]
+      when 'ok'
         {
-          distance_text: response.distance_text,
-          distance_in_meters: response.distance_in_meters,
-          duration_text: response.duration_text,
-          duration_in_seconds: response.duration_in_seconds
+          distance_text: response[:distance_text],
+          distance_in_meters: response[:distance_in_meters],
+          duration_text: response[:duration_text],
+          duration_in_seconds: response[:duration_in_seconds]
         }
-      else
-        { error: 'Check the data' }
+      when 'not_found'
+        raise ArgumentError, 'Origin or Destination not found'
+      when 'zero_results'
+        raise ArgumentError, 'No route could be found between Origin or Destination'
+      when 'max_route_length_exceeded'
+        raise ArgumentError, 'Requested route is too long and cannot be processed'
       end
     end
 

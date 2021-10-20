@@ -4,7 +4,7 @@ module FavouriteLocations
   # Service for user updating
   class UpdateService < ApplicationService
     # @attr_reader params [Hash]
-    # - favourite_location: [FavouriteLocation] 
+    # - favourite_location: [FavouriteLocation]
     # - current_user: [User] current_user
     # - name [String] the name we add
     # - address [String] the address we add

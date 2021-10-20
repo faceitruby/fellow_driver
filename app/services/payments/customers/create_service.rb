@@ -19,9 +19,7 @@ module Payments
       def find_or_create_customer
         if user.stripe_customer_id
           stripe_customer = Stripe::Customer.retrieve({ id: user.stripe_customer_id })
-          if stripe_customer
-            stripe_customer = Stripe::Customer.update(stripe_customer.id, { source: stripe_token })
-          end
+          stripe_customer = Stripe::Customer.update(stripe_customer.id, { source: stripe_token }) if stripe_customer
         else
           stripe_customer = Stripe::Customer.create({
                                                       email: user.email,

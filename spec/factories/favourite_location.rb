@@ -7,4 +7,3 @@ FactoryBot.define do
     address { Faker::Address.full_address }
   end
 end
-
