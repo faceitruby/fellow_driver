@@ -5,5 +5,6 @@ FactoryBot.define do
     user
     name { Faker::Address.community }
     address { Faker::Address.full_address }
+    description { Faker::Lorem.sentence }
   end
 end

@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe FavouriteLocation, type: :model do
   describe 'columns' do
-    %i[id user_id name address created_at updated_at].each do |field|
+    %i[id user_id name address description created_at updated_at].each do |field|
       it { is_expected.to have_db_column(field) }
     end
   end
