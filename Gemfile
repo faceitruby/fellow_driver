@@ -11,6 +11,7 @@ gem 'devise_invitable', '~> 2.0', '>= 2.0.1'
 
 gem 'devise-jwt', '~> 0.5.9'
 gem 'geocoder', '~> 1.3', '>= 1.3.7'
+gem 'google_distance_matrix'
 gem 'google_places_autocomplete'
 gem 'haml-rails'
 

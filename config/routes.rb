@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       delete 'users/logout', to: 'users/sessions#destroy'
 
       post 'users/address_autocomplete/complete', to: 'users/address_autocomplete#complete', as: :address_autocomplete_complete
+      post 'users/distance_time/calculate', to: 'users/distance_matrix#calculate', as: :distance_matrix_calculate
     end
 
     get 'brands', to: 'vehicles#brands'
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
 
     post 'payments/create_customer', to: 'payments#create_customer', as: :create_customer
     post 'payments/create_charge', to: 'payments#create_charge', as: :create_charge
+    resources :favourite_locations
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

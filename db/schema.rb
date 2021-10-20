@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_17_125825) do
+ActiveRecord::Schema.define(version: 2021_09_13_082106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -71,6 +71,16 @@ ActiveRecord::Schema.define(version: 2021_06_17_125825) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["receiver_user_id"], name: "index_family_connections_on_receiver_user_id"
     t.index ["requestor_user_id"], name: "index_family_connections_on_requestor_user_id"
+  end
+
+  create_table "favourite_locations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.string "address"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_favourite_locations_on_user_id"
   end
 
   create_table "friends", force: :cascade do |t|
@@ -216,5 +226,6 @@ ActiveRecord::Schema.define(version: 2021_06_17_125825) do
   add_foreign_key "devices", "users"
   add_foreign_key "family_connections", "users", column: "receiver_user_id"
   add_foreign_key "family_connections", "users", column: "requestor_user_id"
+  add_foreign_key "favourite_locations", "users"
   add_foreign_key "users", "families"
 end
