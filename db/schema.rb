@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 2021_09_13_082106) do
     t.bigint "user_id", null: false
     t.string "name"
     t.string "address"
+    t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_favourite_locations_on_user_id"

@@ -40,7 +40,7 @@ class FavouriteLocationsController < ApplicationController
   private
 
   def location_params
-    params.require(:favourite_location).permit(:name, :address)
+    params.require(:favourite_location).permit(:name, :address, :description)
   end
 
   def favourite_location
